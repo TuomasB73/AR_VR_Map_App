@@ -24,3 +24,7 @@ jobs:
       run: chmod +x gradlew
     - name: Build with Gradle
       run: ./gradlew build
+    - name: produced output
+      run: |
+        ls -lah
+        ls -lah build
