@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">AR_VR_Map</string>
+    <string name="arModeButtonText">AR Mode</string>
 </resources>
