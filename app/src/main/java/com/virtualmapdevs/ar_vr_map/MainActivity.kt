@@ -1,18 +1,29 @@
 package com.virtualmapdevs.ar_vr_map
 
-import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
+import android.widget.FrameLayout
+import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.Fragment
 
 class MainActivity : AppCompatActivity() {
+
+    private lateinit var fragmentContainer: FrameLayout
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        findViewById<Button>(R.id.arModeButton).setOnClickListener {
-            val arModeIntent = Intent(this, ARModeActivity::class.java)
-            startActivity(arModeIntent)
-        }
+        fragmentContainer = findViewById(R.id.fragmentContainer)
+
+        val homeFragment = HomeFragment()
+
+        replaceFragment(homeFragment)
+    }
+
+    private fun replaceFragment(fragment: Fragment) {
+        val fragmentManager = supportFragmentManager
+        val fragmentTransaction = fragmentManager.beginTransaction()
+        fragmentTransaction.replace(R.id.fragmentContainer, fragment)
+        fragmentTransaction.commit()
     }
 }
