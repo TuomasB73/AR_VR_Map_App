@@ -1,10 +1,7 @@
 package com.virtualmapdevs.ar_vr_map
 
-import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.widget.Button
-import android.widget.FrameLayout
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 
