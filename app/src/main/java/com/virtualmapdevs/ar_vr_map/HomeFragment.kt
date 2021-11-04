@@ -2,12 +2,11 @@ package com.virtualmapdevs.ar_vr_map
 
 import android.content.Intent
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
+import androidx.fragment.app.Fragment
 
 class HomeFragment : Fragment() {
 
@@ -20,10 +19,18 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         val arBtn = view.findViewById<TextView>(R.id.arModeButton)
+        val qrBtn = view.findViewById<TextView>(R.id.qrReaderBtn)
 
         arBtn?.setOnClickListener {
             val arModeIntent = Intent(activity, ARModeActivity::class.java)
             startActivity(arModeIntent)
+        }
+
+        qrBtn?.setOnClickListener{
+            val fragmentManager = activity?.supportFragmentManager
+            val fragmentTransaction = fragmentManager?.beginTransaction()
+            fragmentTransaction?.replace(R.id.fragmentContainer, QRScannerFragment())
+            fragmentTransaction?.commit()
         }
     }
 
