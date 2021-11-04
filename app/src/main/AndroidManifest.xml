@@ -20,9 +20,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AR_VR_Map">
         <activity
-            android:name=".ARModeActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>

@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">AR_VR_Map</string>
-    <string name="arModeButtonText">AR Mode</string>
+    <string name="read_qr_code_button_text">Read QR code</string>
+    <string name="saved_scenes_button_text">My saved AR scenes</string>
+    <string name="home_title_text">AR / VR Map App</string>
+    <string name="ar_mode_button_text">AR mode</string>
 </resources>

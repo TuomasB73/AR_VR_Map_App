@@ -3,11 +3,13 @@ package com.virtualmapdevs.ar_vr_map
 import android.content.ContentValues
 import android.graphics.Point
 import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
+import androidx.fragment.app.Fragment
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.Button
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -16,24 +18,35 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 
-class ARModeActivity : AppCompatActivity() {
+class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_armode)
+    }
 
-        findViewById<Button>(R.id.addModelButton).setOnClickListener {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_ar_mode, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<Button>(R.id.addModelButton).setOnClickListener {
             add3dObject()
         }
 
-        arFragment = supportFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+        arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
-                this,
-                Uri.parse("file:///android_asset/storage_box.gltf")
+                context,
+                Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/storage_box.gltf")
             )
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
@@ -70,7 +83,7 @@ class ARModeActivity : AppCompatActivity() {
     }
 
     private fun getScreenCenter(): Point {
-        val vw = findViewById<View>(android.R.id.content)
+        val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
     }
 }
