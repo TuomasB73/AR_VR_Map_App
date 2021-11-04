@@ -26,6 +26,14 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.findViewById<Button>(R.id.readQrCodeButton).setOnClickListener {
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<QRScannerFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
+
         view.findViewById<Button>(R.id.arModeButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
