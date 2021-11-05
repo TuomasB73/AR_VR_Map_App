@@ -4,4 +4,8 @@
     <string name="saved_scenes_button_text">My saved AR scenes</string>
     <string name="home_title_text">AR / VR Map App</string>
     <string name="ar_mode_button_text">AR mode</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="addUsername">username</string>
+    <string name="addPassword">password</string>
 </resources>
