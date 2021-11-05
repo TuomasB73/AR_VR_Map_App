@@ -42,11 +42,16 @@ class ArModeFragment : Fragment() {
         }
 
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+        load3DModel()
+
+    }
+
+    private fun load3DModel() {
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
                 context,
-                Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/storage_box.gltf")
+                Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/terrain_example.gltf")
             )
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
