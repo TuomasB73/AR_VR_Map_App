@@ -57,12 +57,13 @@
         android:id="@+id/registrationTxtView"
         android:layout_width="0dp"
         android:layout_height="40dp"
+        android:layout_marginStart="75dp"
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/don_t_have_any_account_yet"
         android:textSize="14sp"
-        app:layout_constraintTop_toBottomOf="@+id/passwordAdd"
-        tools:layout_editor_absoluteX="85dp" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
 
 
     <Button

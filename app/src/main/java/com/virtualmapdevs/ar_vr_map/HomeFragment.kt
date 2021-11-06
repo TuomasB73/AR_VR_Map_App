@@ -41,5 +41,13 @@ class HomeFragment : Fragment() {
                 addToBackStack(null)
             }
         }
+
+        view.findViewById<Button>(R.id.testLoginButton).setOnClickListener {
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<LoginFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
     }
 }

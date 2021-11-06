@@ -9,6 +9,8 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 
 class RegistrationFragment : Fragment() {
 
@@ -42,6 +44,14 @@ class RegistrationFragment : Fragment() {
 
         view.findViewById<Button>(R.id.registerButton).setOnClickListener{
 
+        }
+
+        view.findViewById<Button>(R.id.logBtn).setOnClickListener{
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<LoginFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
         }
     }
 }

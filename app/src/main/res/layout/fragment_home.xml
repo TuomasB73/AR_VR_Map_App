@@ -40,26 +40,36 @@
             android:id="@+id/savedScenesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp"
+            android:layout_marginTop="32dp"
             android:background="@drawable/custom_button"
             android:contentDescription="@string/my_saved_scenes"
             android:padding="16dp"
             android:text="@string/my_saved_scenes"
             android:textColor="@color/white"
-            app:layout_constraintBottom_toTopOf="@+id/arModeButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/readQrCodeButton" />
 
         <Button
             android:id="@+id/arModeButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="48dp"
+            android:layout_marginTop="16dp"
             android:text="@string/ar_mode_button_text"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/testLoginButton" />
+
+        <Button
+            android:id="@+id/testLoginButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="56dp"
+            android:text="login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/savedScenesButton" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
