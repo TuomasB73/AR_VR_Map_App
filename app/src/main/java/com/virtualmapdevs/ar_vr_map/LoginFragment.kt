@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 
 class LoginFragment : Fragment() {
 
@@ -36,5 +38,12 @@ class LoginFragment : Fragment() {
 
         }
 
+        view.findViewById<Button>(R.id.regBtn).setOnClickListener{
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<RegistrationFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
     }
 }

@@ -13,4 +13,5 @@
     <string name="register">register</string>
     <string name="addConfirmPassword">Confirm Password</string>
     <string name="my_saved_scenes">My saved AR scenes</string>
+    <string name="don_t_have_any_account_yet">Don\'t have any account yet?</string>
 </resources>
