@@ -5,10 +5,10 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoginFragment">
+    tools:context=".RegistrationFragment">
 
     <EditText
-        android:id="@+id/usernameAdd"
+        android:id="@+id/registerUsernameAdd"
         android:layout_width="276dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
@@ -23,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/passwordAdd"
+        android:id="@+id/registerPasswordAdd"
         android:layout_width="276dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
@@ -35,21 +35,37 @@
         android:inputType="textPassword"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/usernameAdd" />
+        app:layout_constraintTop_toBottomOf="@+id/registerUsernameAdd" />
+
+    <EditText
+        android:id="@+id/registerPasswordConfirmAdd"
+        android:layout_width="276dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="8dp"
+        android:autofillHints="Confirm password"
+        android:ems="10"
+        android:hint="@string/addConfirmPassword"
+        android:inputType="textPassword"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/registerPasswordAdd" />
 
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/loginButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="32dp"
         android:background="@drawable/custom_button"
-        android:contentDescription="@string/login"
+        android:contentDescription="@string/register"
         android:padding="16dp"
-        android:text="@string/login"
+        android:text="@string/register"
         android:textColor="@color/white"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
+        app:layout_constraintTop_toBottomOf="@+id/registerPasswordConfirmAdd" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
