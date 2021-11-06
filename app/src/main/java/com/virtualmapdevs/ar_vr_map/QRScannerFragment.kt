@@ -10,12 +10,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
 import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
+import com.google.zxing.Result
 
 class QRScannerFragment : Fragment() {
 
@@ -45,8 +49,6 @@ class QRScannerFragment : Fragment() {
 
     private fun startScanning() {
 
-        val scanResultTextView = view?.findViewById<TextView>(R.id.scanResultView)
-
         // Parameters (default values)
         val scannerView = view?.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = scannerView?.let { context?.let { it1 -> CodeScanner(it1, it) } }!!
@@ -61,8 +63,7 @@ class QRScannerFragment : Fragment() {
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
-                //Toast.makeText(activity, "Scan result: ${it.text}", Toast.LENGTH_LONG).show()
-                scanResultTextView?.text = it.text
+                openAR(it)
             }
         }
         codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
@@ -125,5 +126,20 @@ class QRScannerFragment : Fragment() {
                 )
             }
         }
+    }
+
+    private fun openAR(result: Result) {
+        //val bundle = bundleOf("pos" to result)
+
+        requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            //replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
+            replace<ArModeFragment>(R.id.fragmentContainer)
+            addToBackStack(null)
+        }
+
+        // for testing
+        val scanResultTextView = view?.findViewById<TextView>(R.id.scanResultView)
+        scanResultTextView?.text = result.text
     }
 }
