@@ -36,7 +36,7 @@ class RegistrationFragment : Fragment() {
         val passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd)
         val passwordConfirmTxt = view.findViewById<EditText>(R.id.registerPasswordConfirmAdd)
 
-        if (passwordTxt == passwordConfirmTxt){
+        if (passwordTxt != passwordConfirmTxt){
 
         } else {
             Toast.makeText(activity, "Check your passwords", Toast.LENGTH_LONG).show()
