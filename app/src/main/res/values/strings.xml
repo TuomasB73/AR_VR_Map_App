@@ -1,7 +1,6 @@
 <resources>
     <string name="app_name">AR_VR_Map</string>
     <string name="read_qr_code_button_text">Read QR code</string>
-    <string name="saved_scenes_button_text">My saved AR scenes</string>
     <string name="home_title_text">AR / VR Map App</string>
     <string name="ar_mode_button_text">AR mode</string>
     <!-- TODO: Remove or change this placeholder text -->
@@ -13,4 +12,5 @@
     <string name="login">login</string>
     <string name="register">register</string>
     <string name="addConfirmPassword">Confirm Password</string>
+    <string name="my_saved_scenes">My saved AR scenes</string>
 </resources>

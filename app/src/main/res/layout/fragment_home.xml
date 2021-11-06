@@ -36,12 +36,16 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/homeTitleTextView" />
 
-        <Button
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/savedScenesButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="48dp"
-            android:text="@string/saved_scenes_button_text"
+            android:background="@drawable/custom_button"
+            android:contentDescription="@string/my_saved_scenes"
+            android:padding="16dp"
+            android:text="@string/my_saved_scenes"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toTopOf="@+id/arModeButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.497"
