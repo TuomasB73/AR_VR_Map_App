@@ -34,6 +34,14 @@ class HomeFragment : Fragment() {
             }
         }
 
+        view.findViewById<Button>(R.id.savedScenesButton).setOnClickListener {
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<SavedARScenesFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
+
         view.findViewById<Button>(R.id.arModeButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
