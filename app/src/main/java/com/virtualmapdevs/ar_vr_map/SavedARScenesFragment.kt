@@ -10,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class SavedARScenesFragment : Fragment() {
 
-    private val mapsList = ArrayList<String>()
+    private val mapList = ArrayList<MapModel>()
     private lateinit var mapAdapter: MapAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,31 +33,14 @@ class SavedARScenesFragment : Fragment() {
 
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        mapAdapter = MapAdapter(mapsList)
+        mapAdapter = MapAdapter(mapList)
         val layoutManager = LinearLayoutManager(activity?.applicationContext)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mapAdapter
-        prepareItems()
+        prepareTestData()
     }
 
-    private fun prepareItems() {
-        mapsList.add("Item 1")
-        mapsList.add("Item 2")
-        mapsList.add("Item 3")
-        mapsList.add("Item 4")
-        mapsList.add("Item 5")
-        mapsList.add("Item 6")
-        mapsList.add("Item 7")
-        mapsList.add("Item 8")
-        mapsList.add("Item 9")
-        mapsList.add("Item 10")
-        mapsList.add("Item 11")
-        mapsList.add("Item 12")
-        mapsList.add("Item 13")
-        mapAdapter.notifyDataSetChanged()
-    }
-
-/*    // for testing only!!
+    // for testing only!!
     private fun prepareTestData() {
         var map = MapModel(45756, "Action & Adventure")
         mapList.add(map)
@@ -92,5 +75,5 @@ class SavedARScenesFragment : Fragment() {
         map = MapModel(746984769, "Science Fiction & Fantasy")
         mapList.add(map)
         //mapsAdapter.notifyDataSetChanged()
-    }*/
+    }
 }

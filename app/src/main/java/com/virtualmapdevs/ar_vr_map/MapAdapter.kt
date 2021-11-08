@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.annotation.NonNull
 import androidx.recyclerview.widget.RecyclerView
 
-internal class MapAdapter(private var mapsList: List<String>) :
+internal class MapAdapter(private var mapsList: ArrayList<MapModel>) :
     RecyclerView.Adapter<MapAdapter.MyViewHolder>() {
     internal inner class MyViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var mapNameTxt: TextView = view.findViewById(R.id.mapNameTextView)
@@ -20,7 +20,7 @@ internal class MapAdapter(private var mapsList: List<String>) :
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = mapsList[position]
-        holder.mapNameTxt.text = item
+        holder.mapNameTxt.text = item.getMapName()
     }
     override fun getItemCount(): Int {
         return mapsList.size
