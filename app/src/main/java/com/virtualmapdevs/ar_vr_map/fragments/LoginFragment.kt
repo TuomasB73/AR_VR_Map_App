@@ -48,6 +48,7 @@ class LoginFragment : Fragment() {
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
                 Log.d("artest", "loginUserMsg: ${response.code()}")
+
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
