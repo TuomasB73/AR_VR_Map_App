@@ -15,16 +15,17 @@
             android:name="com.google.ar.sceneform.ux.ArFragment"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/addModelButton"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
-            android:id="@+id/addModelButton"
+            android:id="@+id/show3dModelButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="add model"
+            android:layout_marginBottom="16dp"
+            android:text="Show 3D map"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.498"
