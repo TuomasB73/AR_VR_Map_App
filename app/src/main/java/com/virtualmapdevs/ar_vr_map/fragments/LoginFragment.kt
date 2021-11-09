@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 class LoginFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +50,15 @@ class LoginFragment : Fragment() {
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
                 Log.d("artest", "loginUserMsg: ${response.code()}")
+
+                val loginToken = response.body()?.message
+
+                val sharedPreference =
+                    activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+
+                val editor = sharedPreference?.edit()
+                editor?.putString("loginKey", loginToken)
+                editor?.apply()
 
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
