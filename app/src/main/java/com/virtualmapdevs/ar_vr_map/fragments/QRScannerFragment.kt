@@ -1,4 +1,4 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.budiyev.android.codescanner.AutoFocusMode
@@ -20,6 +19,7 @@ import com.budiyev.android.codescanner.DecodeCallback
 import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.google.zxing.Result
+import com.virtualmapdevs.ar_vr_map.R
 
 class QRScannerFragment : Fragment() {
 

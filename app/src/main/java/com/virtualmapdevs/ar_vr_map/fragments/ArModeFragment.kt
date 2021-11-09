@@ -1,4 +1,4 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.graphics.Point
@@ -19,6 +19,7 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.virtualmapdevs.ar_vr_map.R
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
