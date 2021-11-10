@@ -61,18 +61,16 @@ class HomeFragment : Fragment() {
             }
         }
 
-        view.findViewById<Button>(R.id.testLoginButton).setOnClickListener {
+        view.findViewById<Button>(R.id.logoutBtn).setOnClickListener {
+            val editor = sharedPreference?.edit()
+            editor?.putString("loginKey", "")
+            editor?.apply()
+
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<LoginFragment>(R.id.fragmentContainer)
                 addToBackStack(null)
             }
-        }
-
-        view.findViewById<Button>(R.id.logoutBtn).setOnClickListener {
-            val editor = sharedPreference?.edit()
-            editor?.putString("loginKey", "")
-            editor?.apply()
 
             // for testing only
             val logoutTest = sharedPreference?.getString("loginKey", "defaultValue")

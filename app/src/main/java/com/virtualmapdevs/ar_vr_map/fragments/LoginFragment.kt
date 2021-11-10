@@ -39,13 +39,14 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
+        checkIsUserLoggedIn()
 
         view.findViewById<Button>(R.id.loginButton).setOnClickListener{
             val usernameTxt = view.findViewById<EditText>(R.id.usernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.passwordAdd).text.toString()
             viewModel.loginUser(usernameTxt, passwordTxt)
         }
+
         viewModel.loginUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
@@ -60,15 +61,43 @@ class LoginFragment : Fragment() {
                 editor?.putString("loginKey", loginToken)
                 editor?.apply()
 
+                requireActivity().supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    replace<HomeFragment>(R.id.fragmentContainer)
+                    addToBackStack(null)
+                }
+
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
 
+        viewModel.loginUserMessageFail.observe(viewLifecycleOwner, {
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+
+
         view.findViewById<Button>(R.id.regBtn).setOnClickListener{
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<RegistrationFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
+    }
+
+    private fun checkIsUserLoggedIn(){
+
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val loginId = sharedPreference?.getString("loginKey", "")
+
+        Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
+
+        if (loginId != ""){
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<HomeFragment>(R.id.fragmentContainer)
                 addToBackStack(null)
             }
         }
