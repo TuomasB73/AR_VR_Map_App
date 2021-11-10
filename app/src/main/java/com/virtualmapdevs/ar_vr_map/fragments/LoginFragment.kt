@@ -41,7 +41,7 @@ class LoginFragment : Fragment() {
 
         checkIsUserLoggedIn()
 
-        view.findViewById<Button>(R.id.loginButton).setOnClickListener{
+        view.findViewById<Button>(R.id.loginButton).setOnClickListener {
             val usernameTxt = view.findViewById<EditText>(R.id.usernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.passwordAdd).text.toString()
             viewModel.loginUser(usernameTxt, passwordTxt)
@@ -76,8 +76,7 @@ class LoginFragment : Fragment() {
             Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
 
-
-        view.findViewById<Button>(R.id.regBtn).setOnClickListener{
+        view.findViewById<Button>(R.id.regBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<RegistrationFragment>(R.id.fragmentContainer)
@@ -86,7 +85,7 @@ class LoginFragment : Fragment() {
         }
     }
 
-    private fun checkIsUserLoggedIn(){
+    private fun checkIsUserLoggedIn() {
 
         val sharedPreference =
             activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
@@ -94,7 +93,11 @@ class LoginFragment : Fragment() {
 
         Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
 
-        if (loginId != ""){
+/*        if (loginId != null) {
+            checkSecureData(loginId)
+        }*/
+
+        if (loginId != "") {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<HomeFragment>(R.id.fragmentContainer)
@@ -102,4 +105,20 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
+/*    private fun checkSecureData(token: String) {
+
+        viewModel.getSecureData(token)
+
+        viewModel.secureDataMsg.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                Log.d("artest", "loginUserMsg: ${response.body()}")
+                Log.d("artest", "loginUserMsg: ${response.code()}")
+
+                Log.d("artest", "Token ok")
+            } else {
+                Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+            }
+        })
+    }*/
 }

@@ -37,13 +37,14 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        view.findViewById<Button>(R.id.registerButton).setOnClickListener{
+        view.findViewById<Button>(R.id.registerButton).setOnClickListener {
 
             val usernameTxt = view.findViewById<EditText>(R.id.registerUsernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd).text.toString()
-            val passwordConfirmTxt = view.findViewById<EditText>(R.id.registerPasswordConfirmAdd).text.toString()
+            val passwordConfirmTxt =
+                view.findViewById<EditText>(R.id.registerPasswordConfirmAdd).text.toString()
 
-            if (passwordTxt == passwordConfirmTxt){
+            if (passwordTxt == passwordConfirmTxt) {
 
                 viewModel.registerUser(usernameTxt, passwordTxt)
 
@@ -61,7 +62,7 @@ class RegistrationFragment : Fragment() {
             }
         })
 
-        view.findViewById<Button>(R.id.logBtn).setOnClickListener{
+        view.findViewById<Button>(R.id.logBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<LoginFragment>(R.id.fragmentContainer)
@@ -78,7 +79,6 @@ class RegistrationFragment : Fragment() {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })*/
-
 
 
     }
