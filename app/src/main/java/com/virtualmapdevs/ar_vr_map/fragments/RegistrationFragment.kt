@@ -38,19 +38,19 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
-/*        val passwordConfirmTxt = view.findViewById<EditText>(R.id.registerPasswordConfirmAdd)
-
-        if (passwordTxt == passwordConfirmTxt){
-
-        } else {
-            Toast.makeText(activity, "Check your passwords", Toast.LENGTH_LONG).show()
-        }*/
-
         view.findViewById<Button>(R.id.registerButton).setOnClickListener{
+
             val usernameTxt = view.findViewById<EditText>(R.id.registerUsernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd).text.toString()
-            viewModel.registerUser(usernameTxt, passwordTxt)
+            val passwordConfirmTxt = view.findViewById<EditText>(R.id.registerPasswordConfirmAdd).text.toString()
+
+            if (passwordTxt == passwordConfirmTxt){
+
+                viewModel.registerUser(usernameTxt, passwordTxt)
+
+            } else {
+                Toast.makeText(activity, "Check your passwords", Toast.LENGTH_LONG).show()
+            }
         }
 
         viewModel.registerUserMsg.observe(viewLifecycleOwner, { response ->
