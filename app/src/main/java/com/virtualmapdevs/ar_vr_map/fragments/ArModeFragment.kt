@@ -12,6 +12,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Vector3
@@ -20,12 +21,14 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
-    private lateinit var modelUri: Uri
     private var dashboards = mutableListOf<ViewRenderable>()
+    private var arItemId: Int? = null
+    private lateinit var arItemViewModel: ARItemViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,24 +45,40 @@ class ArModeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Get the AR item ID passed from the previous fragment here
+        arItemId = 1234
+
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+        arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
-        modelUri = Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/terrain_example.gltf")
+        fetchARItemData()
 
-        load3DModel()
-        loadDashboards()
-
-        view.findViewById<Button>(R.id.show3dModelButton).setOnClickListener {
+        view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
             add3dObject()
         }
     }
 
-    private fun load3DModel() {
+    // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
+    private fun fetchARItemData() {
+        if (arItemId != null) {
+            arItemViewModel.getARItem(arItemId!!)
+            arItemViewModel.arItem.observe(requireActivity(), {
+                val itemTitle = it.itemTitle
+                val itemDescription = it.itemDescription
+                val itemModelUri = it.itemModelUri
+
+                load3DModel(Uri.parse(itemModelUri))
+                loadDashboards(itemTitle, itemDescription)
+            })
+        }
+    }
+
+    private fun load3DModel(itemModelUri: Uri) {
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
                 context,
-                modelUri
+                itemModelUri
             )
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
@@ -71,20 +90,24 @@ class ArModeFragment : Fragment() {
             }
     }
 
-    private fun loadDashboards() {
-        // Data will be fetched from different APIs to the dashboards here
-        val arItemDashboard = LayoutInflater.from(context).inflate(R.layout.item_info_dashboard, null as ViewGroup?)
-        arItemDashboard.findViewById<TextView>(R.id.itemTitleTextView).text = "TESTING"
+    private fun loadDashboards(itemTitle: String, itemDescription: String) {
+        for (i in 0..2) {
+            var layout: View
 
-        ViewRenderable.builder()
-            .setView(context, arItemDashboard)
-            .build()
-            .thenAccept { dashboards.add(it) }
+            if (i == 0) {
+                layout = LayoutInflater.from(context).inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
+                layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
+                layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
+            } else {
+                layout = LayoutInflater.from(context).inflate(R.layout.api_data_dashboard, null as ViewGroup?)
+                // Data will be fetched from different APIs to the dashboards here
+            }
 
-        ViewRenderable.builder()
-            .setView(context, R.layout.api_data_dashboard)
-            .build()
-            .thenAccept { dashboards.add(it) }
+            ViewRenderable.builder()
+                .setView(context, layout)
+                .build()
+                .thenAccept { dashboards.add(it) }
+        }
     }
 
     private fun add3dObject() {
@@ -118,7 +141,7 @@ class ArModeFragment : Fragment() {
     }
 
     private fun addDashboards(anchorNode: AnchorNode) {
-        var xAxisPosition = -0.3f
+        var xAxisPosition = 0.6f
 
         for (dashboard in dashboards) {
             val dashboardNode = TransformableNode(arFragment.transformationSystem)
@@ -129,7 +152,7 @@ class ArModeFragment : Fragment() {
             dashboardNode.localPosition = Vector3(xAxisPosition, 0.2f, -0.1f)
             dashboardNode.setParent(anchorNode)
 
-            xAxisPosition += 0.6f
+            xAxisPosition -= 0.6f
         }
     }
 
