@@ -3,8 +3,7 @@
     <string name="read_qr_code_button_text">Read QR code</string>
     <string name="home_title_text">AR / VR Map App</string>
     <string name="ar_mode_button_text">AR mode</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="show_ar_scene_button_text">Show AR scene</string>
     <string name="addUsername">username</string>
     <string name="addPassword">password</string>
     <string name="read_QR_code">read qr code</string>
