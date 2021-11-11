@@ -52,11 +52,7 @@ class SavedARScenesFragment : Fragment() {
         recyclerView.adapter = mapAdapter
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<HomeFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
-            }
+            requireActivity().supportFragmentManager.popBackStack()
         }
     }
 

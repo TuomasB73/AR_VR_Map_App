@@ -2,8 +2,6 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -14,7 +12,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
@@ -28,7 +25,6 @@ import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.MapModel
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
-import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import java.net.URL
 import com.google.gson.Gson
@@ -40,8 +36,6 @@ class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
-    private var arItemId: Int? = null
-    private lateinit var arItemViewModel: ARItemViewModel
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
     private val mapList = ArrayList<MapModel>()
@@ -64,7 +58,6 @@ class ArModeFragment : Fragment() {
         // Get the AR item ID passed from the previous fragment here
 
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
-        //arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
         fetchARItemData()
 
@@ -110,6 +103,9 @@ class ArModeFragment : Fragment() {
 
     // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
     private fun fetchARItemData() {
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val itemId = sharedPreference?.getString("QRid", "")
+        val loginKey = sharedPreference?.getString("loginKey", "")
         val sharedPreference =
             activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         val qRid = sharedPreference?.getString("QRid", "")
@@ -119,27 +115,26 @@ class ArModeFragment : Fragment() {
         Log.d("artest", "armodelF QR id: ${loginId.toString()}")
 
         viewModel.getArItemById(
+            "Bearer $loginKey",
+            "$itemId"
             "Bearer $loginId",
             "$qRid"
         )
+
         viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
-                Log.d("artest", "aritemMsg: ${response.body()}")
-                Log.d("artest", "aritemMsg: ${response.code()}")
-
                 val itemTitle = response.body()?.name
                 val itemDescription = response.body()?.description
                 val itemModelUri = response.body()?.imageReference
 
-                val itemModelUrl = Constants.IMAGE_BASE_URL + itemModelUri.toString()
-                load3DModel(Uri.parse(itemModelUrl))
-                if (itemTitle != null) {
-                    if (itemDescription != null) {
-                        loadDashboards(itemTitle, itemDescription, itemModelUrl)
-                    }
-                }
+                val fullItemModelUrl = Uri.parse(Constants.ITEM_MODEL_BASE_URL + itemModelUri.toString())
+                load3DModel(fullItemModelUrl)
 
+                if (itemTitle != null && itemDescription != null) {
+                    loadDashboards(itemTitle, itemDescription)
+                }
             } else {
+                Log.d("ARItemFetch", "failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
@@ -175,7 +170,7 @@ class ArModeFragment : Fragment() {
             }
     }
 
-    private fun loadDashboards(itemTitle: String, itemDescription: String, itemModelUrl: String) {
+    private fun loadDashboards(itemTitle: String, itemDescription: String) {
         for (i in 0..2) {
             var layout: View
 

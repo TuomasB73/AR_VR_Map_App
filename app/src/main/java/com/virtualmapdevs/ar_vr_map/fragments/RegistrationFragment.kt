@@ -21,9 +21,6 @@ class RegistrationFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
     }
 
     override fun onCreateView(
@@ -72,7 +69,6 @@ class RegistrationFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<LoginFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
             }
         }
 
