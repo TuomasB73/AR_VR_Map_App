@@ -17,15 +17,11 @@ import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class LoginFragment : Fragment() {
-
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
     }
 
     override fun onCreateView(
@@ -64,7 +60,6 @@ class LoginFragment : Fragment() {
                 requireActivity().supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     replace<HomeFragment>(R.id.fragmentContainer)
-                    addToBackStack(null)
                 }
 
             } else {
@@ -80,7 +75,6 @@ class LoginFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<RegistrationFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
             }
         }
     }
@@ -101,7 +95,6 @@ class LoginFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<HomeFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
             }
         }
     }

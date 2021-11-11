@@ -1,6 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.api
 
-import com.virtualmapdevs.ar_vr_map.ARItem
+import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.model.Message
 import com.virtualmapdevs.ar_vr_map.model.User
 import retrofit2.Response

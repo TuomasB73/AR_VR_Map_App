@@ -69,7 +69,6 @@ class HomeFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<LoginFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
             }
 
             // for testing only

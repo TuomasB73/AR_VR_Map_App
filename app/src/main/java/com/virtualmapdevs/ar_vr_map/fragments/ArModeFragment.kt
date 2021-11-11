@@ -2,8 +2,6 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -14,11 +12,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Vector3
@@ -28,16 +24,12 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
-import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
-import java.net.URL
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
-    private var arItemId: Int? = null
-    private lateinit var arItemViewModel: ARItemViewModel
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
 
@@ -56,11 +48,7 @@ class ArModeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Get the AR item ID passed from the previous fragment here
-
-
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
-        //arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
         fetchARItemData()
 
@@ -71,57 +59,32 @@ class ArModeFragment : Fragment() {
 
     // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
     private fun fetchARItemData() {
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val QRid = sharedPreference?.getString("QRid", "")
-        val loginId = sharedPreference?.getString("loginKey", "")
-
-        Log.d("artest", "armodelF QR id: ${QRid.toString()}")
-        Log.d("artest", "armodelF QR id: ${loginId.toString()}")
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val itemId = sharedPreference?.getString("QRid", "")
+        val loginKey = sharedPreference?.getString("loginKey", "")
 
         viewModel.getArItemById(
-            "Bearer $loginId",
-            "$QRid"
+            "Bearer $loginKey",
+            "$itemId"
         )
+
         viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
-                Log.d("artest", "aritemMsg: ${response.body()}")
-                Log.d("artest", "aritemMsg: ${response.code()}")
-
                 val itemTitle = response.body()?.name
-                Log.d("artest", itemTitle.toString())
                 val itemDescription = response.body()?.description
-                Log.d("artest", itemDescription.toString())
                 val itemModelUri = response.body()?.imageReference
-                Log.d("artest", itemModelUri.toString())
 
-                val itemModelUrl = Constants.IMAGE_BASE_URL + itemModelUri.toString()
-                load3DModel(Uri.parse(itemModelUrl))
-                if (itemTitle != null) {
-                    if (itemDescription != null) {
-                        loadDashboards(itemTitle, itemDescription, itemModelUrl)
-                    }
+                val fullItemModelUrl = Uri.parse(Constants.ITEM_MODEL_BASE_URL + itemModelUri.toString())
+                load3DModel(fullItemModelUrl)
+
+                if (itemTitle != null && itemDescription != null) {
+                    loadDashboards(itemTitle, itemDescription)
                 }
-
             } else {
-                Log.d("artest", "failed")
+                Log.d("ARItemFetch", "failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
-
-
-
-/*        if (arItemId != null) {
-            arItemViewModel.getARItem(arItemId!!)
-            arItemViewModel.arItem.observe(requireActivity(), {
-                val itemTitle = it.itemTitle
-                val itemDescription = it.itemDescription
-                val itemModelUri = it.itemModelUri
-
-                load3DModel(Uri.parse(itemModelUri))
-                loadDashboards(itemTitle, itemDescription)
-            })
-        }*/
     }
 
     private fun load3DModel(itemModelUri: Uri) {
@@ -141,7 +104,7 @@ class ArModeFragment : Fragment() {
             }
     }
 
-    private fun loadDashboards(itemTitle: String, itemDescription: String, itemModelUrl: String) {
+    private fun loadDashboards(itemTitle: String, itemDescription: String) {
         for (i in 0..2) {
             var layout: View
 
@@ -152,7 +115,6 @@ class ArModeFragment : Fragment() {
             } else {
                 layout = LayoutInflater.from(context).inflate(R.layout.api_data_dashboard, null as ViewGroup?)
                 // Data will be fetched from different APIs to the dashboards here
-                layout.findViewById<ImageView>(R.id.apiDataImageView).setImageBitmap(loadImage(itemModelUrl))
             }
 
             ViewRenderable.builder()
@@ -211,17 +173,5 @@ class ArModeFragment : Fragment() {
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
-    }
-
-    fun loadImage(url: String) : Bitmap? {
-        val url = URL(url)
-        return try {
-            val connection = url.openConnection()
-            val istream = connection.getInputStream()
-            BitmapFactory.decodeStream(istream)
-        } catch (e: Exception) {
-            Log.d("Error", "Icon download error")
-            null
-        }
     }
 }

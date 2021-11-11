@@ -3,7 +3,7 @@ package com.virtualmapdevs.ar_vr_map.viewmodels
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.virtualmapdevs.ar_vr_map.ARItem
+import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.model.Message
 import com.virtualmapdevs.ar_vr_map.model.User
 import com.virtualmapdevs.ar_vr_map.repository.Repository
