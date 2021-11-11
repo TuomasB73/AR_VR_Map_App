@@ -87,8 +87,10 @@ class LoginFragment : Fragment() {
 
         Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
 
-        if (loginId != null) {
-            checkSecureData(loginId)
+        if (loginId != "") {
+            if (loginId != null) {
+                checkSecureData(loginId)
+            }
         }
     }
 

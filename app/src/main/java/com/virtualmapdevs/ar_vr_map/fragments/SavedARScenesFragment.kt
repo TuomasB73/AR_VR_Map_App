@@ -7,7 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.MapAdapter
@@ -16,7 +19,7 @@ import com.virtualmapdevs.ar_vr_map.R
 import org.json.JSONArray
 import org.json.JSONTokener
 
-class SavedARScenesFragment : Fragment() {
+class SavedARScenesFragment : Fragment(), MapAdapter.ClickListener {
 
     private val mapList = ArrayList<MapModel>()
     private lateinit var mapAdapter: MapAdapter
@@ -43,7 +46,7 @@ class SavedARScenesFragment : Fragment() {
         prepareData()
 
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        mapAdapter = MapAdapter(mapList)
+        mapAdapter = MapAdapter(mapList, this)
         val layoutManager = LinearLayoutManager(activity?.applicationContext)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mapAdapter
@@ -80,14 +83,16 @@ class SavedARScenesFragment : Fragment() {
         }
     }
 
-/*    override fun onItemClick(item: String?) {
+    override fun onItemClick(item: String?) {
         val bundle = bundleOf("pos" to item)
 
         requireActivity().supportFragmentManager.commit {
 
-            setReorderingAllowed(true)
+/*            setReorderingAllowed(true)
             replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            addToBackStack(null)
+            addToBackStack(null)*/
+
+            Log.d("artest", "SavedARScenesFragment: onItemClick: $item")
         }
-    }*/
+    }
 }
