@@ -72,15 +72,12 @@ class ArModeFragment : Fragment() {
         val loginId = sharedPreference?.getString("loginKey", "")
 
         Log.d("artest", "armodelF QR id: ${QRid.toString()}")
+        Log.d("artest", "armodelF QR id: ${loginId.toString()}")
 
-        if (loginId != null) {
-            if (QRid != null) {
-                viewModel.getArItemById(
-                    "Bearer $loginId",
-                    QRid
-                )
-            }
-        }
+        viewModel.getArItemById(
+            "Bearer $loginId",
+            "$QRid"
+        )
         viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "aritemMsg: ${response.body()}")
@@ -89,7 +86,9 @@ class ArModeFragment : Fragment() {
                 val itemTitle = response.body()?.name
                 Log.d("artest", itemTitle.toString())
                 val itemDescription = response.body()?.description
+                Log.d("artest", itemDescription.toString())
                 val itemModelUri = response.body()?.imageReference
+                Log.d("artest", itemModelUri.toString())
 
                 load3DModel(Uri.parse(itemModelUri))
                 if (itemTitle != null) {
