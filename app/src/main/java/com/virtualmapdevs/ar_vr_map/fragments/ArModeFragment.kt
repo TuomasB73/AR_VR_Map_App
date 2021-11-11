@@ -84,11 +84,11 @@ class ArModeFragment : Fragment() {
                 Log.d("artest", "aritemMsg: ${response.code()}")
 
                 val itemTitle = response.body()?.name
-                Log.d("artest", itemTitle.toString())
+                Log.d("artest", "name: $itemTitle.toString()")
                 val itemDescription = response.body()?.description
-                Log.d("artest", itemDescription.toString())
+                Log.d("artest", "description: $itemDescription.toString()")
                 val itemModelUri = response.body()?.imageReference
-                Log.d("artest", itemModelUri.toString())
+                Log.d("artest", "uri: $itemModelUri.toString()")
 
                 load3DModel(Uri.parse(itemModelUri))
                 if (itemTitle != null) {
