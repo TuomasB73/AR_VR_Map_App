@@ -24,6 +24,7 @@ import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
@@ -90,7 +91,8 @@ class ArModeFragment : Fragment() {
                 val itemModelUri = response.body()?.imageReference
                 Log.d("artest", "uri: $itemModelUri.toString()")
 
-                load3DModel(Uri.parse(itemModelUri))
+                val itemModelUrl = Constants.IMAGE_BASE_URL + itemModelUri.toString()
+                load3DModel(Uri.parse(itemModelUrl))
                 if (itemTitle != null) {
                     if (itemDescription != null) {
                         loadDashboards(itemTitle, itemDescription)
