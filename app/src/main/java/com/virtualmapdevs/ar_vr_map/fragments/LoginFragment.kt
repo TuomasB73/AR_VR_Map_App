@@ -87,21 +87,14 @@ class LoginFragment : Fragment() {
 
         Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
 
-/*        if (loginId != null) {
+        if (loginId != null) {
             checkSecureData(loginId)
-        }*/
-
-        if (loginId != "") {
-            requireActivity().supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<HomeFragment>(R.id.fragmentContainer)
-            }
         }
     }
 
-/*    private fun checkSecureData(token: String) {
+    private fun checkSecureData(token: String) {
 
-        viewModel.getSecureData(token)
+        viewModel.getSecureData("Bearer $token")
 
         viewModel.secureDataMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
@@ -109,9 +102,14 @@ class LoginFragment : Fragment() {
                 Log.d("artest", "loginUserMsg: ${response.code()}")
 
                 Log.d("artest", "Token ok")
+                requireActivity().supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    replace<HomeFragment>(R.id.fragmentContainer)
+                }
+
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
-    }*/
+    }
 }
