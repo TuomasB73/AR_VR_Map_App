@@ -93,7 +93,7 @@ class ArModeFragment : Fragment() {
                         val map = MapModel(qRid, itemTitle)
                         mapList.add(map)
 
-                        val newMap = mapList.distinctBy { Pair(it.mapId, it.mapName) }
+                        val newMap = mapList.distinctBy { it.mapId }
 
                         val gson = Gson()
                         val json = gson.toJson(newMap)
