@@ -88,11 +88,27 @@ class SavedARScenesFragment : Fragment(), MapAdapter.ClickListener {
 
         requireActivity().supportFragmentManager.commit {
 
-/*            setReorderingAllowed(true)
-            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            addToBackStack(null)*/
+            openAR(item)
+        }
+    }
 
-            Log.d("artest", "SavedARScenesFragment: onItemClick: $item")
+    private fun openAR(result: String?) {
+        //val bundle = bundleOf("pos" to result)
+
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+
+        val editor = sharedPreference?.edit()
+        editor?.putString("QRid", result.toString())
+        editor?.apply()
+
+        Log.d("artest", "savedARScenesFragment QR id: ${result.toString()}")
+
+        requireActivity().supportFragmentManager.commit {
+            setReorderingAllowed(true)
+            //replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
+            replace<ArModeFragment>(R.id.fragmentContainer)
+            addToBackStack(null)
         }
     }
 }
