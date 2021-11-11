@@ -69,15 +69,15 @@ class ArModeFragment : Fragment() {
     private fun fetchARItemData() {
         val sharedPreference =
             activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val QRid = sharedPreference?.getString("QRid", "")
+        val qRid = sharedPreference?.getString("QRid", "")
         val loginId = sharedPreference?.getString("loginKey", "")
 
-        Log.d("artest", "armodelF QR id: ${QRid.toString()}")
+        Log.d("artest", "armodelF QR id: ${qRid.toString()}")
         Log.d("artest", "armodelF QR id: ${loginId.toString()}")
 
         viewModel.getArItemById(
             "Bearer $loginId",
-            "$QRid"
+            "$qRid"
         )
         viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
@@ -85,11 +85,11 @@ class ArModeFragment : Fragment() {
                 Log.d("artest", "aritemMsg: ${response.code()}")
 
                 val itemTitle = response.body()?.name
-                Log.d("artest", "name: $itemTitle.toString()")
+                Log.d("artest", "armodelF name: $itemTitle")
                 val itemDescription = response.body()?.description
-                Log.d("artest", "description: $itemDescription.toString()")
+                Log.d("artest", "armodelF description: $itemDescription")
                 val itemModelUri = response.body()?.imageReference
-                Log.d("artest", "uri: $itemModelUri.toString()")
+                Log.d("artest", "armodelF uri: $itemModelUri")
 
                 val itemModelUrl = Constants.IMAGE_BASE_URL + itemModelUri.toString()
                 load3DModel(Uri.parse(itemModelUrl))
@@ -100,7 +100,7 @@ class ArModeFragment : Fragment() {
                 }
 
             } else {
-                Log.d("artest", "failed")
+                Log.d("artest", "armodelF failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
