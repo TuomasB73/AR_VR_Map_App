@@ -44,7 +44,7 @@ class ArModeFragment : Fragment() {
     private lateinit var arItemViewModel: ARItemViewModel
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
-    val mapList = ArrayList<MapModel>()
+    private val mapList = ArrayList<MapModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -145,7 +145,6 @@ class ArModeFragment : Fragment() {
         })
 
 
-
 /*        if (arItemId != null) {
             arItemViewModel.getARItem(arItemId!!)
             arItemViewModel.arItem.observe(requireActivity(), {
@@ -181,13 +180,16 @@ class ArModeFragment : Fragment() {
             var layout: View
 
             if (i == 0) {
-                layout = LayoutInflater.from(context).inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
+                layout = LayoutInflater.from(context)
+                    .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
                 layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
                 layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
             } else {
-                layout = LayoutInflater.from(context).inflate(R.layout.api_data_dashboard, null as ViewGroup?)
+                layout = LayoutInflater.from(context)
+                    .inflate(R.layout.api_data_dashboard, null as ViewGroup?)
                 // Data will be fetched from different APIs to the dashboards here
-                layout.findViewById<ImageView>(R.id.apiDataImageView).setImageBitmap(loadImage(itemModelUrl))
+                layout.findViewById<ImageView>(R.id.apiDataImageView)
+                    .setImageBitmap(loadImage(itemModelUrl))
             }
 
             ViewRenderable.builder()
@@ -248,7 +250,7 @@ class ArModeFragment : Fragment() {
         return Point(vw.width / 2, vw.height / 2)
     }
 
-    fun loadImage(url: String) : Bitmap? {
+    fun loadImage(url: String): Bitmap? {
         val url = URL(url)
         return try {
             val connection = url.openConnection()
@@ -269,19 +271,19 @@ class ArModeFragment : Fragment() {
 
         val json: String? = sharedPreference?.getString("savedIds", "")
 
-        if (json != ""){
+        if (json != "") {
             val jsonArray = JSONTokener(json).nextValue() as JSONArray
             for (i in 0 until jsonArray.length()) {
-                // mapId
-                val mapId = jsonArray.getJSONObject(i).getString("mapId")
-
                 // mapName
                 val mapName = jsonArray.getJSONObject(i).getString("mapName")
-
-                val map = MapModel(mapId, mapName)
-                mapList.add(map)
+                // mapId
+                val mapId = jsonArray.getJSONObject(i).getString("mapId")
+                if (mapName != "still empty") {
+                    val map = MapModel(mapId, mapName)
+                    mapList.add(map)
+                }
             }
-        }else{
+        } else {
             val map = MapModel("mapId", "still empty")
             mapList.add(map)
         }

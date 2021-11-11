@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
@@ -15,11 +16,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.MapAdapter
 import com.virtualmapdevs.ar_vr_map.MapModel
 import com.virtualmapdevs.ar_vr_map.R
-import java.util.HashSet
-import com.google.gson.Gson
 import org.json.JSONArray
 import org.json.JSONTokener
-
 
 class SavedARScenesFragment : Fragment() {
 
@@ -45,13 +43,13 @@ class SavedARScenesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        prepareData()
+
         val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
         mapAdapter = MapAdapter(mapList)
         val layoutManager = LinearLayoutManager(activity?.applicationContext)
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mapAdapter
-
-        prepareData()
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
@@ -69,25 +67,33 @@ class SavedARScenesFragment : Fragment() {
 
         val json: String? = sharedPreference?.getString("savedIds", "")
 
-        if (json != ""){
+        if (json != "") {
             val jsonArray = JSONTokener(json).nextValue() as JSONArray
             for (i in 0 until jsonArray.length()) {
-                // mapId
-                val mapId = jsonArray.getJSONObject(i).getString("mapId")
-                Log.i("ID: ", mapId)
-
                 // mapName
                 val mapName = jsonArray.getJSONObject(i).getString("mapName")
-                Log.i("mapName: ", mapName)
-
-                val map = MapModel(mapId, mapName)
-                mapList.add(map)
+                // mapId
+                val mapId = jsonArray.getJSONObject(i).getString("mapId")
+                if (mapName != "still empty") {
+                    val map = MapModel(mapId, mapName)
+                    mapList.add(map)
+                }
             }
             Log.d("artest", "SavedARScenesFragment: jsonarray test3: $jsonArray.")
-        }else{
+        } else {
             val map = MapModel("mapId", "still empty")
             mapList.add(map)
         }
-
     }
+
+/*    override fun onItemClick(item: String?) {
+        val bundle = bundleOf("pos" to item)
+
+        requireActivity().supportFragmentManager.commit {
+
+            setReorderingAllowed(true)
+            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
+            addToBackStack(null)
+        }
+    }*/
 }
