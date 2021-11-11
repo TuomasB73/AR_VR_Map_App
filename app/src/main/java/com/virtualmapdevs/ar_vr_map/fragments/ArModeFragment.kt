@@ -2,6 +2,8 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +14,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
@@ -27,6 +30,7 @@ import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import java.net.URL
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
@@ -95,7 +99,7 @@ class ArModeFragment : Fragment() {
                 load3DModel(Uri.parse(itemModelUrl))
                 if (itemTitle != null) {
                     if (itemDescription != null) {
-                        loadDashboards(itemTitle, itemDescription)
+                        loadDashboards(itemTitle, itemDescription, itemModelUrl)
                     }
                 }
 
@@ -125,7 +129,7 @@ class ArModeFragment : Fragment() {
         ModelRenderable.builder()
             .setSource(
                 context,
-                itemModelUri
+                Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/terrain_example.gltf")
             )
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
@@ -137,7 +141,7 @@ class ArModeFragment : Fragment() {
             }
     }
 
-    private fun loadDashboards(itemTitle: String, itemDescription: String) {
+    private fun loadDashboards(itemTitle: String, itemDescription: String, itemModelUrl: String) {
         for (i in 0..2) {
             var layout: View
 
@@ -148,6 +152,7 @@ class ArModeFragment : Fragment() {
             } else {
                 layout = LayoutInflater.from(context).inflate(R.layout.api_data_dashboard, null as ViewGroup?)
                 // Data will be fetched from different APIs to the dashboards here
+                layout.findViewById<ImageView>(R.id.apiDataImageView).setImageBitmap(loadImage(itemModelUrl))
             }
 
             ViewRenderable.builder()
@@ -206,5 +211,17 @@ class ArModeFragment : Fragment() {
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
+    }
+
+    fun loadImage(url: String) : Bitmap? {
+        val url = URL(url)
+        return try {
+            val connection = url.openConnection()
+            val istream = connection.getInputStream()
+            BitmapFactory.decodeStream(istream)
+        } catch (e: Exception) {
+            Log.d("Error", "Icon download error")
+            null
+        }
     }
 }
