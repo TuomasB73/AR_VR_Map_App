@@ -1,6 +1,7 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
+import android.content.Context
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -12,6 +13,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import android.widget.Toast
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -22,6 +25,7 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
+import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
@@ -29,6 +33,8 @@ class ArModeFragment : Fragment() {
     private var dashboards = mutableListOf<ViewRenderable>()
     private var arItemId: Int? = null
     private lateinit var arItemViewModel: ARItemViewModel
+    private val viewModel: MainViewModel by viewModels()
+    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,10 +52,10 @@ class ArModeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         // Get the AR item ID passed from the previous fragment here
-        arItemId = 1234
+
 
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
-        arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
+        //arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
         fetchARItemData()
 
@@ -60,7 +66,47 @@ class ArModeFragment : Fragment() {
 
     // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
     private fun fetchARItemData() {
-        if (arItemId != null) {
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val QRid = sharedPreference?.getString("QRid", "")
+        val loginId = sharedPreference?.getString("loginKey", "")
+
+        Log.d("artest", "armodelF QR id: ${QRid.toString()}")
+
+        if (loginId != null) {
+            if (QRid != null) {
+                viewModel.getArItemById(
+                    "Bearer $loginId",
+                    QRid
+                )
+            }
+        }
+        viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                Log.d("artest", "aritemMsg: ${response.body()}")
+                Log.d("artest", "aritemMsg: ${response.code()}")
+
+                val itemTitle = response.body()?.name
+                Log.d("artest", itemTitle.toString())
+                val itemDescription = response.body()?.description
+                val itemModelUri = response.body()?.imageReference
+
+                load3DModel(Uri.parse(itemModelUri))
+                if (itemTitle != null) {
+                    if (itemDescription != null) {
+                        loadDashboards(itemTitle, itemDescription)
+                    }
+                }
+
+            } else {
+                Log.d("artest", "failed")
+                Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+            }
+        })
+
+
+
+/*        if (arItemId != null) {
             arItemViewModel.getARItem(arItemId!!)
             arItemViewModel.arItem.observe(requireActivity(), {
                 val itemTitle = it.itemTitle
@@ -70,7 +116,7 @@ class ArModeFragment : Fragment() {
                 load3DModel(Uri.parse(itemModelUri))
                 loadDashboards(itemTitle, itemDescription)
             })
-        }
+        }*/
     }
 
     private fun load3DModel(itemModelUri: Uri) {

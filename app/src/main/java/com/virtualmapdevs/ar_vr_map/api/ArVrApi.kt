@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.api
 
+import com.virtualmapdevs.ar_vr_map.ARItem
 import com.virtualmapdevs.ar_vr_map.model.Message
 import com.virtualmapdevs.ar_vr_map.model.User
 import retrofit2.Response
@@ -32,4 +33,11 @@ interface ArVrApi {
 
     @GET("aritem/")
     suspend fun getSecureData(@Header("Authorization") token: String): Response<Message>
+
+
+    @GET("aritem/{id}")
+    suspend fun getArItemById(
+        @Header("Authorization") token: String,
+        @Path(value = "id", encoded = true) id: String,
+    ): Response<ARItem>
 }

@@ -1,7 +1,9 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +26,7 @@ import com.virtualmapdevs.ar_vr_map.R
 class QRScannerFragment : Fragment() {
 
     private lateinit var codeScanner: CodeScanner
+    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -130,6 +133,15 @@ class QRScannerFragment : Fragment() {
 
     private fun openAR(result: Result) {
         //val bundle = bundleOf("pos" to result)
+
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+
+        val editor = sharedPreference?.edit()
+        editor?.putString("QRid", result.toString())
+        editor?.apply()
+
+        Log.d("artest", "qrscanF QR id: ${result.toString()}")
 
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)

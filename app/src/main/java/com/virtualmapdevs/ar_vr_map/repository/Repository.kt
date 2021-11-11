@@ -1,6 +1,7 @@
 package com.virtualmapdevs.ar_vr_map.repository
 
 import android.util.Log
+import com.virtualmapdevs.ar_vr_map.ARItem
 import com.virtualmapdevs.ar_vr_map.api.RetrofitInstance
 import com.virtualmapdevs.ar_vr_map.model.Message
 import com.virtualmapdevs.ar_vr_map.model.User
@@ -27,5 +28,13 @@ class Repository {
 
     suspend fun getSecureData(token: String): Response<Message> {
         return RetrofitInstance.api.getSecureData(token)
+    }
+
+
+    suspend fun getArItemById(
+        token: String,
+        id: String,
+    ): Response<ARItem> {
+        return RetrofitInstance.api.getArItemById(token, id)
     }
 }

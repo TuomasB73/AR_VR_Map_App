@@ -1,19 +1,14 @@
 package com.virtualmapdevs.ar_vr_map.viewmodels
 
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.virtualmapdevs.ar_vr_map.ARItem
 import com.virtualmapdevs.ar_vr_map.model.Message
 import com.virtualmapdevs.ar_vr_map.model.User
 import com.virtualmapdevs.ar_vr_map.repository.Repository
 import kotlinx.coroutines.launch
 import retrofit2.Response
-import org.json.JSONObject
-
-
-
 
 class MainViewModel : ViewModel() {
 
@@ -24,6 +19,8 @@ class MainViewModel : ViewModel() {
     var loginUserMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var secureDataMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var loginUserMessageFail: MutableLiveData<String> = MutableLiveData()
+
+    var ARItembyIdMsg: MutableLiveData<Response<ARItem>> = MutableLiveData()
 
     fun getMessage() {
         viewModelScope.launch {
@@ -71,6 +68,13 @@ class MainViewModel : ViewModel() {
             if (message.code() != 400) {
                 secureDataMsg.value = message
             }
+        }
+    }
+
+    fun getArItemById(token: String, id: String) {
+        viewModelScope.launch {
+            val message = repository.getArItemById(token, id)
+            ARItembyIdMsg.value = message
         }
     }
 
