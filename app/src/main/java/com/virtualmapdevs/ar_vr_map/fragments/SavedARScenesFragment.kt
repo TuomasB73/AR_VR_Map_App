@@ -1,10 +1,13 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.MapAdapter
@@ -41,6 +44,14 @@ class SavedARScenesFragment : Fragment() {
         recyclerView.layoutManager = layoutManager
         recyclerView.adapter = mapAdapter
         prepareTestData()
+
+        view.findViewById<Button>(R.id.backBtn).setOnClickListener {
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<HomeFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
     }
 
     // for testing only!!

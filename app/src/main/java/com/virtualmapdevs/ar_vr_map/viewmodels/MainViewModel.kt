@@ -1,5 +1,7 @@
 package com.virtualmapdevs.ar_vr_map.viewmodels
 
+import android.util.Log
+import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -8,6 +10,10 @@ import com.virtualmapdevs.ar_vr_map.model.User
 import com.virtualmapdevs.ar_vr_map.repository.Repository
 import kotlinx.coroutines.launch
 import retrofit2.Response
+import org.json.JSONObject
+
+
+
 
 class MainViewModel : ViewModel() {
 
@@ -17,6 +23,7 @@ class MainViewModel : ViewModel() {
     var registerUserMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var loginUserMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var secureDataMsg: MutableLiveData<Response<Message>> = MutableLiveData()
+    var loginUserMessageFail: MutableLiveData<String> = MutableLiveData()
 
     fun getMessage() {
         viewModelScope.launch {
@@ -35,21 +42,35 @@ class MainViewModel : ViewModel() {
     fun registerUser(name: String, password: String) {
         viewModelScope.launch {
             val message = repository.registerUser(name, password)
-            registerUserMsg.value = message
+            val errorMessage = message.errorBody()?.string()
+            if (message.code() != 400) {
+                registerUserMsg.value = message
+            }else{
+                loginUserMessageFail.value = errorMessage
+            }
         }
     }
 
     fun loginUser(name: String, password: String) {
         viewModelScope.launch {
             val message = repository.loginUser(name, password)
-            loginUserMsg.value = message
+
+            val errorMessage = message.errorBody()?.string()
+
+            if (message.code() != 400){
+                loginUserMsg.value = message
+            }else{
+                loginUserMessageFail.value = errorMessage
+            }
         }
     }
 
     fun getSecureData(token: String) {
         viewModelScope.launch {
             val message = repository.getSecureData(token)
-            secureDataMsg.value = message
+            if (message.code() != 400) {
+                secureDataMsg.value = message
+            }
         }
     }
 

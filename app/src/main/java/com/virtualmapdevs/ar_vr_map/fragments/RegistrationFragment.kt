@@ -2,17 +2,16 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.LifecycleOwner
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
@@ -38,19 +37,20 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        view.findViewById<Button>(R.id.registerButton).setOnClickListener {
 
-/*        val passwordConfirmTxt = view.findViewById<EditText>(R.id.registerPasswordConfirmAdd)
-
-        if (passwordTxt == passwordConfirmTxt){
-
-        } else {
-            Toast.makeText(activity, "Check your passwords", Toast.LENGTH_LONG).show()
-        }*/
-
-        view.findViewById<Button>(R.id.registerButton).setOnClickListener{
             val usernameTxt = view.findViewById<EditText>(R.id.registerUsernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd).text.toString()
-            viewModel.registerUser(usernameTxt, passwordTxt)
+            val passwordConfirmTxt =
+                view.findViewById<EditText>(R.id.registerPasswordConfirmAdd).text.toString()
+
+            if (passwordTxt == passwordConfirmTxt) {
+
+                viewModel.registerUser(usernameTxt, passwordTxt)
+
+            } else {
+                Toast.makeText(activity, "Check your passwords", Toast.LENGTH_LONG).show()
+            }
         }
 
         viewModel.registerUserMsg.observe(viewLifecycleOwner, { response ->
@@ -62,7 +62,7 @@ class RegistrationFragment : Fragment() {
             }
         })
 
-        view.findViewById<Button>(R.id.logBtn).setOnClickListener{
+        view.findViewById<Button>(R.id.logBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<LoginFragment>(R.id.fragmentContainer)
@@ -79,7 +79,6 @@ class RegistrationFragment : Fragment() {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })*/
-
 
 
     }

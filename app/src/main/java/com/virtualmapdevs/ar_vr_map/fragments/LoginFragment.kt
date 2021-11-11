@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -18,6 +19,7 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 class LoginFragment : Fragment() {
 
     private val viewModel: MainViewModel by viewModels()
+    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,24 +39,44 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        checkIsUserLoggedIn()
 
-
-        view.findViewById<Button>(R.id.loginButton).setOnClickListener{
+        view.findViewById<Button>(R.id.loginButton).setOnClickListener {
             val usernameTxt = view.findViewById<EditText>(R.id.usernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.passwordAdd).text.toString()
             viewModel.loginUser(usernameTxt, passwordTxt)
         }
+
         viewModel.loginUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
                 Log.d("artest", "loginUserMsg: ${response.code()}")
+
+                val loginToken = response.body()?.message
+
+                val sharedPreference =
+                    activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+
+                val editor = sharedPreference?.edit()
+                editor?.putString("loginKey", loginToken)
+                editor?.apply()
+
+                requireActivity().supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    replace<HomeFragment>(R.id.fragmentContainer)
+                    addToBackStack(null)
+                }
 
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
 
-        view.findViewById<Button>(R.id.regBtn).setOnClickListener{
+        viewModel.loginUserMessageFail.observe(viewLifecycleOwner, {
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+
+        view.findViewById<Button>(R.id.regBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<RegistrationFragment>(R.id.fragmentContainer)
@@ -62,4 +84,41 @@ class LoginFragment : Fragment() {
             }
         }
     }
+
+    private fun checkIsUserLoggedIn() {
+
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val loginId = sharedPreference?.getString("loginKey", "")
+
+        Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
+
+/*        if (loginId != null) {
+            checkSecureData(loginId)
+        }*/
+
+        if (loginId != "") {
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<HomeFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
+    }
+
+/*    private fun checkSecureData(token: String) {
+
+        viewModel.getSecureData(token)
+
+        viewModel.secureDataMsg.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                Log.d("artest", "loginUserMsg: ${response.body()}")
+                Log.d("artest", "loginUserMsg: ${response.code()}")
+
+                Log.d("artest", "Token ok")
+            } else {
+                Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+            }
+        })
+    }*/
 }

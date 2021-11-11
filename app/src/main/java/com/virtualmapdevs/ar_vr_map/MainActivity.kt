@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.virtualmapdevs.ar_vr_map.fragments.HomeFragment
+import com.virtualmapdevs.ar_vr_map.fragments.LoginFragment
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -13,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
         supportFragmentManager.commit {
             setReorderingAllowed(true)
-            replace<HomeFragment>(R.id.fragmentContainer)
+            replace<LoginFragment>(R.id.fragmentContainer)
         }
     }
 }
