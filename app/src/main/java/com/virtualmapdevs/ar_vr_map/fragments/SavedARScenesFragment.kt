@@ -73,6 +73,9 @@ class SavedARScenesFragment : Fragment() {
                 }
             }
             Log.d("artest", "SavedARScenesFragment: jsonarray test3: $jsonArray.")
+
+            mapList.distinctBy { Pair(it.mapId, it.mapName) }
+
         } else {
             val map = MapModel("mapId", "still empty")
             mapList.add(map)

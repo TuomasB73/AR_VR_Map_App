@@ -93,8 +93,10 @@ class ArModeFragment : Fragment() {
                         val map = MapModel(qRid, itemTitle)
                         mapList.add(map)
 
+                        val newMap = mapList.distinctBy { Pair(it.mapId, it.mapName) }
+
                         val gson = Gson()
-                        val json = gson.toJson(mapList)
+                        val json = gson.toJson(newMap)
                         val editor = sharedPreference?.edit()
                         editor?.putString("savedIds", json)
                         editor?.apply()
