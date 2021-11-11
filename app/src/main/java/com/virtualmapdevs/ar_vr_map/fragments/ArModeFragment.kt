@@ -41,6 +41,7 @@ class ArModeFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
     private val mapList = ArrayList<MapModel>()
+    var mapSaved = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,37 +71,40 @@ class ArModeFragment : Fragment() {
 
         view.findViewById<Button>(R.id.saveBtn).setOnClickListener {
 
-            prepareData()
+            if (!mapSaved) {
+                prepareData()
 
-            val sharedPreference =
-                activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-            val qRid = sharedPreference?.getString("QRid", "")
-            val loginId = sharedPreference?.getString("loginKey", "")
+                val sharedPreference =
+                    activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+                val qRid = sharedPreference?.getString("QRid", "")
+                val loginId = sharedPreference?.getString("loginKey", "")
 
-            viewModel.getArItemById(
-                "Bearer $loginId",
-                "$qRid"
-            )
-            viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
-                if (response.isSuccessful) {
-                    Log.d("artest", "aritemMsg: ${response.body()}")
-                    Log.d("artest", "aritemMsg: ${response.code()}")
+                viewModel.getArItemById(
+                    "Bearer $loginId",
+                    "$qRid"
+                )
+                viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
+                    if (response.isSuccessful) {
+                        Log.d("artest", "aritemMsg: ${response.body()}")
+                        Log.d("artest", "aritemMsg: ${response.code()}")
 
-                    val itemTitle = response.body()?.name
+                        val itemTitle = response.body()?.name
 
-                    val map = MapModel(qRid, itemTitle)
-                    mapList.add(map)
+                        val map = MapModel(qRid, itemTitle)
+                        mapList.add(map)
 
-                    val gson = Gson()
-                    val json = gson.toJson(mapList)
-                    val editor = sharedPreference?.edit()
-                    editor?.putString("savedIds", json)
-                    editor?.apply()
+                        val gson = Gson()
+                        val json = gson.toJson(mapList)
+                        val editor = sharedPreference?.edit()
+                        editor?.putString("savedIds", json)
+                        editor?.apply()
 
-                } else {
-                    Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
-                }
-            })
+                    } else {
+                        Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+                    }
+                })
+            }
+            mapSaved = true
         }
     }
 
