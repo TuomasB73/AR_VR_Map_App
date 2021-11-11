@@ -20,7 +20,7 @@ internal class MapAdapter(private var mapsList: ArrayList<MapModel>) :
     }
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val item = mapsList[position]
-        holder.mapNameTxt.text = item.getMapName()
+        holder.mapNameTxt.text = item.mapName
     }
     override fun getItemCount(): Int {
         return mapsList.size

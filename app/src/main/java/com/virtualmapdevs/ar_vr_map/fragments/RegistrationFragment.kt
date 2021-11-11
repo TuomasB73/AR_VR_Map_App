@@ -57,6 +57,12 @@ class RegistrationFragment : Fragment() {
             if (response.isSuccessful) {
                 Log.d("artest", "postUserMsg: ${response.body()}")
                 Log.d("artest", "postUserMsg: ${response.code()}")
+
+                requireActivity().supportFragmentManager.commit {
+                    setReorderingAllowed(true)
+                    replace<LoginFragment>(R.id.fragmentContainer)
+                    addToBackStack(null)
+                }
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }

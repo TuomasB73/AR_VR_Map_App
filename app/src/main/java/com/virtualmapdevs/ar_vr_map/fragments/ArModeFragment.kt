@@ -18,7 +18,6 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Vector3
@@ -26,11 +25,16 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
+import com.virtualmapdevs.ar_vr_map.MapModel
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.viewmodels.ARItemViewModel
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import java.net.URL
+import com.google.gson.Gson
+import org.json.JSONArray
+import org.json.JSONTokener
+
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
@@ -40,6 +44,7 @@ class ArModeFragment : Fragment() {
     private lateinit var arItemViewModel: ARItemViewModel
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
+    val mapList = ArrayList<MapModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,7 +63,6 @@ class ArModeFragment : Fragment() {
 
         // Get the AR item ID passed from the previous fragment here
 
-
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
         //arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
@@ -66,6 +70,41 @@ class ArModeFragment : Fragment() {
 
         view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
             add3dObject()
+        }
+
+        view.findViewById<Button>(R.id.saveBtn).setOnClickListener {
+
+            prepareData()
+
+            val sharedPreference =
+                activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+            val qRid = sharedPreference?.getString("QRid", "")
+            val loginId = sharedPreference?.getString("loginKey", "")
+
+            viewModel.getArItemById(
+                "Bearer $loginId",
+                "$qRid"
+            )
+            viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
+                if (response.isSuccessful) {
+                    Log.d("artest", "aritemMsg: ${response.body()}")
+                    Log.d("artest", "aritemMsg: ${response.code()}")
+
+                    val itemTitle = response.body()?.name
+
+                    val map = MapModel(qRid, itemTitle)
+                    mapList.add(map)
+
+                    val gson = Gson()
+                    val json = gson.toJson(mapList)
+                    val editor = sharedPreference?.edit()
+                    editor?.putString("savedIds", json)
+                    editor?.apply()
+
+                } else {
+                    Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 
@@ -89,11 +128,8 @@ class ArModeFragment : Fragment() {
                 Log.d("artest", "aritemMsg: ${response.code()}")
 
                 val itemTitle = response.body()?.name
-                Log.d("artest", "armodelF name: $itemTitle")
                 val itemDescription = response.body()?.description
-                Log.d("artest", "armodelF description: $itemDescription")
                 val itemModelUri = response.body()?.imageReference
-                Log.d("artest", "armodelF uri: $itemModelUri")
 
                 val itemModelUrl = Constants.IMAGE_BASE_URL + itemModelUri.toString()
                 load3DModel(Uri.parse(itemModelUrl))
@@ -104,7 +140,6 @@ class ArModeFragment : Fragment() {
                 }
 
             } else {
-                Log.d("artest", "armodelF failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
@@ -223,5 +258,33 @@ class ArModeFragment : Fragment() {
             Log.d("Error", "Icon download error")
             null
         }
+    }
+
+    // If user want to save map, this will create list of all previously saved maps so
+    // new one is added to that.
+    private fun prepareData() {
+
+        val sharedPreference =
+            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+
+        val json: String? = sharedPreference?.getString("savedIds", "")
+
+        if (json != ""){
+            val jsonArray = JSONTokener(json).nextValue() as JSONArray
+            for (i in 0 until jsonArray.length()) {
+                // mapId
+                val mapId = jsonArray.getJSONObject(i).getString("mapId")
+
+                // mapName
+                val mapName = jsonArray.getJSONObject(i).getString("mapName")
+
+                val map = MapModel(mapId, mapName)
+                mapList.add(map)
+            }
+        }else{
+            val map = MapModel("mapId", "still empty")
+            mapList.add(map)
+        }
+
     }
 }
