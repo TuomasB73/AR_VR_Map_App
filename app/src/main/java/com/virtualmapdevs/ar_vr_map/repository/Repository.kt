@@ -8,7 +8,6 @@ import com.virtualmapdevs.ar_vr_map.model.User
 import retrofit2.Response
 
 class Repository {
-
     suspend fun getMessage(): Response<Message> {
         Log.d("artest", "in repo")
         return RetrofitInstance.api.getMessage()
@@ -29,7 +28,6 @@ class Repository {
     suspend fun getSecureData(token: String): Response<Message> {
         return RetrofitInstance.api.getSecureData(token)
     }
-
 
     suspend fun getArItemById(
         token: String,

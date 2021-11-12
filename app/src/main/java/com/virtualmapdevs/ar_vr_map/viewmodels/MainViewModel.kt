@@ -11,15 +11,14 @@ import kotlinx.coroutines.launch
 import retrofit2.Response
 
 class MainViewModel : ViewModel() {
-
     private val repository = Repository()
 
     var getMessageMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var registerUserMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var loginUserMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var secureDataMsg: MutableLiveData<Response<Message>> = MutableLiveData()
-    var loginUserMessageFail: MutableLiveData<String> = MutableLiveData()
-
+    var registerUserMsgFail: MutableLiveData<String> = MutableLiveData()
+    var loginUserMsgFail: MutableLiveData<String> = MutableLiveData()
     var ARItembyIdMsg: MutableLiveData<Response<ARItem>> = MutableLiveData()
 
     fun getMessage() {
@@ -40,10 +39,11 @@ class MainViewModel : ViewModel() {
         viewModelScope.launch {
             val message = repository.registerUser(name, password)
             val errorMessage = message.errorBody()?.string()
+
             if (message.code() != 400) {
                 registerUserMsg.value = message
-            }else{
-                loginUserMessageFail.value = errorMessage
+            } else {
+                registerUserMsgFail.value = errorMessage
             }
         }
     }
@@ -51,13 +51,12 @@ class MainViewModel : ViewModel() {
     fun loginUser(name: String, password: String) {
         viewModelScope.launch {
             val message = repository.loginUser(name, password)
-
             val errorMessage = message.errorBody()?.string()
 
-            if (message.code() != 400){
+            if (message.code() != 400) {
                 loginUserMsg.value = message
-            }else{
-                loginUserMessageFail.value = errorMessage
+            } else {
+                loginUserMsgFail.value = errorMessage
             }
         }
     }
@@ -65,6 +64,7 @@ class MainViewModel : ViewModel() {
     fun getSecureData(token: String) {
         viewModelScope.launch {
             val message = repository.getSecureData(token)
+
             if (message.code() != 400) {
                 secureDataMsg.value = message
             }
@@ -77,6 +77,4 @@ class MainViewModel : ViewModel() {
             ARItembyIdMsg.value = message
         }
     }
-
-
 }

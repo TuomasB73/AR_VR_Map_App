@@ -37,11 +37,10 @@ class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
-    private var arItemId: Int? = null
     private val viewModel: MainViewModel by viewModels()
     private val sharedPrefFile = "loginsharedpreference"
     private val mapList = ArrayList<MapModel>()
-    var mapSaved = false
+    private var mapSaved = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -58,10 +57,7 @@ class ArModeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Get the AR item ID passed from the previous fragment here
-
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
-        //arItemViewModel = ViewModelProvider(this).get(ARItemViewModel::class.java)
 
         fetchARItemData()
 
@@ -70,7 +66,6 @@ class ArModeFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.saveBtn).setOnClickListener {
-
             if (!mapSaved) {
                 prepareData()
 
@@ -83,6 +78,7 @@ class ArModeFragment : Fragment() {
                     "Bearer $loginId",
                     "$qRid"
                 )
+
                 viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
                         Log.d("artest", "aritemMsg: ${response.body()}")
@@ -100,7 +96,6 @@ class ArModeFragment : Fragment() {
                         val editor = sharedPreference?.edit()
                         editor?.putString("savedIds", json)
                         editor?.apply()
-
                     } else {
                         Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
                     }
@@ -127,14 +122,27 @@ class ArModeFragment : Fragment() {
                 val itemDescription = response.body()?.description
                 val itemModelUri = response.body()?.imageReference
 
-                val fullItemModelUrl = Uri.parse(Constants.ITEM_MODEL_BASE_URL + itemModelUri.toString())
-                load3DModel(fullItemModelUrl)
+                if (itemModelUri != null) {
+                    val fullItemModelUri =
+                        Uri.parse(Constants.AR_ITEM_MODEL_BASE_URL + itemModelUri)
+                    load3DModel(fullItemModelUri)
+                } else {
+                    Log.d("ARItemFetch", "Item model Uri not found")
+                    Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
+                }
 
                 if (itemTitle != null && itemDescription != null) {
                     loadDashboards(itemTitle, itemDescription)
+                } else {
+                    Log.d("ARItemFetch", "Item title and/or description not found")
+                    Toast.makeText(
+                        activity,
+                        "Item title and/or description not found",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             } else {
-                Log.d("ARItemFetch", "failed")
+                Log.d("ARItemFetch", "Item fetch failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
@@ -145,7 +153,7 @@ class ArModeFragment : Fragment() {
         ModelRenderable.builder()
             .setSource(
                 context,
-                Uri.parse("https://users.metropolia.fi/~tuomasbb/mobile_project/test_3d_model/terrain_example.gltf")
+                itemModelUri
             )
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
@@ -162,11 +170,13 @@ class ArModeFragment : Fragment() {
             var layout: View
 
             if (i == 0) {
-                layout = LayoutInflater.from(context).inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
+                layout = LayoutInflater.from(context)
+                    .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
                 layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
                 layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
             } else {
-                layout = LayoutInflater.from(context).inflate(R.layout.api_data_dashboard, null as ViewGroup?)
+                layout = LayoutInflater.from(context)
+                    .inflate(R.layout.api_data_dashboard, null as ViewGroup?)
                 // Data will be fetched from different APIs to the dashboards here
             }
 
@@ -213,8 +223,8 @@ class ArModeFragment : Fragment() {
         for (dashboard in dashboards) {
             val dashboardNode = TransformableNode(arFragment.transformationSystem)
             dashboardNode.renderable = dashboard
-            dashboardNode.scaleController.minScale = 0.3f
-            dashboardNode.scaleController.maxScale = 0.5f
+            dashboardNode.scaleController.minScale = 0.2f
+            dashboardNode.scaleController.maxScale = 0.6f
             dashboardNode.localScale = Vector3(0.4f, 0.4f, 0.4f)
             dashboardNode.localPosition = Vector3(xAxisPosition, 0.2f, -0.1f)
             dashboardNode.setParent(anchorNode)
@@ -228,24 +238,10 @@ class ArModeFragment : Fragment() {
         return Point(vw.width / 2, vw.height / 2)
     }
 
-    fun loadImage(url: String): Bitmap? {
-        val url = URL(url)
-        return try {
-            val connection = url.openConnection()
-            val istream = connection.getInputStream()
-            BitmapFactory.decodeStream(istream)
-        } catch (e: Exception) {
-            Log.d("Error", "Icon download error")
-            null
-        }
-    }
-
     // If user want to save map, this will create list of all previously saved maps so
     // new one is added to that.
     private fun prepareData() {
-
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
 
         val json: String? = sharedPreference?.getString("savedIds", "")
 
