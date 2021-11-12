@@ -7,7 +7,6 @@ import retrofit2.Response
 import retrofit2.http.*
 
 interface ArVrApi {
-
     @GET("auth/register")
     suspend fun getMessage(): Response<Message>
 
@@ -30,10 +29,8 @@ interface ArVrApi {
         @Field("password") password: String,
     ): Response<Message>
 
-
     @GET("aritem/")
     suspend fun getSecureData(@Header("Authorization") token: String): Response<Message>
-
 
     @GET("aritem/{id}")
     suspend fun getArItemById(

@@ -61,13 +61,12 @@ class LoginFragment : Fragment() {
                     setReorderingAllowed(true)
                     replace<HomeFragment>(R.id.fragmentContainer)
                 }
-
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
 
-        viewModel.loginUserMessageFail.observe(viewLifecycleOwner, {
+        viewModel.loginUserMsgFail.observe(viewLifecycleOwner, {
             Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
 
