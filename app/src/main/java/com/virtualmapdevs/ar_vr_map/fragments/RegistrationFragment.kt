@@ -65,6 +65,10 @@ class RegistrationFragment : Fragment() {
             }
         })
 
+        viewModel.loginUserMessageFail.observe(viewLifecycleOwner, {
+            Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+        })
+
         view.findViewById<Button>(R.id.logBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
