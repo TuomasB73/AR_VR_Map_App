@@ -36,6 +36,7 @@ class RegistrationFragment : Fragment() {
 
         view.findViewById<Button>(R.id.registerButton).setOnClickListener {
 
+            Log.d("TEST", "register pressed")
             val usernameTxt = view.findViewById<EditText>(R.id.registerUsernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd).text.toString()
             val passwordConfirmTxt =
