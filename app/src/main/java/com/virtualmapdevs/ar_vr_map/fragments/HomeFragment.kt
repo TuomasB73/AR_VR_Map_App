@@ -53,14 +53,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        view.findViewById<Button>(R.id.arModeButton).setOnClickListener {
-            requireActivity().supportFragmentManager.commit {
-                setReorderingAllowed(true)
-                replace<ArModeFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
-            }
-        }
-
         view.findViewById<Button>(R.id.logoutBtn).setOnClickListener {
             val editor = sharedPreference?.edit()
             editor?.putString("loginKey", "")

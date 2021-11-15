@@ -2,8 +2,6 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -24,23 +22,20 @@ import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
-import com.google.gson.Gson
-import com.virtualmapdevs.ar_vr_map.MapModel
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
-import org.json.JSONArray
-import org.json.JSONTokener
-import java.net.URL
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
     private val viewModel: MainViewModel by viewModels()
+    private var arItemId: String? = null
+    private var loginToken: String? = null
     private val sharedPrefFile = "loginsharedpreference"
-    private val mapList = ArrayList<MapModel>()
-    private var mapSaved = false
+    private var arItemSaved: Boolean? = null
+    private lateinit var saveItemButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,6 +52,15 @@ class ArModeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        arItemId = requireArguments().getString("arItemId")
+
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        loginToken = sharedPreference?.getString("loginKey", "")
+
+        saveItemButton = view.findViewById(R.id.saveBtn)
+
+        checkIfItemIsAlreadySaved()
+
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         fetchARItemData()
@@ -65,58 +69,113 @@ class ArModeFragment : Fragment() {
             add3dObject()
         }
 
-        view.findViewById<Button>(R.id.saveBtn).setOnClickListener {
-            if (!mapSaved) {
-                prepareData()
+        saveItemButton.setOnClickListener {
+            saveOrDeleteUserScannedItem()
+        }
+    }
 
-                val sharedPreference =
-                    activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-                val qRid = sharedPreference?.getString("QRid", "")
-                val loginId = sharedPreference?.getString("loginKey", "")
+    private fun checkIfItemIsAlreadySaved() {
+        if (loginToken != null) {
+            viewModel.getUserScannedItems(loginToken!!)
+        }
 
-                viewModel.getArItemById(
-                    "Bearer $loginId",
-                    "$qRid"
-                )
+        viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                val savedArItems = response.body()
 
-                viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
+                arItemSaved = false
+
+                if (savedArItems != null) {
+                    for (arItem in savedArItems) {
+                        if (arItem._id == arItemId) {
+                            arItemSaved = true
+                            break
+                        }
+                    }
+                }
+
+                setSaveButtonAppearance()
+            }
+        })
+    }
+
+    private fun setSaveButtonAppearance() {
+        saveItemButton.isEnabled = true
+
+        if (arItemSaved == true) {
+            saveItemButton.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_baseline_favorite_24,
+                0,
+                0,
+                0
+            )
+        } else {
+            saveItemButton.setCompoundDrawablesWithIntrinsicBounds(
+                R.drawable.ic_baseline_favorite_border_24,
+                0,
+                0,
+                0
+            )
+        }
+    }
+
+    private fun saveOrDeleteUserScannedItem() {
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val loginKey = sharedPreference?.getString("loginKey", "")
+
+        if (loginKey != null && arItemId != null) {
+            // If AR item is not saved, it will be saved
+            if (arItemSaved == false) {
+                viewModel.postUserScannedItem(loginKey, arItemId!!)
+
+                viewModel.postUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
-                        Log.d("artest", "aritemMsg: ${response.body()}")
-                        Log.d("artest", "aritemMsg: ${response.code()}")
+                        val message = response.body()?.message
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
 
-                        val itemTitle = response.body()?.name
-
-                        val map = MapModel(qRid, itemTitle)
-                        mapList.add(map)
-
-                        val newMap = mapList.distinctBy { it.mapId }
-
-                        val gson = Gson()
-                        val json = gson.toJson(newMap)
-                        val editor = sharedPreference?.edit()
-                        editor?.putString("savedIds", json)
-                        editor?.apply()
+                        arItemSaved = true
+                        setSaveButtonAppearance()
                     } else {
-                        Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, "Post failed", Toast.LENGTH_SHORT).show()
                     }
                 })
+
+                viewModel.postUserScannedItemMsgFail.observe(viewLifecycleOwner, {
+                    Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+                })
+                // If AR item is already saved, it will be deleted
+            } else {
+                viewModel.deleteUserScannedItem(loginKey, arItemId!!)
+
+                viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
+                    if (response.isSuccessful) {
+                        val message = response.body()?.message
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+
+                        arItemSaved = false
+                        setSaveButtonAppearance()
+                    } else {
+                        Toast.makeText(activity, "Delete failed", Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+                viewModel.deleteUserScannedItemMsgFail.observe(viewLifecycleOwner, {
+                    Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+                })
             }
-            mapSaved = true
         }
     }
 
     // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
     private fun fetchARItemData() {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val itemId = sharedPreference?.getString("QRid", "")
-        val loginKey = sharedPreference?.getString("loginKey", "")
+        if (arItemId != null) {
+            viewModel.getArItemById(
+                "Bearer $loginToken",
+                arItemId!!
+            )
+        }
 
-        viewModel.getArItemById(
-            "Bearer $loginKey",
-            "$itemId"
-        )
-
-        viewModel.ARItembyIdMsg.observe(viewLifecycleOwner, { response ->
+        viewModel.arItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 val itemTitle = response.body()?.name
                 val itemDescription = response.body()?.description
@@ -160,7 +219,7 @@ class ArModeFragment : Fragment() {
             .build()
             .thenAccept { modelRenderable = it }
             .exceptionally {
-                Log.e(ContentValues.TAG, "something went wrong ${it.localizedMessage}")
+                Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
                 null
             }
     }
@@ -236,30 +295,5 @@ class ArModeFragment : Fragment() {
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
-    }
-
-    // If user want to save map, this will create list of all previously saved maps so
-    // new one is added to that.
-    private fun prepareData() {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-
-        val json: String? = sharedPreference?.getString("savedIds", "")
-
-        if (json != "") {
-            val jsonArray = JSONTokener(json).nextValue() as JSONArray
-            for (i in 0 until jsonArray.length()) {
-                // mapName
-                val mapName = jsonArray.getJSONObject(i).getString("mapName")
-                // mapId
-                val mapId = jsonArray.getJSONObject(i).getString("mapId")
-                if (mapName != "still empty") {
-                    val map = MapModel(mapId, mapName)
-                    mapList.add(map)
-                }
-            }
-        } else {
-            val map = MapModel("mapId", "still empty")
-            mapList.add(map)
-        }
     }
 }
