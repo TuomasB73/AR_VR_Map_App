@@ -2,7 +2,6 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.Context
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,25 +10,20 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.virtualmapdevs.ar_vr_map.MapAdapter
-import com.virtualmapdevs.ar_vr_map.MapModel
+import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.R
-import org.json.JSONArray
-import org.json.JSONTokener
+import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
-class SavedARScenesFragment : Fragment(), MapAdapter.ClickListener {
-
-    private val mapList = ArrayList<MapModel>()
-    private lateinit var mapAdapter: MapAdapter
+class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private val sharedPrefFile = "loginsharedpreference"
+    private var loginToken: String? = null
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        arguments?.let {
-
-        }
     }
 
     override fun onCreateView(
@@ -43,71 +37,35 @@ class SavedARScenesFragment : Fragment(), MapAdapter.ClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        prepareData()
+        val savedItemsRecyclerView = view.findViewById<RecyclerView>(R.id.savedItemsRecyclerView)
+        val layoutManager = LinearLayoutManager(this.context)
+        savedItemsRecyclerView.layoutManager = layoutManager
 
-        val recyclerView = view.findViewById<RecyclerView>(R.id.recyclerView)
-        mapAdapter = MapAdapter(mapList, this)
-        val layoutManager = LinearLayoutManager(activity?.applicationContext)
-        recyclerView.layoutManager = layoutManager
-        recyclerView.adapter = mapAdapter
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        loginToken = sharedPreference?.getString("loginKey", "")
+
+        if (loginToken != null) {
+            viewModel.getUserScannedItems("Bearer $loginToken")
+        }
+
+        viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
+            if (response.isSuccessful) {
+                val savedArItems = response.body()
+                savedItemsRecyclerView.adapter = SavedItemAdapter(savedArItems, this)
+            }
+        })
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
     }
 
-    private fun prepareData() {
-
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-
-        val json: String? = sharedPreference?.getString("savedIds", "")
-
-        if (json != "") {
-            val jsonArray = JSONTokener(json).nextValue() as JSONArray
-            for (i in 0 until jsonArray.length()) {
-                // mapName
-                val mapName = jsonArray.getJSONObject(i).getString("mapName")
-                // mapId
-                val mapId = jsonArray.getJSONObject(i).getString("mapId")
-                if (mapName != "still empty") {
-                    val map = MapModel(mapId, mapName)
-                    mapList.add(map)
-                }
-            }
-            Log.d("artest", "SavedARScenesFragment: jsonarray test3: $jsonArray.")
-
-        } else {
-            val map = MapModel("mapId", "still empty")
-            mapList.add(map)
-        }
-    }
-
-    override fun onItemClick(item: String?) {
-        val bundle = bundleOf("pos" to item)
-
-        requireActivity().supportFragmentManager.commit {
-
-            openAR(item)
-        }
-    }
-
-    private fun openAR(result: String?) {
-        //val bundle = bundleOf("pos" to result)
-
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-
-        val editor = sharedPreference?.edit()
-        editor?.putString("QRid", result.toString())
-        editor?.apply()
-
-        Log.d("artest", "savedARScenesFragment QR id: ${result.toString()}")
+    override fun onItemClick(arItemId: String?) {
+        val bundle = bundleOf("arItemId" to arItemId)
 
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
-            //replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            replace<ArModeFragment>(R.id.fragmentContainer)
+            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
             addToBackStack(null)
         }
     }

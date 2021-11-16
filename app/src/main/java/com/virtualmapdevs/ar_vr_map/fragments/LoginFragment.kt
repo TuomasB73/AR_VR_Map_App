@@ -47,6 +47,7 @@ class LoginFragment : Fragment() {
                 Log.d("artest", "loginUserMsg: ${response.code()}")
 
                 val loginToken = response.body()?.message
+                Log.d("LoginToken", loginToken!!)
 
                 val sharedPreference =
                     activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)

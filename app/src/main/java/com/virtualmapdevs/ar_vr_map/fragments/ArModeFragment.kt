@@ -76,7 +76,7 @@ class ArModeFragment : Fragment() {
 
     private fun checkIfItemIsAlreadySaved() {
         if (loginToken != null) {
-            viewModel.getUserScannedItems(loginToken!!)
+            viewModel.getUserScannedItems("Bearer $loginToken")
         }
 
         viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
@@ -126,7 +126,7 @@ class ArModeFragment : Fragment() {
         if (loginKey != null && arItemId != null) {
             // If AR item is not saved, it will be saved
             if (arItemSaved == false) {
-                viewModel.postUserScannedItem(loginKey, arItemId!!)
+                viewModel.postUserScannedItem("Bearer $loginKey", arItemId!!)
 
                 viewModel.postUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
@@ -136,7 +136,7 @@ class ArModeFragment : Fragment() {
                         arItemSaved = true
                         setSaveButtonAppearance()
                     } else {
-                        Toast.makeText(activity, "Post failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
                     }
                 })
 
@@ -145,7 +145,7 @@ class ArModeFragment : Fragment() {
                 })
                 // If AR item is already saved, it will be deleted
             } else {
-                viewModel.deleteUserScannedItem(loginKey, arItemId!!)
+                viewModel.deleteUserScannedItem("Bearer $loginKey", arItemId!!)
 
                 viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
@@ -155,7 +155,7 @@ class ArModeFragment : Fragment() {
                         arItemSaved = false
                         setSaveButtonAppearance()
                     } else {
-                        Toast.makeText(activity, "Delete failed", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
                     }
                 })
 

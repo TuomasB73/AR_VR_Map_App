@@ -5,7 +5,7 @@
     android:layout_margin="8dp"
     android:background="#EBDBFA">
     <TextView
-        android:id="@+id/mapNameTextView"
+        android:id="@+id/itemNameTextView"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_alignParentStart="true"
