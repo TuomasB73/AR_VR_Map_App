@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -21,6 +22,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private val sharedPrefFile = "loginsharedpreference"
     private var loginToken: String? = null
     private val viewModel: MainViewModel by viewModels()
+    private lateinit var savedItemsRecyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,13 +39,21 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val savedItemsRecyclerView = view.findViewById<RecyclerView>(R.id.savedItemsRecyclerView)
+        savedItemsRecyclerView = view.findViewById(R.id.savedItemsRecyclerView)
         val layoutManager = LinearLayoutManager(this.context)
         savedItemsRecyclerView.layoutManager = layoutManager
 
         val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         loginToken = sharedPreference?.getString("loginKey", "")
 
+        fetchSavedItemsAndSetAdapter()
+
+        view.findViewById<Button>(R.id.backBtn).setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+    }
+
+    private fun fetchSavedItemsAndSetAdapter() {
         if (loginToken != null) {
             viewModel.getUserScannedItems("Bearer $loginToken")
         }
@@ -54,10 +64,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
                 savedItemsRecyclerView.adapter = SavedItemAdapter(savedArItems, this)
             }
         })
-
-        view.findViewById<Button>(R.id.backBtn).setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
-        }
     }
 
     override fun onItemClick(arItemId: String?) {
@@ -67,6 +73,29 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
             setReorderingAllowed(true)
             replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
             addToBackStack(null)
+        }
+    }
+
+    override fun onDeleteButtonPressed(arItemId: String?) {
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        loginToken = sharedPreference?.getString("loginKey", "")
+
+        if (loginToken != null) {
+            viewModel.deleteUserScannedItem("Bearer $loginToken", arItemId!!)
+
+            viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
+                if (response.isSuccessful) {
+                    val message = response.body()?.message
+                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                    fetchSavedItemsAndSetAdapter()
+                } else {
+                    Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+                }
+            })
+
+            viewModel.deleteUserScannedItemMsgFail.observe(viewLifecycleOwner, {
+                Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+            })
         }
     }
 }
