@@ -4,5 +4,6 @@ class Constants {
     companion object {
         const val BASE_URL = "http://10.114.32.77/app/"
         const val AR_ITEM_MODEL_BASE_URL = "https://lauriaristorage.blob.core.windows.net/objects/"
+        // https://lauriaristorage.blob.core.windows.net/
     }
 }
