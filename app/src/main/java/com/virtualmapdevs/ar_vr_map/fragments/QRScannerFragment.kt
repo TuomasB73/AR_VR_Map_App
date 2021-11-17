@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
@@ -26,7 +25,6 @@ import com.virtualmapdevs.ar_vr_map.R
 
 class QRScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
-    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

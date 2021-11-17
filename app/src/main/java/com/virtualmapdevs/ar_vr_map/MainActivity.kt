@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map
 
-import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -8,14 +7,14 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.fragment.app.viewModels
 import com.virtualmapdevs.ar_vr_map.fragments.HomeFragment
 import com.virtualmapdevs.ar_vr_map.fragments.LoginFragment
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
-    private val sharedPrefFile = "loginsharedpreference"
+    private var userToken: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,13 +24,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun checkIsUserLoggedIn() {
-        val sharedPreference = getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val loginId = sharedPreference?.getString("loginKey", "")
+        userToken = SharedPreferencesFunctions.getUserToken(this)
 
-        Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
+        Log.d("checkIsUserLoggedIn test", "userToken: $userToken")
 
-        if (loginId != "" && loginId != null) {
-            checkSecureData(loginId)
+        if (userToken != null && userToken != "Bearer ") {
+            checkSecureData(userToken!!)
         } else {
             supportFragmentManager.commit {
                 setReorderingAllowed(true)
@@ -40,15 +38,15 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun checkSecureData(token: String) {
-        viewModel.getSecureData("Bearer $token")
+    private fun checkSecureData(userToken: String) {
+        viewModel.getSecureData(userToken)
 
         viewModel.secureDataMsg.observe(this, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
                 Log.d("artest", "loginUserMsg: ${response.code()}")
+                Log.d("artest", "userToken ok")
 
-                Log.d("artest", "Token ok")
                 supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     replace<HomeFragment>(R.id.fragmentContainer)

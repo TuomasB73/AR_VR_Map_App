@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -14,11 +13,11 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class LoginFragment : Fragment() {
     private val viewModel: MainViewModel by viewModels()
-    private val sharedPrefFile = "loginsharedpreference"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,15 +45,10 @@ class LoginFragment : Fragment() {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
                 Log.d("artest", "loginUserMsg: ${response.code()}")
 
-                val loginToken = response.body()?.message
-                Log.d("LoginToken", loginToken!!)
+                val userToken = response.body()?.message
+                Log.d("userToken", userToken!!)
 
-                val sharedPreference =
-                    activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-
-                val editor = sharedPreference?.edit()
-                editor?.putString("loginKey", loginToken)
-                editor?.apply()
+                SharedPreferencesFunctions.saveUserToken(requireActivity(), userToken)
 
                 requireActivity().supportFragmentManager.commit {
                     setReorderingAllowed(true)
