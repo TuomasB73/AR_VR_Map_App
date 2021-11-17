@@ -35,8 +35,6 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        checkIsUserLoggedIn()
-
         view.findViewById<Button>(R.id.loginButton).setOnClickListener {
             val usernameTxt = view.findViewById<EditText>(R.id.usernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.passwordAdd).text.toString()
@@ -49,6 +47,7 @@ class LoginFragment : Fragment() {
                 Log.d("artest", "loginUserMsg: ${response.code()}")
 
                 val loginToken = response.body()?.message
+                Log.d("LoginToken", loginToken!!)
 
                 val sharedPreference =
                     activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
@@ -76,41 +75,5 @@ class LoginFragment : Fragment() {
                 replace<RegistrationFragment>(R.id.fragmentContainer)
             }
         }
-    }
-
-    private fun checkIsUserLoggedIn() {
-
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val loginId = sharedPreference?.getString("loginKey", "")
-
-        Log.d("checkIsUserLoggedIn test", "loginId: $loginId")
-
-        if (loginId != "") {
-            if (loginId != null) {
-                checkSecureData(loginId)
-            }
-        }
-    }
-
-    private fun checkSecureData(token: String) {
-
-        viewModel.getSecureData("Bearer $token")
-
-        viewModel.secureDataMsg.observe(viewLifecycleOwner, { response ->
-            if (response.isSuccessful) {
-                Log.d("artest", "loginUserMsg: ${response.body()}")
-                Log.d("artest", "loginUserMsg: ${response.code()}")
-
-                Log.d("artest", "Token ok")
-                requireActivity().supportFragmentManager.commit {
-                    setReorderingAllowed(true)
-                    replace<HomeFragment>(R.id.fragmentContainer)
-                }
-
-            } else {
-                Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
-            }
-        })
     }
 }

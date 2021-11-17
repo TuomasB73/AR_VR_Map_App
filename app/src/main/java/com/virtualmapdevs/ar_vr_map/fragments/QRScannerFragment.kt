@@ -12,6 +12,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.budiyev.android.codescanner.AutoFocusMode
@@ -128,21 +129,13 @@ class QRScannerFragment : Fragment() {
     }
 
     private fun openAR(result: Result) {
-        //val bundle = bundleOf("pos" to result)
+        val bundle = bundleOf("arItemId" to result.text)
 
-        val sharedPreference =
-            activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-
-        val editor = sharedPreference?.edit()
-        editor?.putString("QRid", result.toString())
-        editor?.apply()
-
-        Log.d("artest", "qrscanF QR id: ${result.toString()}")
+        Log.d("artest", "qrscanF QR id: $result")
 
         requireActivity().supportFragmentManager.commit {
             setReorderingAllowed(true)
-            //replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            replace<ArModeFragment>(R.id.fragmentContainer)
+            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
             addToBackStack(null)
         }
 

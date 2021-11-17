@@ -37,4 +37,21 @@ interface ArVrApi {
         @Header("Authorization") token: String,
         @Path(value = "id", encoded = true) id: String,
     ): Response<ARItem>
+
+    @POST("user/userscanneditems/{id}")
+    suspend fun postUserScannedItem(
+        @Header("Authorization") token: String,
+        @Path(value = "id", encoded = true) id: String,
+    ): Response<Message>
+
+    @DELETE("user/userscanneditems/{id}")
+    suspend fun deleteUserScannedItem(
+        @Header("Authorization") token: String,
+        @Path(value = "id", encoded = true) id: String,
+    ): Response<Message>
+
+    @GET("user/userscanneditems")
+    suspend fun getUserScannedItems(
+        @Header("Authorization") token: String,
+    ): Response<List<ARItem>>
 }

@@ -19,7 +19,12 @@ class MainViewModel : ViewModel() {
     var secureDataMsg: MutableLiveData<Response<Message>> = MutableLiveData()
     var registerUserMsgFail: MutableLiveData<String> = MutableLiveData()
     var loginUserMsgFail: MutableLiveData<String> = MutableLiveData()
-    var ARItembyIdMsg: MutableLiveData<Response<ARItem>> = MutableLiveData()
+    var arItembyIdMsg: MutableLiveData<Response<ARItem>> = MutableLiveData()
+    var postUserScannedItemMsg: MutableLiveData<Response<Message>> = MutableLiveData()
+    var postUserScannedItemMsgFail: MutableLiveData<String> = MutableLiveData()
+    var deleteUserScannedItemMsg: MutableLiveData<Response<Message>> = MutableLiveData()
+    var deleteUserScannedItemMsgFail: MutableLiveData<String> = MutableLiveData()
+    var getUserScannedItemsMsg: MutableLiveData<Response<List<ARItem>>> = MutableLiveData()
 
     fun getMessage() {
         viewModelScope.launch {
@@ -74,7 +79,40 @@ class MainViewModel : ViewModel() {
     fun getArItemById(token: String, id: String) {
         viewModelScope.launch {
             val message = repository.getArItemById(token, id)
-            ARItembyIdMsg.value = message
+            arItembyIdMsg.value = message
+        }
+    }
+
+    fun postUserScannedItem(token: String, id: String) {
+        viewModelScope.launch {
+            val message = repository.postUserScannedItem(token, id)
+            val errorMessage = message.errorBody()?.string()
+
+            if (message.code() != 400) {
+                postUserScannedItemMsg.value = message
+            } else {
+                postUserScannedItemMsgFail.value = errorMessage
+            }
+        }
+    }
+
+    fun deleteUserScannedItem(token: String, id: String) {
+        viewModelScope.launch {
+            val message = repository.deleteUserScannedItem(token, id)
+            val errorMessage = message.errorBody()?.string()
+
+            if (message.code() != 400) {
+                deleteUserScannedItemMsg.value = message
+            } else {
+                deleteUserScannedItemMsgFail.value = errorMessage
+            }
+        }
+    }
+
+    fun getUserScannedItems(token: String) {
+        viewModelScope.launch {
+            val message = repository.getUserScannedItems(token)
+            getUserScannedItemsMsg.value = message
         }
     }
 }

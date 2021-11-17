@@ -35,4 +35,16 @@ class Repository {
     ): Response<ARItem> {
         return RetrofitInstance.api.getArItemById(token, id)
     }
+
+    suspend fun postUserScannedItem(token: String, id: String): Response<Message> {
+        return RetrofitInstance.api.postUserScannedItem(token, id)
+    }
+
+    suspend fun deleteUserScannedItem(token: String, id: String): Response<Message> {
+        return RetrofitInstance.api.deleteUserScannedItem(token, id)
+    }
+
+    suspend fun getUserScannedItems(token: String): Response<List<ARItem>> {
+        return RetrofitInstance.api.getUserScannedItems(token)
+    }
 }

@@ -54,7 +54,6 @@ class RegistrationFragment : Fragment() {
                 requireActivity().supportFragmentManager.commit {
                     setReorderingAllowed(true)
                     replace<LoginFragment>(R.id.fragmentContainer)
-                    addToBackStack(null)
                 }
             } else {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
