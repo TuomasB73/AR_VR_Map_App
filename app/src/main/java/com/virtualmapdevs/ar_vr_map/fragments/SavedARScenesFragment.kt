@@ -16,11 +16,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
-    private val sharedPrefFile = "loginsharedpreference"
-    private var loginToken: String? = null
+    private var userToken: String? = null
     private val viewModel: MainViewModel by viewModels()
     private lateinit var savedItemsRecyclerView: RecyclerView
 
@@ -43,8 +43,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         val layoutManager = LinearLayoutManager(this.context)
         savedItemsRecyclerView.layoutManager = layoutManager
 
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        loginToken = sharedPreference?.getString("loginKey", "")
+        userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
         fetchSavedItemsAndSetAdapter()
 
@@ -54,8 +53,8 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     private fun fetchSavedItemsAndSetAdapter() {
-        if (loginToken != null) {
-            viewModel.getUserScannedItems("Bearer $loginToken")
+        if (userToken != null) {
+            viewModel.getUserScannedItems(userToken!!)
         }
 
         viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
@@ -77,11 +76,8 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     override fun onDeleteButtonPressed(arItemId: String?) {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        loginToken = sharedPreference?.getString("loginKey", "")
-
-        if (loginToken != null) {
-            viewModel.deleteUserScannedItem("Bearer $loginToken", arItemId!!)
+        if (userToken != null && arItemId != null) {
+            viewModel.deleteUserScannedItem(userToken!!, arItemId)
 
             viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                 if (response.isSuccessful) {

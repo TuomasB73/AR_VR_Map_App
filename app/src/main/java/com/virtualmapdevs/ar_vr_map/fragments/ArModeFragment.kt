@@ -1,7 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
-import android.content.Context
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
@@ -24,6 +23,7 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
@@ -32,8 +32,7 @@ class ArModeFragment : Fragment() {
     private var dashboards = mutableListOf<ViewRenderable>()
     private val viewModel: MainViewModel by viewModels()
     private var arItemId: String? = null
-    private var loginToken: String? = null
-    private val sharedPrefFile = "loginsharedpreference"
+    private var userToken: String? = null
     private var arItemSaved: Boolean? = null
     private lateinit var saveItemButton: Button
 
@@ -54,8 +53,7 @@ class ArModeFragment : Fragment() {
 
         arItemId = requireArguments().getString("arItemId")
 
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        loginToken = sharedPreference?.getString("loginKey", "")
+        userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
         saveItemButton = view.findViewById(R.id.saveBtn)
 
@@ -75,8 +73,8 @@ class ArModeFragment : Fragment() {
     }
 
     private fun checkIfItemIsAlreadySaved() {
-        if (loginToken != null) {
-            viewModel.getUserScannedItems("Bearer $loginToken")
+        if (userToken != null) {
+            viewModel.getUserScannedItems(userToken!!)
         }
 
         viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
@@ -120,13 +118,10 @@ class ArModeFragment : Fragment() {
     }
 
     private fun saveOrDeleteUserScannedItem() {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val loginKey = sharedPreference?.getString("loginKey", "")
-
-        if (loginKey != null && arItemId != null) {
+        if (userToken != null && arItemId != null) {
             // If AR item is not saved, it will be saved
             if (arItemSaved == false) {
-                viewModel.postUserScannedItem("Bearer $loginKey", arItemId!!)
+                viewModel.postUserScannedItem(userToken!!, arItemId!!)
 
                 viewModel.postUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
@@ -145,7 +140,7 @@ class ArModeFragment : Fragment() {
                 })
                 // If AR item is already saved, it will be deleted
             } else {
-                viewModel.deleteUserScannedItem("Bearer $loginKey", arItemId!!)
+                viewModel.deleteUserScannedItem(userToken!!, arItemId!!)
 
                 viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
                     if (response.isSuccessful) {
@@ -168,11 +163,8 @@ class ArModeFragment : Fragment() {
 
     // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
     private fun fetchARItemData() {
-        if (arItemId != null) {
-            viewModel.getArItemById(
-                "Bearer $loginToken",
-                arItemId!!
-            )
+        if (userToken != null && arItemId != null) {
+            viewModel.getArItemById(userToken!!, arItemId!!)
         }
 
         viewModel.arItembyIdMsg.observe(viewLifecycleOwner, { response ->
@@ -183,7 +175,7 @@ class ArModeFragment : Fragment() {
 
                 if (itemModelUri != null) {
                     val fullItemModelUri =
-                        Uri.parse(Constants.AR_ITEM_MODEL_BASE_URL + itemModelUri)
+                        Uri.parse("${Constants.AR_ITEM_MODEL_BASE_URL}$itemModelUri")
                     load3DModel(fullItemModelUri)
                 } else {
                     Log.d("ARItemFetch", "Item model Uri not found")
@@ -277,18 +269,18 @@ class ArModeFragment : Fragment() {
     }
 
     private fun addDashboards(anchorNode: AnchorNode) {
-        var xAxisPosition = 0.6f
+        var xAxisPosition = 0.8f
 
         for (dashboard in dashboards) {
             val dashboardNode = TransformableNode(arFragment.transformationSystem)
             dashboardNode.renderable = dashboard
             dashboardNode.scaleController.minScale = 0.2f
-            dashboardNode.scaleController.maxScale = 0.6f
+            dashboardNode.scaleController.maxScale = 0.8f
             dashboardNode.localScale = Vector3(0.4f, 0.4f, 0.4f)
             dashboardNode.localPosition = Vector3(xAxisPosition, 0.2f, -0.1f)
             dashboardNode.setParent(anchorNode)
 
-            xAxisPosition -= 0.6f
+            xAxisPosition -= 0.8f
         }
     }
 
