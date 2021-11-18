@@ -25,6 +25,7 @@ import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import com.google.ar.sceneform.assets.RenderableSource
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
@@ -200,7 +201,29 @@ class ArModeFragment : Fragment() {
     }
 
     private fun load3DModel(itemModelUri: Uri) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
+        ModelRenderable.builder()
+            .setSource(
+                context, RenderableSource.builder().setSource(
+                    context,
+                    itemModelUri,
+                    RenderableSource.SourceType.GLTF2
+                )
+                    .setScale(1.0f)
+                    .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                    .build()
+            )
+            .build()
+            .thenAccept { renderable: ModelRenderable ->
+                modelRenderable = renderable
+            }
+            .exceptionally {
+                Toast.makeText(
+                    context, "Unable to load renderable $itemModelUri", Toast.LENGTH_LONG
+                ).show()
+                null
+            }
+
+        /*StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
                 context,
@@ -213,7 +236,7 @@ class ArModeFragment : Fragment() {
             .exceptionally {
                 Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
                 null
-            }
+            }*/
     }
 
     private fun loadDashboards(itemTitle: String, itemDescription: String) {
