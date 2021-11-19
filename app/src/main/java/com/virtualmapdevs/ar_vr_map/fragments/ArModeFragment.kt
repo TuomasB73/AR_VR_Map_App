@@ -71,6 +71,10 @@ class ArModeFragment : Fragment() {
         saveItemButton.setOnClickListener {
             saveOrDeleteUserScannedItem()
         }
+
+        view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
+            requireActivity().onBackPressed()
+        }
     }
 
     private fun checkIfItemIsAlreadySaved() {

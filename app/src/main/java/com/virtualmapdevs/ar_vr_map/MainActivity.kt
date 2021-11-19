@@ -61,4 +61,15 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
+
+    override fun onBackPressed() {
+        if (supportFragmentManager.backStackEntryCount > 1 &&
+            supportFragmentManager.getBackStackEntryAt(0).name == "QRScannerFragment") {
+            for (i in 0 until supportFragmentManager.backStackEntryCount) {
+                supportFragmentManager.popBackStack()
+            }
+        } else {
+            super.onBackPressed()
+        }
+    }
 }

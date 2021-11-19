@@ -32,7 +32,7 @@ class HomeFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<QRScannerFragment>(R.id.fragmentContainer)
-                addToBackStack(null)
+                addToBackStack("QRScannerFragment")
             }
         }
 

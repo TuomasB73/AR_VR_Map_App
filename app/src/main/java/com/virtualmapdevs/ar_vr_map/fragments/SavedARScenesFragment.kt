@@ -48,7 +48,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         fetchSavedItemsAndSetAdapter()
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
-            requireActivity().supportFragmentManager.popBackStack()
+            requireActivity().onBackPressed()
         }
     }
 
