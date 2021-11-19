@@ -14,4 +14,5 @@
     <string name="my_saved_scenes">My saved AR scenes</string>
     <string name="don_t_have_any_account_yet">Don\'t have any account yet?</string>
     <string name="already_have_an_account">Already have an account?</string>
+    <string name="logout">logout</string>
 </resources>
