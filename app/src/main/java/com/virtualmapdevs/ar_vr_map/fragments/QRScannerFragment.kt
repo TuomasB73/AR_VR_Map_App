@@ -61,7 +61,8 @@ class QRScannerFragment : Fragment() {
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
-                openAR(it)
+                isQRcodeValidCheck(it)
+                //openAR(it)
             }
         }
         codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
@@ -136,9 +137,31 @@ class QRScannerFragment : Fragment() {
             replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
             addToBackStack(null)
         }
-
-        // for testing
-        val scanResultTextView = view?.findViewById<TextView>(R.id.scanResultView)
-        scanResultTextView?.text = result.text
     }
+
+    private fun isQRcodeValidCheck(result: Result) {
+
+        val inTest = result.toString()
+
+        if (inTest.length == 24) {
+            if (isLettersOrNumbers(inTest)){
+                openAR(result)
+            } else{
+                Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
+            }
+        }else{
+            Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
+        }
+    }
+
+    private fun isLettersOrNumbers(string: String): Boolean {
+        for (c in string)
+        {
+            if (c !in 'A'..'Z' && c !in 'a'..'z' && c !in '0'..'9') {
+                return false
+            }
+        }
+        return true
+    }
+
 }
