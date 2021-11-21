@@ -40,6 +40,10 @@ class LoginFragment : Fragment() {
             viewModel.loginUser(usernameTxt, passwordTxt)
         }
 
+        view.findViewById<Button>(R.id.infoButton).setOnClickListener {
+            Toast.makeText(activity, "Password must be at least 8 characters in length and have 1 capital letter", Toast.LENGTH_SHORT).show()
+        }
+
         viewModel.loginUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")

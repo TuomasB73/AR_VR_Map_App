@@ -51,7 +51,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationTxtView" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationTxtView"
+
+        />
 
     <TextView
         android:id="@+id/registrationTxtView"
@@ -77,5 +79,18 @@
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/registrationTxtView"
         app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
+
+    <Button
+        android:id="@+id/infoButton"
+        android:layout_width="60dp"
+        android:layout_height="61dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/white"
+        android:drawableLeft="@drawable/ic_baseline_info_24"
+        android:padding="16dp"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/usernameAdd"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
