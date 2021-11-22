@@ -18,6 +18,7 @@ import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -28,12 +29,13 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
-    private var modelRenderable: ModelRenderable? = null
+    private var modelRenderable: Renderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
     private val viewModel: MainViewModel by viewModels()
     private var arItemId: String? = null
     private var userToken: String? = null
     private var arItemSaved: Boolean? = null
+    private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,18 +54,14 @@ class ArModeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arItemId = requireArguments().getString("arItemId")
-
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
-
+        showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
-
         checkIfItemIsAlreadySaved()
-
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
-
         fetchARItemData()
 
-        view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
+        showArSceneButton.setOnClickListener {
             add3dObject()
         }
 
@@ -249,24 +247,36 @@ class ArModeFragment : Fragment() {
             val screenCenter = getScreenCenter()
             val hits = frame.hitTest(screenCenter.x.toFloat(), screenCenter.y.toFloat())
 
-            for (hit in hits) {
-                val trackable = hit.trackable
+            if (hits.isEmpty()) {
+                Toast.makeText(
+                    activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
+                ).show()
+            } else {
+                for (hit in hits) {
+                    val trackable = hit.trackable
 
-                if (trackable is Plane) {
-                    val anchor = hit!!.createAnchor()
-                    val anchorNode = AnchorNode(anchor)
-                    anchorNode.setParent(arFragment.arSceneView.scene)
-                    val modelNode = TransformableNode(arFragment.transformationSystem)
-                    modelNode.renderable = modelRenderable
-                    modelNode.scaleController.minScale = 0.05f
-                    modelNode.scaleController.maxScale = 0.15f
-                    modelNode.localScale = Vector3(0.1f, 0.1f, 0.1f)
-                    modelNode.setParent(anchorNode)
-                    modelNode.select()
+                    if (trackable is Plane) {
+                        showArSceneButton.visibility = View.GONE
 
-                    addDashboards(anchorNode)
+                        val anchor = hit!!.createAnchor()
+                        val anchorNode = AnchorNode(anchor)
+                        anchorNode.setParent(arFragment.arSceneView.scene)
+                        val modelNode = TransformableNode(arFragment.transformationSystem)
+                        modelNode.renderable = modelRenderable
+                        modelNode.scaleController.minScale = 0.05f
+                        modelNode.scaleController.maxScale = 0.15f
+                        modelNode.localScale = Vector3(0.1f, 0.1f, 0.1f)
+                        modelNode.setParent(anchorNode)
+                        modelNode.select()
 
-                    break
+                        addDashboards(anchorNode)
+
+                        break
+                    } else {
+                        Toast.makeText(
+                            activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }
