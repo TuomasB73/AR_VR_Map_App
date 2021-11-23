@@ -12,8 +12,10 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
 import com.google.ar.sceneform.Node
@@ -22,15 +24,18 @@ import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.model.Poi
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
+    private lateinit var pois: MutableList<Poi>
     private lateinit var arFragment: ArFragment
+    lateinit var navView: NavigationView
     private var anchorNode: AnchorNode? = null
     private var modelNode: TransformableNode? = null
-    private var sphereRenderable: ModelRenderable? = null
+    private var cubeRenderable: ModelRenderable? = null
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
     private val viewModel: MainViewModel by viewModels()
@@ -64,9 +69,11 @@ class ArModeFragment : Fragment() {
 
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
+        navView = view.findViewById(R.id.nav_view)
+
         fetchARItemData()
 
-        createSpehere()
+        createCube()
 
         view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
             add3dObject()
@@ -78,25 +85,6 @@ class ArModeFragment : Fragment() {
 
         view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
             requireActivity().onBackPressed()
-        }
-
-        view.findViewById<Button>(R.id.add_spehere_btn).setOnClickListener {
-            Toast.makeText(requireContext(), "Add sphere pressed", Toast.LENGTH_SHORT).show()
-            val sphereNode = Node()
-            sphereNode.renderable = sphereRenderable
-            //sphereNode.localScale = Vector3(25f, 25f, 25f)
-            sphereNode.localPosition = Vector3(28.5f, 0f, -23.5883f)
-
-            sphereNode.setOnTapListener { _, _ ->
-                Toast.makeText(
-                    requireContext(),
-                    sphereNode.localPosition.toString(),
-                    Toast.LENGTH_LONG
-                ).show()
-            }
-
-
-            sphereNode.setParent(modelNode)
         }
     }
 
@@ -200,6 +188,40 @@ class ArModeFragment : Fragment() {
                 val itemTitle = response.body()?.name
                 val itemDescription = response.body()?.description
                 val itemModelUri = response.body()?.imageReference
+                pois = mutableListOf<Poi>(
+                    Poi(
+                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
+                        "Room D590",
+                        "Describe classroom D590 here...",
+                        -29.2849f, 0f, -4.26449f
+                    ),
+                    Poi(
+                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
+                        "Room D558",
+                        "Describe classroom D558 here...",
+                        -20.5637f, 0f, -10.068f
+                    ),
+                    Poi(
+                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
+                        "Room D557",
+                        "Describe classroom D557 here...",
+                        -9.16784f, 0f, -19.2356f
+                    ),
+                    Poi(
+                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
+                        "Room D550",
+                        "Describe classroom D550 here...",
+                        -0.145803f, 0f, -10.6616f
+                    ),
+                    Poi(
+                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
+                        "Room D503.1",
+                        "Describe classroom 503.1 here...",
+                        -5.58866f, 0f, -6.05427f
+                    ),
+                )
+
+                Log.d("pois", pois.toString())
 
                 if (itemModelUri != null) {
                     val fullItemModelUri =
@@ -211,7 +233,7 @@ class ArModeFragment : Fragment() {
                 }
 
                 if (itemTitle != null && itemDescription != null) {
-                    loadDashboards(itemTitle, itemDescription)
+                    //loadDashboards(itemTitle, itemDescription)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -220,11 +242,59 @@ class ArModeFragment : Fragment() {
                         Toast.LENGTH_SHORT
                     ).show()
                 }
+
+                if (pois.size > 0) {
+                    initDrawerItems(pois)
+                }
+
             } else {
                 Log.d("ARItemFetch", "Item fetch failed")
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun initDrawerItems(pois: MutableList<Poi>) {
+        Log.d("pois", "yes pois")
+
+        val mMenu = navView.menu
+        val menuSize = mMenu.size()
+
+        pois.forEach { poi ->
+            // groupId, itemId, order, title
+            mMenu.add(1, menuSize, menuSize, poi.name).setOnMenuItemClickListener {
+                val cubeNode = Node()
+                cubeNode.renderable = cubeRenderable
+                // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
+                //cubeNode.localScale = Vector3(25f, 25f, 25f)
+                cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
+
+                cubeNode.setOnTapListener { _, _ ->
+                    setNodeRemovalAlertBuilder(poi, cubeNode)
+                }
+
+                cubeNode.setParent(modelNode)
+
+                false
+            }
+        }
+    }
+
+    private fun setNodeRemovalAlertBuilder(poi: Poi, cubeNode: Node) {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(poi.name)
+        builder.setMessage(poi.description)
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Remove from map") { _, _ ->
+            arFragment.arSceneView.scene.removeChild(cubeNode)
+            cubeNode.setParent(null)
+            cubeNode.renderable = null
+        }
+        builder.setNeutralButton("Cancel") { _, _ ->
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun load3DModel(itemModelUri: Uri) {
@@ -312,10 +382,10 @@ class ArModeFragment : Fragment() {
         }
     }
 
-    private fun createSpehere() {
+    private fun createCube() {
         MaterialFactory.makeOpaqueWithColor(requireContext(), Color(255f, 0f, 0f))
             .thenAccept { material: Material? ->
-                sphereRenderable =
+                cubeRenderable =
                         //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
                     ShapeFactory.makeCube(
                         Vector3(2.5f, 2.5f, 2.5f),
