@@ -103,7 +103,7 @@
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="8dp"
         android:backgroundTint="@color/backround"
-        android:drawableLeft="@drawable/ic_baseline_info_24"
+        android:drawableLeft="@drawable/ic_baseline_info_24_white"
         android:padding="16dp"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/registerUsernameAdd"

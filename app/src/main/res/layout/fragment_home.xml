@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backround"
     tools:context=".fragments.HomeFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -46,7 +47,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="@color/button"
+            android:textColor="@color/white"
             android:textSize="12sp"
             android:text="@string/logout"
             app:layout_constraintEnd_toEndOf="parent"
