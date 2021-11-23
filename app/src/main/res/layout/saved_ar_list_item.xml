@@ -4,15 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp"
+    android:layout_margin="6dp"
     android:background="@drawable/shape">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        app:cardCornerRadius="5dp"
-        android:elevation="10dp">
+        android:elevation="10dp"
+        app:cardCornerRadius="5dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -40,10 +40,10 @@
                 android:layout_height="48dp"
                 android:layout_gravity="center"
                 android:layout_margin="8dp"
+                android:background="@color/button"
                 android:minWidth="0dp"
                 android:paddingStart="0dp"
                 android:paddingEnd="0dp"
-                android:background="@color/button"
                 app:icon="@drawable/ic_baseline_delete_24"
                 app:iconGravity="textEnd"
                 app:iconPadding="0dp"
