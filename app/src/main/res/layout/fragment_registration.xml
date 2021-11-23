@@ -7,6 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".fragments.RegistrationFragment">
 
+    <ImageView
+        android:id="@+id/bRimageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cropToPadding="false"
+        android:scaleType="centerCrop"
+        android:src="@drawable/testbackround2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
     <EditText
         android:id="@+id/registerUsernameAdd"
         android:layout_width="276dp"
@@ -77,6 +91,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/already_have_an_account"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerPasswordConfirmAdd" />
@@ -95,12 +110,13 @@
 
     <Button
         android:id="@+id/infoRegisterButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="60dp"
         android:layout_height="61dp"
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/white"
-        android:drawableLeft="@drawable/ic_baseline_info_24"
+        android:backgroundTint="@color/backround"
+        android:drawableLeft="@drawable/ic_baseline_info_24_white"
         android:padding="16dp"
         android:textSize="24sp"
         app:layout_constraintBottom_toTopOf="@+id/registerUsernameAdd"
