@@ -1,10 +1,8 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.content.ContentValues
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +12,10 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.Renderable
@@ -37,6 +37,7 @@ class ArModeFragment : Fragment() {
     private var arItemSaved: Boolean? = null
     private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
+    private lateinit var modelLoadingIndicator: CircularProgressIndicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,10 +56,13 @@ class ArModeFragment : Fragment() {
 
         arItemId = requireArguments().getString("arItemId")
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
+
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
-        checkIfItemIsAlreadySaved()
+        modelLoadingIndicator = view.findViewById(R.id.modelLoadingIndicator)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
+
+        checkIfItemIsAlreadySaved()
         fetchARItemData()
 
         showArSceneButton.setOnClickListener {
@@ -202,18 +206,27 @@ class ArModeFragment : Fragment() {
     }
 
     private fun load3DModel(itemModelUri: Uri) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
-                context,
-                itemModelUri
+                context, RenderableSource.builder().setSource(
+                    context,
+                    itemModelUri,
+                    RenderableSource.SourceType.GLTF2
+                )
+                    .setScale(1.0f)
+                    .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                    .build()
             )
-            .setIsFilamentGltf(true)
-            .setAsyncLoadEnabled(true)
             .build()
-            .thenAccept { modelRenderable = it }
+            .thenAccept { renderable: ModelRenderable ->
+                modelRenderable = renderable
+                showArSceneButton.visibility = View.VISIBLE
+                modelLoadingIndicator.visibility = View.GONE
+            }
             .exceptionally {
-                Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
+                Toast.makeText(
+                    context, "Unable to load renderable $itemModelUri", Toast.LENGTH_LONG
+                ).show()
                 null
             }
     }
