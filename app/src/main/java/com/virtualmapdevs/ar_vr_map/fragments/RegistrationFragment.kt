@@ -46,6 +46,10 @@ class RegistrationFragment : Fragment() {
             }
         }
 
+        view.findViewById<Button>(R.id.infoRegisterButton).setOnClickListener {
+            Toast.makeText(activity, "Password must be at least 8 characters in length and have 1 capital letter", Toast.LENGTH_SHORT).show()
+        }
+
         viewModel.registerUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "postUserMsg: ${response.body()}")

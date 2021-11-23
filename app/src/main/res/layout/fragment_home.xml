@@ -10,6 +10,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <ImageView
+            android:id="@+id/bRimageView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:cropToPadding="false"
+            android:scaleType="centerCrop"
+            android:src="@drawable/testbackround2"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/readQrCodeButton"
             android:layout_width="wrap_content"
@@ -46,7 +60,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:textColor="@color/button"
+            android:textColor="@color/white"
             android:textSize="12sp"
             android:text="@string/logout"
             app:layout_constraintEnd_toEndOf="parent"
@@ -59,7 +73,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="70dp"
             android:layout_marginEnd="8dp"
-            android:src="@drawable/testlogo"
+            android:src="@drawable/testlogo2"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"

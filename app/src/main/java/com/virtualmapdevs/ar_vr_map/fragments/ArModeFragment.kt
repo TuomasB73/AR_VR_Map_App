@@ -15,11 +15,16 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
+import com.google.ar.sceneform.rendering.ModelRenderable
+import com.google.ar.sceneform.rendering.Renderable
+import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -42,7 +47,9 @@ class ArModeFragment : Fragment() {
     private var arItemId: String? = null
     private var userToken: String? = null
     private var arItemSaved: Boolean? = null
+    private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
+    private lateinit var modelLoadingIndicator: CircularProgressIndicator
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,31 +67,32 @@ class ArModeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         arItemId = requireArguments().getString("arItemId")
-
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
+        showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
-
-        checkIfItemIsAlreadySaved()
-
+        modelLoadingIndicator = view.findViewById(R.id.modelLoadingIndicator)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
 
+        checkIfItemIsAlreadySaved()
         fetchARItemData()
 
         createCube()
 
         view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
-            add3dObject()
-        }
+            showArSceneButton.setOnClickListener {
+                add3dObject()
+            }
 
-        saveItemButton.setOnClickListener {
-            saveOrDeleteUserScannedItem()
-        }
+            saveItemButton.setOnClickListener {
+                saveOrDeleteUserScannedItem()
+            }
 
-        view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
-            requireActivity().onBackPressed()
+            view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
+                requireActivity().onBackPressed()
+            }
         }
     }
 
@@ -298,18 +306,27 @@ class ArModeFragment : Fragment() {
     }
 
     private fun load3DModel(itemModelUri: Uri) {
-        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
-                context,
-                itemModelUri
+                context, RenderableSource.builder().setSource(
+                    context,
+                    itemModelUri,
+                    RenderableSource.SourceType.GLTF2
+                )
+                    .setScale(1.0f)
+                    .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                    .build()
             )
-            .setIsFilamentGltf(true)
-            .setAsyncLoadEnabled(true)
             .build()
-            .thenAccept { modelRenderable = it }
+            .thenAccept { renderable: ModelRenderable ->
+                modelRenderable = renderable
+                showArSceneButton.visibility = View.VISIBLE
+                modelLoadingIndicator.visibility = View.GONE
+            }
             .exceptionally {
-                Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
+                Toast.makeText(
+                    context, "Unable to load renderable $itemModelUri", Toast.LENGTH_LONG
+                ).show()
                 null
             }
     }
@@ -343,8 +360,13 @@ class ArModeFragment : Fragment() {
             val screenCenter = getScreenCenter()
             val hits = frame.hitTest(screenCenter.x.toFloat(), screenCenter.y.toFloat())
 
-            for (hit in hits) {
-                val trackable = hit.trackable
+            if (hits.isEmpty()) {
+                Toast.makeText(
+                    activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
+                ).show()
+            } else {
+                for (hit in hits) {
+                    val trackable = hit.trackable
 
                 if (trackable is Plane) {
                     val anchor = hit!!.createAnchor()
@@ -358,9 +380,14 @@ class ArModeFragment : Fragment() {
                     modelNode?.setParent(anchorNode)
                     modelNode?.select()
 
-                    //addDashboards(anchorNode!!)
+                    //addDashboards(anchorNode)
 
-                    break
+                        break
+                    } else {
+                        Toast.makeText(
+                            activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
+                        ).show()
+                    }
                 }
             }
         }

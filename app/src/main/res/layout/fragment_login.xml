@@ -7,6 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".fragments.LoginFragment">
 
+    <ImageView
+        android:id="@+id/bRimageView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cropToPadding="false"
+        android:scaleType="centerCrop"
+        android:src="@drawable/testbackround2"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0" />
+
     <EditText
         android:id="@+id/usernameAdd"
         android:layout_width="276dp"
@@ -18,6 +32,7 @@
         android:ems="10"
         android:hint="@string/addUsername"
         android:inputType="textPersonName"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,6 +48,7 @@
         android:ems="10"
         android:hint="@string/addPassword"
         android:inputType="textPassword"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameAdd" />
@@ -51,7 +67,9 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/registrationTxtView" />
+        app:layout_constraintTop_toBottomOf="@+id/registrationTxtView"
+
+        />
 
     <TextView
         android:id="@+id/registrationTxtView"
@@ -61,6 +79,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/don_t_have_any_account_yet"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
@@ -77,5 +96,18 @@
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/registrationTxtView"
         app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
+
+    <Button
+        android:id="@+id/infoButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="60dp"
+        android:layout_height="61dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="8dp"
+        android:drawableLeft="@drawable/ic_baseline_info_24_white"
+        android:padding="16dp"
+        android:textSize="24sp"
+        app:layout_constraintBottom_toTopOf="@+id/usernameAdd"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
