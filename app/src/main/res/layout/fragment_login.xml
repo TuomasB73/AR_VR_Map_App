@@ -5,6 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backround"
     tools:context=".fragments.LoginFragment">
 
     <EditText
@@ -18,6 +19,7 @@
         android:ems="10"
         android:hint="@string/addUsername"
         android:inputType="textPersonName"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -33,6 +35,7 @@
         android:ems="10"
         android:hint="@string/addPassword"
         android:inputType="textPassword"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/usernameAdd" />
@@ -63,6 +66,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/don_t_have_any_account_yet"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/passwordAdd" />
@@ -82,11 +86,12 @@
 
     <Button
         android:id="@+id/infoButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="60dp"
         android:layout_height="61dp"
         android:layout_marginEnd="32dp"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/backround"
         android:drawableLeft="@drawable/ic_baseline_info_24"
         android:padding="16dp"
         android:textSize="24sp"

@@ -5,6 +5,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/backround"
     tools:context=".fragments.RegistrationFragment">
 
     <EditText
@@ -77,6 +78,7 @@
         android:layout_marginTop="8dp"
         android:gravity="center_horizontal|center_vertical"
         android:text="@string/already_have_an_account"
+        android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/registerPasswordConfirmAdd" />
@@ -95,11 +97,12 @@
 
     <Button
         android:id="@+id/infoRegisterButton"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
         android:layout_width="60dp"
         android:layout_height="61dp"
         android:layout_marginEnd="36dp"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/backround"
         android:drawableLeft="@drawable/ic_baseline_info_24"
         android:padding="16dp"
         android:textSize="24sp"

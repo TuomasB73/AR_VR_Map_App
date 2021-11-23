@@ -7,6 +7,10 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="button">#CA38E4</color>
+
+    <color name="button">#003d7c</color>
+    <color name="button_pressed">#294F77</color>
+    <color name="backround">#2072de</color>
+
     <color name="api_dashboard_background">#B2B3DBDF</color>
 </resources>
