@@ -16,9 +16,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
-import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.rendering.ViewRenderable
+import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
@@ -28,6 +28,9 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
     private lateinit var arFragment: ArFragment
+    private var anchorNode: AnchorNode? = null
+    private var modelNode: TransformableNode? = null
+    private var sphereRenderable: ModelRenderable? = null
     private var modelRenderable: ModelRenderable? = null
     private var dashboards = mutableListOf<ViewRenderable>()
     private val viewModel: MainViewModel by viewModels()
@@ -63,6 +66,8 @@ class ArModeFragment : Fragment() {
 
         fetchARItemData()
 
+        createSpehere()
+
         view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
             add3dObject()
         }
@@ -73,6 +78,25 @@ class ArModeFragment : Fragment() {
 
         view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        view.findViewById<Button>(R.id.add_spehere_btn).setOnClickListener {
+            Toast.makeText(requireContext(), "Add sphere pressed", Toast.LENGTH_SHORT).show()
+            val sphereNode = Node()
+            sphereNode.renderable = sphereRenderable
+            //sphereNode.localScale = Vector3(25f, 25f, 25f)
+            sphereNode.localPosition = Vector3(28.5f, 0f, -23.5883f)
+
+            sphereNode.setOnTapListener { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    sphereNode.localPosition.toString(),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
+
+
+            sphereNode.setParent(modelNode)
         }
     }
 
@@ -254,17 +278,17 @@ class ArModeFragment : Fragment() {
 
                 if (trackable is Plane) {
                     val anchor = hit!!.createAnchor()
-                    val anchorNode = AnchorNode(anchor)
-                    anchorNode.setParent(arFragment.arSceneView.scene)
-                    val modelNode = TransformableNode(arFragment.transformationSystem)
-                    modelNode.renderable = modelRenderable
-                    modelNode.scaleController.minScale = 0.05f
-                    modelNode.scaleController.maxScale = 0.15f
-                    modelNode.localScale = Vector3(0.1f, 0.1f, 0.1f)
-                    modelNode.setParent(anchorNode)
-                    modelNode.select()
+                    anchorNode = AnchorNode(anchor)
+                    anchorNode?.setParent(arFragment.arSceneView.scene)
+                    modelNode = TransformableNode(arFragment.transformationSystem)
+                    modelNode?.renderable = modelRenderable
+                    //modelNode?.scaleController?.minScale = 0.01f
+                    //modelNode?.scaleController?.maxScale = 0.03f
+                    anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
+                    modelNode?.setParent(anchorNode)
+                    modelNode?.select()
 
-                    addDashboards(anchorNode)
+                    //addDashboards(anchorNode!!)
 
                     break
                 }
@@ -286,6 +310,19 @@ class ArModeFragment : Fragment() {
 
             xAxisPosition -= 0.8f
         }
+    }
+
+    private fun createSpehere() {
+        MaterialFactory.makeOpaqueWithColor(requireContext(), Color(255f, 0f, 0f))
+            .thenAccept { material: Material? ->
+                sphereRenderable =
+                        //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
+                    ShapeFactory.makeCube(
+                        Vector3(2.5f, 2.5f, 2.5f),
+                        Vector3(0.0f, 1f, 0.0f),
+                        material
+                    )
+            }
     }
 
     private fun getScreenCenter(): Point {
