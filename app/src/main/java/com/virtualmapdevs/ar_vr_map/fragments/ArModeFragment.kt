@@ -26,13 +26,13 @@ import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.model.Poi
+import com.virtualmapdevs.ar_vr_map.model.Pois
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment() {
-    private lateinit var pois: MutableList<Poi>
+    private lateinit var pois: MutableList<Pois>
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
     private var anchorNode: AnchorNode? = null
@@ -195,40 +195,7 @@ class ArModeFragment : Fragment() {
                     response.body()?.description
                 )
                 val itemModelUri = response.body()?.imageReference
-                pois = mutableListOf<Poi>(
-                    Poi(
-                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
-                        "Room D590",
-                        "Describe classroom D590 here...",
-                        -29.2849f, 0f, -4.26449f
-                    ),
-                    Poi(
-                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
-                        "Room D558",
-                        "Describe classroom D558 here...",
-                        -20.5637f, 0f, -10.068f
-                    ),
-                    Poi(
-                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
-                        "Room D557",
-                        "Describe classroom D557 here...",
-                        -9.16784f, 0f, -19.2356f
-                    ),
-                    Poi(
-                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
-                        "Room D550",
-                        "Describe classroom D550 here...",
-                        -0.145803f, 0f, -10.6616f
-                    ),
-                    Poi(
-                        "1a5edf6d-fe59-4e98-ad77-928120dd9106",
-                        "Room D503.1",
-                        "Describe classroom 503.1 here...",
-                        -5.58866f, 0f, -6.05427f
-                    ),
-                )
-
-                Log.d("pois", pois.toString())
+                val pois = response.body()?.pois
 
                 if (itemModelUri != null) {
                     val fullItemModelUri =
@@ -250,8 +217,12 @@ class ArModeFragment : Fragment() {
                     ).show()
                 }
 
-                if (pois.size > 0) {
-                    initDrawerItems(pois)
+                if (pois?.size!! > 0) {
+                    initDrawerItems(pois as MutableList<Pois>)
+                } else {
+                    val mMenu = navView.menu
+                    val menuSize = mMenu.size()
+                    mMenu.add(1, menuSize, menuSize, "No points of interest")
                 }
 
             } else {
@@ -261,8 +232,7 @@ class ArModeFragment : Fragment() {
         })
     }
 
-    private fun initDrawerItems(pois: MutableList<Poi>) {
-        Log.d("pois", "yes pois")
+    private fun initDrawerItems(pois: MutableList<Pois>) {
 
         val mMenu = navView.menu
         val menuSize = mMenu.size()
@@ -288,7 +258,7 @@ class ArModeFragment : Fragment() {
         }
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Poi, cubeNode: Node) {
+    private fun setNodeRemovalAlertBuilder(poi: Pois, cubeNode: Node) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
@@ -397,7 +367,7 @@ class ArModeFragment : Fragment() {
                 cubeRenderable =
                         //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
                     ShapeFactory.makeCube(
-                        Vector3(1.5f, 1.5f, 1.5f),
+                        Vector3(2.5f, 2.5f, 2.5f),
                         Vector3(0.0f, 1f, 0.0f),
                         material
                     )
