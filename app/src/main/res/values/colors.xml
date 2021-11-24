@@ -14,4 +14,5 @@
     <color name="heart_red">#C51818</color>
 
     <color name="api_dashboard_background">#B2B3DBDF</color>
+    <color name="light_gray">#B2DCDCDC</color>
 </resources>

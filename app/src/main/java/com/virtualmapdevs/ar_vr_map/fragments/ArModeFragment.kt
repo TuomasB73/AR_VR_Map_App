@@ -1,8 +1,10 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.content.ContentValues
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
+import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -13,11 +15,9 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import com.google.android.material.progressindicator.CircularProgressIndicator
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
-import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
@@ -46,7 +46,7 @@ class ArModeFragment : Fragment() {
     private var arItemSaved: Boolean? = null
     private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
-    private lateinit var modelLoadingIndicator: CircularProgressIndicator
+    private lateinit var loadingModelTextView: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,7 +68,7 @@ class ArModeFragment : Fragment() {
 
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
-        modelLoadingIndicator = view.findViewById(R.id.modelLoadingIndicator)
+        loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
@@ -78,18 +78,16 @@ class ArModeFragment : Fragment() {
 
         createCube()
 
-        view.findViewById<Button>(R.id.showArSceneButton).setOnClickListener {
-            showArSceneButton.setOnClickListener {
-                add3dObject()
-            }
+        showArSceneButton.setOnClickListener {
+            add3dObject()
+        }
 
-            saveItemButton.setOnClickListener {
-                saveOrDeleteUserScannedItem()
-            }
+        saveItemButton.setOnClickListener {
+            saveOrDeleteUserScannedItem()
+        }
 
-            view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
-                requireActivity().onBackPressed()
-            }
+        view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
+            requireActivity().onBackPressed()
         }
     }
 
@@ -238,7 +236,7 @@ class ArModeFragment : Fragment() {
                 }
 
                 if (itemTitle != null && itemDescription != null) {
-                    //loadDashboards(itemTitle, itemDescription)
+                    loadDashboards(itemTitle, itemDescription)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -304,27 +302,20 @@ class ArModeFragment : Fragment() {
     }
 
     private fun load3DModel(itemModelUri: Uri) {
+        StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
-                context, RenderableSource.builder().setSource(
-                    context,
-                    itemModelUri,
-                    RenderableSource.SourceType.GLTF2
-                )
-                    .setScale(0.5f)
-                    .setRecenterMode(RenderableSource.RecenterMode.ROOT)
-                    .build()
+                context,
+                itemModelUri
             )
+            .setIsFilamentGltf(true)
+            .setAsyncLoadEnabled(true)
             .build()
-            .thenAccept { renderable: ModelRenderable ->
-                modelRenderable = renderable
-                showArSceneButton.visibility = View.VISIBLE
-                modelLoadingIndicator.visibility = View.GONE
+            .thenAccept {
+                modelRenderable = it
             }
             .exceptionally {
-                Toast.makeText(
-                    context, "Unable to load renderable $itemModelUri", Toast.LENGTH_LONG
-                ).show()
+                Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
                 null
             }
     }
@@ -378,7 +369,8 @@ class ArModeFragment : Fragment() {
                         modelNode?.setParent(anchorNode)
                         modelNode?.select()
 
-                        //addDashboards(anchorNode)
+                        addDashboards(anchorNode!!)
+                        loadingModelTextView.visibility = View.GONE
 
                         break
                     } else {

@@ -16,4 +16,5 @@
     <string name="already_have_an_account">Already have an account?</string>
     <string name="logout">logout</string>
     <string name="find_plane_toast_text">Move the phone and find a plane/level first!</string>
+    <string name="loading_model_text">Loading</string>
 </resources>

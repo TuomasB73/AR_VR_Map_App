@@ -59,7 +59,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
         viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
-                val savedArItems = response.body()
+                val savedArItems = response.body()?.reversed()
                 savedItemsRecyclerView.adapter = SavedItemAdapter(savedArItems, this)
             }
         })
