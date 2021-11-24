@@ -311,9 +311,7 @@ class ArModeFragment : Fragment() {
             .setIsFilamentGltf(true)
             .setAsyncLoadEnabled(true)
             .build()
-            .thenAccept {
-                modelRenderable = it
-            }
+            .thenAccept { modelRenderable = it }
             .exceptionally {
                 Log.e(ContentValues.TAG, "Something went wrong ${it.localizedMessage}")
                 null
@@ -370,6 +368,7 @@ class ArModeFragment : Fragment() {
                         modelNode?.select()
 
                         addDashboards(anchorNode!!)
+                        showArSceneButton.visibility = View.GONE
                         loadingModelTextView.visibility = View.GONE
 
                         break
