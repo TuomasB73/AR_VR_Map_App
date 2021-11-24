@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">AR_VR_Map</string>
+    <string name="app_name">ARea Explorer</string>
     <string name="read_qr_code_button_text">Read QR code</string>
     <string name="home_title_text">AR / VR Map App</string>
     <string name="ar_mode_button_text">AR mode</string>
