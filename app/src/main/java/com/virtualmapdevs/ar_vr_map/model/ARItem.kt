@@ -12,7 +12,6 @@ data class ARItem(
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double,
     @SerializedName("category") val category: String,
-    @SerializedName("QRCode") val qRCode: String,
     @SerializedName("__v") val __v: Int
 )
 

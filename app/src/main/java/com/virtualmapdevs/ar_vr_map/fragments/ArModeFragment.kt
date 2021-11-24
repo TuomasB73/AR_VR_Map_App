@@ -34,12 +34,12 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 class ArModeFragment : Fragment() {
     private lateinit var pois: MutableList<Poi>
     private lateinit var arFragment: ArFragment
-    lateinit var navView: NavigationView
+    private lateinit var navView: NavigationView
     private var anchorNode: AnchorNode? = null
     private var modelNode: TransformableNode? = null
     private var cubeRenderable: ModelRenderable? = null
     private var modelRenderable: ModelRenderable? = null
-    private var dashboards = mutableListOf<ViewRenderable>()
+    private var infoDashboard: ViewRenderable? = null
     private val viewModel: MainViewModel by viewModels()
     private var arItemId: String? = null
     private var userToken: String? = null
@@ -189,7 +189,11 @@ class ArModeFragment : Fragment() {
         viewModel.arItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 val itemTitle = response.body()?.name
-                val itemDescription = response.body()?.description
+                val itemCategory = response.body()?.category
+                val itemDescription = getString(
+                    R.string.item_info_dashboard_category_text,
+                    response.body()?.description
+                )
                 val itemModelUri = response.body()?.imageReference
                 pois = mutableListOf<Poi>(
                     Poi(
@@ -235,8 +239,8 @@ class ArModeFragment : Fragment() {
                     Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
                 }
 
-                if (itemTitle != null && itemDescription != null) {
-                    loadDashboards(itemTitle, itemDescription)
+                if (itemTitle != null && itemCategory != null && itemDescription != null) {
+                    loadInfoDashboard(itemTitle, itemCategory, itemDescription)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -277,7 +281,7 @@ class ArModeFragment : Fragment() {
                     setNodeRemovalAlertBuilder(poi, cubeNode)
                 }
 
-                cubeNode.setParent(modelNode)
+                cubeNode.parent = modelNode
 
                 false
             }
@@ -291,7 +295,7 @@ class ArModeFragment : Fragment() {
         builder.setIcon(android.R.drawable.ic_dialog_alert)
         builder.setPositiveButton("Remove from map") { _, _ ->
             arFragment.arSceneView.scene.removeChild(cubeNode)
-            cubeNode.setParent(null)
+            cubeNode.parent = null
             cubeNode.renderable = null
         }
         builder.setNeutralButton("Cancel") { _, _ ->
@@ -318,26 +322,21 @@ class ArModeFragment : Fragment() {
             }
     }
 
-    private fun loadDashboards(itemTitle: String, itemDescription: String) {
-        for (i in 0..2) {
-            var layout: View
+    private fun loadInfoDashboard(
+        itemTitle: String,
+        itemCategory: String,
+        itemDescription: String
+    ) {
+        val layout = LayoutInflater.from(context)
+            .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
+        layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
+        layout.findViewById<TextView>(R.id.itemCategoryTextView).text = itemCategory
+        layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
 
-            if (i == 0) {
-                layout = LayoutInflater.from(context)
-                    .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
-                layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
-                layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
-            } else {
-                layout = LayoutInflater.from(context)
-                    .inflate(R.layout.api_data_dashboard, null as ViewGroup?)
-                // Data will be fetched from different APIs to the dashboards here
-            }
-
-            ViewRenderable.builder()
-                .setView(context, layout)
-                .build()
-                .thenAccept { dashboards.add(it) }
-        }
+        ViewRenderable.builder()
+            .setView(context, layout)
+            .build()
+            .thenAccept { infoDashboard = it }
     }
 
     private fun add3dObject() {
@@ -358,16 +357,16 @@ class ArModeFragment : Fragment() {
                     if (trackable is Plane) {
                         val anchor = hit!!.createAnchor()
                         anchorNode = AnchorNode(anchor)
-                        anchorNode?.setParent(arFragment.arSceneView.scene)
+                        anchorNode?.parent = arFragment.arSceneView.scene
                         modelNode = TransformableNode(arFragment.transformationSystem)
                         modelNode?.renderable = modelRenderable
                         //modelNode?.scaleController?.minScale = 0.01f
                         //modelNode?.scaleController?.maxScale = 0.03f
                         anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
-                        modelNode?.setParent(anchorNode)
+                        modelNode?.parent = anchorNode
                         modelNode?.select()
 
-                        addDashboards(anchorNode!!)
+                        addInfoDashboard(anchorNode!!)
                         showArSceneButton.visibility = View.GONE
                         loadingModelTextView.visibility = View.GONE
 
@@ -382,20 +381,14 @@ class ArModeFragment : Fragment() {
         }
     }
 
-    private fun addDashboards(anchorNode: AnchorNode) {
-        var xAxisPosition = 0.8f
-
-        for (dashboard in dashboards) {
-            val dashboardNode = TransformableNode(arFragment.transformationSystem)
-            dashboardNode.renderable = dashboard
-            dashboardNode.scaleController.minScale = 0.2f
-            dashboardNode.scaleController.maxScale = 0.8f
-            dashboardNode.localScale = Vector3(0.4f, 0.4f, 0.4f)
-            dashboardNode.localPosition = Vector3(xAxisPosition, 0.2f, -0.1f)
-            dashboardNode.setParent(anchorNode)
-
-            xAxisPosition -= 0.8f
-        }
+    private fun addInfoDashboard(anchorNode: AnchorNode) {
+        val dashboardNode = TransformableNode(arFragment.transformationSystem)
+        dashboardNode.renderable = infoDashboard
+        dashboardNode.scaleController.minScale = 10.0f
+        dashboardNode.scaleController.maxScale = 30.0f
+        dashboardNode.localScale = Vector3(20.0f, 20.0f, 20.0f)
+        dashboardNode.localPosition = Vector3(0.0f, 10.0f, -10.0f)
+        dashboardNode.parent = anchorNode
     }
 
     private fun createCube() {
