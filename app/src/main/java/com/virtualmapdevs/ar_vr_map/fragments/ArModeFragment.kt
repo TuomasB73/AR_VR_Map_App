@@ -1,10 +1,8 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.content.ContentValues
 import android.graphics.Point
 import android.net.Uri
 import android.os.Bundle
-import android.os.StrictMode
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -23,7 +21,6 @@ import com.google.ar.sceneform.assets.RenderableSource
 import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Vector3
 import com.google.ar.sceneform.rendering.ModelRenderable
-import com.google.ar.sceneform.rendering.Renderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
@@ -278,6 +275,7 @@ class ArModeFragment : Fragment() {
                 cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
 
                 cubeNode.setOnTapListener { _, _ ->
+                    Toast.makeText(requireContext(), "Pressed cube", Toast.LENGTH_SHORT).show()
                     setNodeRemovalAlertBuilder(poi, cubeNode)
                 }
 
@@ -313,7 +311,7 @@ class ArModeFragment : Fragment() {
                     itemModelUri,
                     RenderableSource.SourceType.GLTF2
                 )
-                    .setScale(1.0f)
+                    .setScale(0.5f)
                     .setRecenterMode(RenderableSource.RecenterMode.ROOT)
                     .build()
             )
@@ -368,19 +366,19 @@ class ArModeFragment : Fragment() {
                 for (hit in hits) {
                     val trackable = hit.trackable
 
-                if (trackable is Plane) {
-                    val anchor = hit!!.createAnchor()
-                    anchorNode = AnchorNode(anchor)
-                    anchorNode?.setParent(arFragment.arSceneView.scene)
-                    modelNode = TransformableNode(arFragment.transformationSystem)
-                    modelNode?.renderable = modelRenderable
-                    //modelNode?.scaleController?.minScale = 0.01f
-                    //modelNode?.scaleController?.maxScale = 0.03f
-                    anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
-                    modelNode?.setParent(anchorNode)
-                    modelNode?.select()
+                    if (trackable is Plane) {
+                        val anchor = hit!!.createAnchor()
+                        anchorNode = AnchorNode(anchor)
+                        anchorNode?.setParent(arFragment.arSceneView.scene)
+                        modelNode = TransformableNode(arFragment.transformationSystem)
+                        modelNode?.renderable = modelRenderable
+                        //modelNode?.scaleController?.minScale = 0.01f
+                        //modelNode?.scaleController?.maxScale = 0.03f
+                        anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
+                        modelNode?.setParent(anchorNode)
+                        modelNode?.select()
 
-                    //addDashboards(anchorNode)
+                        //addDashboards(anchorNode)
 
                         break
                     } else {
@@ -415,7 +413,7 @@ class ArModeFragment : Fragment() {
                 cubeRenderable =
                         //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
                     ShapeFactory.makeCube(
-                        Vector3(2.5f, 2.5f, 2.5f),
+                        Vector3(1.5f, 1.5f, 1.5f),
                         Vector3(0.0f, 1f, 0.0f),
                         material
                     )
