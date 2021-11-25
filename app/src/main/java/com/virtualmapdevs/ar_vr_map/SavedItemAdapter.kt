@@ -25,7 +25,7 @@ class SavedItemAdapter(
 
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
-        var imageView: ImageView = view.findViewById(R.id.imageView2)
+        var imageView: ImageView = view.findViewById(R.id.mapImageView)
         var deleteSavedItemButton: Button = view.findViewById(R.id.deleteSavedItemButton)
 
     }
@@ -33,13 +33,13 @@ class SavedItemAdapter(
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
-        // just placeholder image
-        holder.imageView.setImageResource(R.drawable.testlogo2)
+        // just a placeholder image
+        holder.imageView.setImageResource(R.drawable.testlogo3)
 
         holder.imageView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
         }
-        
+
         holder.itemNameTextView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
         }

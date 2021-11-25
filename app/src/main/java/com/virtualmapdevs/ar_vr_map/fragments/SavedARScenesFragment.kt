@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
@@ -40,7 +41,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         super.onViewCreated(view, savedInstanceState)
 
         savedItemsRecyclerView = view.findViewById(R.id.savedItemsRecyclerView)
-        val layoutManager = LinearLayoutManager(this.context)
+        val layoutManager = GridLayoutManager(this.context, 2)
         savedItemsRecyclerView.layoutManager = layoutManager
 
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
