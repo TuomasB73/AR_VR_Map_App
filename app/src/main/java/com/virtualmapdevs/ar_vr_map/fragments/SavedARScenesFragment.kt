@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -13,10 +12,9 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
