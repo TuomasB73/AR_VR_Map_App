@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -41,7 +42,14 @@ class LoginFragment : Fragment() {
         }
 
         view.findViewById<Button>(R.id.infoButton).setOnClickListener {
-            Toast.makeText(activity, "Password must be at least 8 characters in length and have 1 capital letter", Toast.LENGTH_SHORT).show()
+            val builder = AlertDialog.Builder(this.requireContext())
+            builder.setTitle("Username and password")
+            builder.setMessage("Username must be 3 or more characters and start with capital letter" +
+                    "\n" + "\n" +
+                    "Password must be at least 8 characters in length and have 1 capital letter")
+
+            builder.setPositiveButton("Ok") { _, _ -> }
+            builder.show()
         }
 
         viewModel.loginUserMsg.observe(viewLifecycleOwner, { response ->
