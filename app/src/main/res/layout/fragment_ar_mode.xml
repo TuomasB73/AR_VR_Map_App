@@ -53,7 +53,7 @@
             android:id="@+id/showArSceneButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
+            android:layout_marginBottom="48dp"
             android:text="@string/show_ar_scene_button_text"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -64,8 +64,6 @@
             android:id="@+id/loadingModelTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@color/light_gray"
-            android:padding="8dp"
             android:text="@string/loading_model_text"
             android:textSize="34sp"
             android:textStyle="bold"
@@ -81,6 +79,50 @@
             android:layout_width="1dp"
             android:layout_height="1dp"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/sensorTestTextView1"
+            android:layout_width="370dp"
+            android:layout_height="39dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/black"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/sensorTestTextView2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.363"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/sensorTestTextView2"
+            android:layout_width="370dp"
+            android:layout_height="40dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/black"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/sensorTestTextView3"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.487"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/sensorTestTextView3"
+            android:layout_width="369dp"
+            android:layout_height="39dp"
+            android:layout_marginBottom="32dp"
+            android:background="@color/black"
+            android:text="TextView"
+            android:textAlignment="textStart"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            app:layout_constraintBottom_toTopOf="@+id/showArSceneButton"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

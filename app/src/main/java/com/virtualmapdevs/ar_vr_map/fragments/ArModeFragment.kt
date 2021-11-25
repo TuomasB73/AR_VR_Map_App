@@ -1,7 +1,12 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
+import android.content.Context
 import android.graphics.Point
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -31,7 +36,7 @@ import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
-class ArModeFragment : Fragment() {
+class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var pois: MutableList<Pois>
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
@@ -47,6 +52,11 @@ class ArModeFragment : Fragment() {
     private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
     private lateinit var loadingModelTextView: TextView
+    private lateinit var sensorManager: SensorManager
+    private var sensorAccelerometer: Sensor? = null
+    private lateinit var sensorTestTextView1: TextView
+    private lateinit var sensorTestTextView2: TextView
+    private lateinit var sensorTestTextView3: TextView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,6 +79,11 @@ class ArModeFragment : Fragment() {
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
+
+        sensorTestTextView1 = view.findViewById(R.id.sensorTestTextView1)
+        sensorTestTextView2 = view.findViewById(R.id.sensorTestTextView2)
+        sensorTestTextView3 = view.findViewById(R.id.sensorTestTextView3)
+
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
@@ -77,6 +92,8 @@ class ArModeFragment : Fragment() {
         fetchARItemData()
 
         createCube()
+
+        setUpSensor()
 
         showArSceneButton.setOnClickListener {
             add3dObject()
@@ -377,5 +394,40 @@ class ArModeFragment : Fragment() {
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
+    }
+
+    private fun setUpSensor() {
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER) != null) {
+            sensorAccelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        } else {
+            Log.i("SENSOR", "Your device does not have an accelerometer sensor.")
+        }
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event?:return
+        if (event.sensor == sensorAccelerometer) {
+            sensorTestTextView1.text = "x: ${event.values[0]}"
+            sensorTestTextView2.text = "y: ${event.values[1]}"
+            sensorTestTextView3.text = "z: ${event.values[2]}"
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        Log.i("SENSOR", "Sensor accuracy changed.")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorAccelerometer?.also {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 }
