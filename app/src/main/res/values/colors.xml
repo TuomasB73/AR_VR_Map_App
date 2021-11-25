@@ -10,9 +10,11 @@
 
     <color name="button">#01328f</color>
     <color name="button_pressed">#020d4b</color>
-    <color name="backround">#2072de</color>
+    <color name="background">#2072de</color>
     <color name="heart_red">#C51818</color>
 
     <color name="ar_item_info_dashboard_background">#CBB3DBDF</color>
     <color name="light_gray">#B2DCDCDC</color>
+
+    <color name="grey_transparent">#55A0A0A0</color>
 </resources>
