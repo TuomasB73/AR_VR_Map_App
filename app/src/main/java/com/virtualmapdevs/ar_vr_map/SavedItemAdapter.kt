@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.model.ARItem
@@ -24,12 +25,21 @@ class SavedItemAdapter(
 
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
+        var imageView: ImageView = view.findViewById(R.id.imageView2)
         var deleteSavedItemButton: Button = view.findViewById(R.id.deleteSavedItemButton)
+
     }
 
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
+        // just placeholder image
+        holder.imageView.setImageResource(R.drawable.testlogo2)
+
+        holder.imageView.setOnClickListener {
+            clickListener.onItemClick(arItemsList?.get(position)?._id)
+        }
+        
         holder.itemNameTextView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
         }
