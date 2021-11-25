@@ -24,6 +24,7 @@
         android:theme="@style/Theme.AR_VR_Map">
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
