@@ -104,7 +104,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         builder.setNegativeButton("Cancel") { _, _ ->
             Toast.makeText(
                 activity,
-                "canceled", Toast.LENGTH_SHORT
+                "cancelled", Toast.LENGTH_SHORT
             ).show()
         }
         builder.show()
