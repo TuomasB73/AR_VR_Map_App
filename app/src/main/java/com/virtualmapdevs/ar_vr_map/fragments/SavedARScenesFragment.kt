@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -75,22 +76,37 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     override fun onDeleteButtonPressed(arItemId: String?) {
-        if (userToken != null && arItemId != null) {
-            viewModel.deleteUserScannedItem(userToken!!, arItemId)
 
-            viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
-                if (response.isSuccessful) {
-                    val message = response.body()?.message
-                    Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
-                    fetchSavedItemsAndSetAdapter()
-                } else {
-                    Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
-                }
-            })
+        val builder = AlertDialog.Builder(this.requireContext())
+        builder.setTitle("DELETE")
+        builder.setMessage("Are you sure you want to delete map?")
 
-            viewModel.deleteUserScannedItemMsgFail.observe(viewLifecycleOwner, {
-                Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
-            })
+        builder.setPositiveButton("Ok") { _, _ ->
+            if (userToken != null && arItemId != null) {
+                viewModel.deleteUserScannedItem(userToken!!, arItemId)
+
+                viewModel.deleteUserScannedItemMsg.observe(viewLifecycleOwner, { response ->
+                    if (response.isSuccessful) {
+                        val message = response.body()?.message
+                        Toast.makeText(activity, message, Toast.LENGTH_SHORT).show()
+                        fetchSavedItemsAndSetAdapter()
+                    } else {
+                        Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
+                    }
+                })
+
+                viewModel.deleteUserScannedItemMsgFail.observe(viewLifecycleOwner, {
+                    Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
+                })
+            }
         }
+
+        builder.setNegativeButton("Cancel") { _, _ ->
+            Toast.makeText(
+                activity,
+                "canceled", Toast.LENGTH_SHORT
+            ).show()
+        }
+        builder.show()
     }
 }
