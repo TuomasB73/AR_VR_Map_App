@@ -205,7 +205,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     R.string.item_info_dashboard_category_text,
                     response.body()?.description
                 )
-                val itemModelUri = response.body()?.imageReference
+                val itemModelUri = response.body()?.objectReference
                 val pois = response.body()?.pois
 
                 if (itemModelUri != null) {
