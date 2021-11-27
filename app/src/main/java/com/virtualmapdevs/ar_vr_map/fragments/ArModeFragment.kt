@@ -15,11 +15,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -206,6 +208,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     response.body()?.description
                 )
                 val itemModelUri = response.body()?.objectReference
+                val logoReference = response.body()?.logoImageReference
                 val pois = response.body()?.pois
 
                 if (itemModelUri != null) {
@@ -228,6 +231,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     ).show()
                 }
 
+                initDrawerHeader(logoReference)
+
                 if (pois?.size!! > 0) {
                     initDrawerItems(pois as MutableList<Pois>)
                 } else {
@@ -241,6 +246,16 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 Toast.makeText(activity, response.code(), Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun initDrawerHeader(logoReference: String?) {
+        logoReference ?: return
+        val headerView = navView.getHeaderView(0)
+        val drawerImage = headerView.findViewById<ImageView>(R.id.navDrawerImageView)
+
+        Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$logoReference")
+            .error(R.drawable.testlogo2)
+            .into(drawerImage)
     }
 
     private fun initDrawerItems(pois: MutableList<Pois>) {
