@@ -11,9 +11,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
@@ -39,7 +37,6 @@ import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
 class ArModeFragment : Fragment(), SensorEventListener {
-    private lateinit var pois: MutableList<Pois>
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
     private var anchorNode: AnchorNode? = null
@@ -221,7 +218,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
 
                 if (itemTitle != null && itemCategory != null && itemDescription != null) {
-                    loadInfoDashboard(itemTitle, itemCategory, itemDescription)
+                    //loadInfoDashboard(itemTitle, itemCategory, itemDescription)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -261,25 +258,28 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private fun initDrawerItems(pois: MutableList<Pois>) {
 
         val mMenu = navView.menu
-        val menuSize = mMenu.size()
+        val categories = pois.distinctBy { it.category }.map { it.category }.sortedBy { it }
+        val poisSortedAlphabetically = pois.sortedBy { it.name }
 
-        pois.forEach { poi ->
-            // groupId, itemId, order, title
-            mMenu.add(1, menuSize, menuSize, poi.name).setOnMenuItemClickListener {
-                val cubeNode = Node()
-                cubeNode.renderable = cubeRenderable
-                // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
-                //cubeNode.localScale = Vector3(25f, 25f, 25f)
-                cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
+        categories.forEach { category ->
+            val subMenu: SubMenu = mMenu.addSubMenu(0, 0, 0, category)
+            poisSortedAlphabetically.forEach { poi ->
+                if (category == poi.category) {
+                    subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
+                        val cubeNode = Node()
+                        cubeNode.renderable = cubeRenderable
+                        // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
+                        //cubeNode.localScale = Vector3(25f, 25f, 25f)
+                        cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
 
-                cubeNode.setOnTapListener { _, _ ->
-                    Toast.makeText(requireContext(), "Pressed cube", Toast.LENGTH_SHORT).show()
-                    setNodeRemovalAlertBuilder(poi, cubeNode)
+                        cubeNode.setOnTapListener { _, _ ->
+                            setNodeRemovalAlertBuilder(poi, cubeNode)
+                        }
+
+                        cubeNode.parent = modelNode
+                        false
+                    }
                 }
-
-                cubeNode.parent = modelNode
-
-                false
             }
         }
     }
