@@ -35,6 +35,7 @@ class LoginFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         view.findViewById<Button>(R.id.loginButton).setOnClickListener {
             val usernameTxt = view.findViewById<EditText>(R.id.usernameAdd).text.toString()
             val passwordTxt = view.findViewById<EditText>(R.id.passwordAdd).text.toString()
