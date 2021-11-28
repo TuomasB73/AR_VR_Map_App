@@ -1,7 +1,12 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
+import android.content.Context
 import android.graphics.Point
+import android.hardware.Sensor
+import android.hardware.SensorEvent
+import android.hardware.SensorEventListener
+import android.hardware.SensorManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
@@ -31,7 +36,7 @@ import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
-class ArModeFragment : Fragment() {
+class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var pois: MutableList<Pois>
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
@@ -47,6 +52,10 @@ class ArModeFragment : Fragment() {
     private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
     private lateinit var loadingModelTextView: TextView
+    private lateinit var sensorManager: SensorManager
+    private var sensorLinearAcceleration: Sensor? = null
+    private var lastXAxisAccelerationValue = 0.0f
+    private var lastYAxisAccelerationValue = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -77,6 +86,8 @@ class ArModeFragment : Fragment() {
         fetchARItemData()
 
         createCube()
+
+        setUpSensor()
 
         showArSceneButton.setOnClickListener {
             add3dObject()
@@ -194,7 +205,7 @@ class ArModeFragment : Fragment() {
                     R.string.item_info_dashboard_category_text,
                     response.body()?.description
                 )
-                val itemModelUri = response.body()?.imageReference
+                val itemModelUri = response.body()?.objectReference
                 val pois = response.body()?.pois
 
                 if (itemModelUri != null) {
@@ -339,6 +350,7 @@ class ArModeFragment : Fragment() {
                         addInfoDashboard(anchorNode!!)
                         showArSceneButton.visibility = View.GONE
                         loadingModelTextView.visibility = View.GONE
+                        arFragment.arSceneView.planeRenderer.isVisible = false
 
                         break
                     } else {
@@ -374,8 +386,96 @@ class ArModeFragment : Fragment() {
             }
     }
 
+    private fun removePointsOfInterest() {
+        val poiNodes = modelNode?.children?.toList()
+
+        poiNodes?.forEach {
+            modelNode?.removeChild(it)
+        }
+    }
+
+    private fun zoomMapModel(shrink: Boolean) {
+        val currentScale = anchorNode?.localScale?.x
+
+        if (currentScale != null) {
+            val zoomLevel = 0.005f
+            val newScale: Float
+
+            if (shrink) {
+                newScale = currentScale - zoomLevel
+            } else {
+                newScale = currentScale + zoomLevel
+            }
+
+            anchorNode?.localScale = Vector3(newScale, newScale, newScale)
+        }
+    }
+
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
+    }
+
+    private fun setUpSensor() {
+        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+
+        if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
+            sensorLinearAcceleration =
+                sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION)
+        } else {
+            Log.i("SENSOR", "Your device does not have an accelerometer sensor.")
+        }
+    }
+
+    override fun onSensorChanged(event: SensorEvent?) {
+        event ?: return
+        if (event.sensor == sensorLinearAcceleration) {
+            determineVerticalMovement(event)
+            determineHorizontalMovement(event)
+        }
+    }
+
+    private fun determineVerticalMovement(event: SensorEvent?) {
+        if (event != null) {
+            val yAxisAccelerationValue = event.values[1]
+
+            if ((yAxisAccelerationValue >= 3.0 && lastYAxisAccelerationValue < 3.0) ||
+                (yAxisAccelerationValue <= -3.0 && lastYAxisAccelerationValue > -3.0)
+            ) {
+                removePointsOfInterest()
+            }
+
+            lastYAxisAccelerationValue = yAxisAccelerationValue
+        }
+    }
+
+    private fun determineHorizontalMovement(event: SensorEvent?) {
+        if (event != null) {
+            val xAxisAccelerationValue = event.values[0]
+
+            if (xAxisAccelerationValue >= 3.0 && lastXAxisAccelerationValue < 3.0) {
+                zoomMapModel(true)
+            } else if (xAxisAccelerationValue <= -3.0 && lastXAxisAccelerationValue > -3.0) {
+                zoomMapModel(false)
+            }
+
+            lastXAxisAccelerationValue = xAxisAccelerationValue
+        }
+    }
+
+    override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
+        Log.i("SENSOR", "Sensor accuracy changed.")
+    }
+
+    override fun onResume() {
+        super.onResume()
+        sensorLinearAcceleration?.also {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        sensorManager.unregisterListener(this)
     }
 }
