@@ -3,7 +3,7 @@ package com.virtualmapdevs.ar_vr_map.model
 import com.google.gson.annotations.SerializedName
 
 data class ARItem(
-    @SerializedName("pois") val pois: List<Pois>,
+    @SerializedName("pois") val pois: List<Poi>,
     @SerializedName("_id") val _id: String,
     @SerializedName("userId") val userId: String,
     @SerializedName("type") val type: String,
@@ -16,7 +16,7 @@ data class ARItem(
     @SerializedName("category") val category: String,
 )
 
-data class Pois(
+data class Poi(
 
     @SerializedName("poiId") val poiId : String,
     @SerializedName("name") val name : String,
