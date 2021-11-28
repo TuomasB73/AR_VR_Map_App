@@ -2,6 +2,7 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Point
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -11,15 +12,15 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.bumptech.glide.Glide
 import com.google.android.material.navigation.NavigationView
 import com.google.ar.core.Plane
 import com.google.ar.sceneform.AnchorNode
@@ -31,13 +32,20 @@ import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.model.Pois
+import com.virtualmapdevs.ar_vr_map.model.Poi
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import android.graphics.drawable.Drawable
+
+import androidx.annotation.Nullable
+
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import android.graphics.drawable.BitmapDrawable
+
 
 class ArModeFragment : Fragment(), SensorEventListener {
-    private lateinit var pois: MutableList<Pois>
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
     private var anchorNode: AnchorNode? = null
@@ -206,6 +214,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     response.body()?.description
                 )
                 val itemModelUri = response.body()?.objectReference
+                val logoReference = response.body()?.logoImageReference
                 val pois = response.body()?.pois
 
                 if (itemModelUri != null) {
@@ -218,7 +227,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
 
                 if (itemTitle != null && itemCategory != null && itemDescription != null) {
-                    loadInfoDashboard(itemTitle, itemCategory, itemDescription)
+                    //loadInfoDashboard(itemTitle, itemCategory, itemDescription)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -228,8 +237,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     ).show()
                 }
 
+                initDrawerHeader(logoReference)
+
                 if (pois?.size!! > 0) {
-                    initDrawerItems(pois as MutableList<Pois>)
+                    initDrawerItems(pois as MutableList<Poi>)
                 } else {
                     val mMenu = navView.menu
                     val menuSize = mMenu.size()
@@ -243,33 +254,72 @@ class ArModeFragment : Fragment(), SensorEventListener {
         })
     }
 
-    private fun initDrawerItems(pois: MutableList<Pois>) {
+    private fun initDrawerHeader(logoReference: String?) {
+        logoReference ?: return
+        val headerView = navView.getHeaderView(0)
+        val drawerImage = headerView.findViewById<ImageView>(R.id.navDrawerImageView)
 
+        Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$logoReference")
+            .error(R.drawable.testlogo2)
+            .into(drawerImage)
+    }
+
+    private fun initDrawerItems(pois: MutableList<Poi>) {
+
+        navView.itemIconTintList = null
         val mMenu = navView.menu
-        val menuSize = mMenu.size()
+        val categories = pois.distinctBy { it.category }.map { it.category }.sortedBy { it }
+        val poisSortedAlphabetically = pois.sortedBy { it.name }
 
-        pois.forEach { poi ->
-            // groupId, itemId, order, title
-            mMenu.add(1, menuSize, menuSize, poi.name).setOnMenuItemClickListener {
-                val cubeNode = Node()
-                cubeNode.renderable = cubeRenderable
-                // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
-                //cubeNode.localScale = Vector3(25f, 25f, 25f)
-                cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
-
-                cubeNode.setOnTapListener { _, _ ->
-                    Toast.makeText(requireContext(), "Pressed cube", Toast.LENGTH_SHORT).show()
-                    setNodeRemovalAlertBuilder(poi, cubeNode)
+        categories.forEach { category ->
+            val subMenu: SubMenu = mMenu.addSubMenu(0, 0, 0, category)
+            poisSortedAlphabetically.forEach { poi ->
+                if (category == poi.category) {
+                    subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
+                        setSubMenuItemClickListener(poi)
+                        false
+                    }.also {
+                        setSubMenuIcon(it, poi.poiImage)
+                    }
                 }
-
-                cubeNode.parent = modelNode
-
-                false
             }
         }
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Pois, cubeNode: Node) {
+    private fun setSubMenuIcon(menuItem: MenuItem, poiImage: String) {
+        Glide.with(requireContext())
+            .asBitmap()
+            .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poiImage}")
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    @Nullable transition: Transition<in Bitmap?>?
+                ) {
+                    val loadedIcon: Drawable = BitmapDrawable(resources, resource)
+                    menuItem.icon = loadedIcon
+                }
+
+                override fun onLoadCleared(@Nullable placeholder: Drawable?) {
+                    menuItem.setIcon(R.drawable.testlogo2)
+                }
+            })
+    }
+
+    private fun setSubMenuItemClickListener(poi: Poi) {
+        val cubeNode = Node()
+        cubeNode.renderable = cubeRenderable
+        // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
+        //cubeNode.localScale = Vector3(25f, 25f, 25f)
+        cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
+
+        cubeNode.setOnTapListener { _, _ ->
+            setNodeRemovalAlertBuilder(poi, cubeNode)
+        }
+
+        cubeNode.parent = modelNode
+    }
+
+    private fun setNodeRemovalAlertBuilder(poi: Poi, cubeNode: Node) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
