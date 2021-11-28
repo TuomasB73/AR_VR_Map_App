@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.SearchView
 import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
+import com.virtualmapdevs.ar_vr_map.databinding.FragmentSavedARScenesBinding
+import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
@@ -23,17 +26,20 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private var userToken: String? = null
     private val viewModel: MainViewModel by viewModels()
     private lateinit var savedItemsRecyclerView: RecyclerView
+    private var maps: List<ARItem> = arrayListOf()
+    private var matchedMaps: List<ARItem> = arrayListOf()
+    private var savedItemAdapter: SavedItemAdapter = SavedItemAdapter(maps, this)
+
+
+    private lateinit var binding: FragmentSavedARScenesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_saved_a_r_scenes, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        binding = FragmentSavedARScenesBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,10 +52,15 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
         fetchSavedItemsAndSetAdapter()
+        //performSearch()
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
             requireActivity().onBackPressed()
         }
+
+
+
+
     }
 
     private fun fetchSavedItemsAndSetAdapter() {
@@ -60,7 +71,19 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         viewModel.getUserScannedItemsMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 val savedArItems = response.body()?.reversed()
-                savedItemsRecyclerView.adapter = SavedItemAdapter(savedArItems, this)
+
+
+                if (savedArItems != null) {
+                    maps = savedArItems
+                }
+
+
+                savedItemAdapter = SavedItemAdapter(maps, this).also {
+                    binding.savedItemsRecyclerView.adapter = it
+                    binding.savedItemsRecyclerView.adapter!!.notifyDataSetChanged()
+                }
+                binding.searchView.isSubmitButtonEnabled = true
+
             }
         })
     }
@@ -108,5 +131,50 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
             ).show()
         }
         builder.show()
+    }
+
+    override fun onResume() {
+
+        fetchSavedItemsAndSetAdapter()
+        super.onResume()
+    }
+
+    private fun performSearch() {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                search(query)
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                search(newText)
+                return true
+            }
+        })
+    }
+
+    private fun search(text: String?) {
+        matchedMaps = arrayListOf()
+
+        text?.let {
+            maps.forEach { mapName ->
+                if (mapName.name.contains(text, true)
+                ) {
+                    (matchedMaps as ArrayList<ARItem>).add(mapName)
+                    updateRecyclerView()
+                }
+            }
+            if (matchedMaps.isEmpty()) {
+                Toast.makeText(activity, "No match found!", Toast.LENGTH_SHORT).show()
+            }
+            updateRecyclerView()
+        }
+    }
+
+    private fun updateRecyclerView() {
+        binding.savedItemsRecyclerView.apply {
+            //savedItemAdapter. = matchedMaps
+            savedItemAdapter.notifyDataSetChanged()
+        }
     }
 }
