@@ -2,6 +2,7 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.content.ContentValues
 import android.content.Context
+import android.graphics.Bitmap
 import android.graphics.Point
 import android.hardware.Sensor
 import android.hardware.SensorEvent
@@ -31,10 +32,18 @@ import com.google.ar.sceneform.rendering.*
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.model.Pois
+import com.virtualmapdevs.ar_vr_map.model.Poi
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import android.graphics.drawable.Drawable
+
+import androidx.annotation.Nullable
+
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.transition.Transition
+import android.graphics.drawable.BitmapDrawable
+
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -231,7 +240,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 initDrawerHeader(logoReference)
 
                 if (pois?.size!! > 0) {
-                    initDrawerItems(pois as MutableList<Pois>)
+                    initDrawerItems(pois as MutableList<Poi>)
                 } else {
                     val mMenu = navView.menu
                     val menuSize = mMenu.size()
@@ -255,8 +264,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .into(drawerImage)
     }
 
-    private fun initDrawerItems(pois: MutableList<Pois>) {
+    private fun initDrawerItems(pois: MutableList<Poi>) {
 
+        navView.itemIconTintList = null
         val mMenu = navView.menu
         val categories = pois.distinctBy { it.category }.map { it.category }.sortedBy { it }
         val poisSortedAlphabetically = pois.sortedBy { it.name }
@@ -266,25 +276,50 @@ class ArModeFragment : Fragment(), SensorEventListener {
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
                     subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
-                        val cubeNode = Node()
-                        cubeNode.renderable = cubeRenderable
-                        // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
-                        //cubeNode.localScale = Vector3(25f, 25f, 25f)
-                        cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
-
-                        cubeNode.setOnTapListener { _, _ ->
-                            setNodeRemovalAlertBuilder(poi, cubeNode)
-                        }
-
-                        cubeNode.parent = modelNode
+                        setSubMenuItemClickListener(poi)
                         false
+                    }.also {
+                        setSubMenuIcon(it, poi.poiImage)
                     }
                 }
             }
         }
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Pois, cubeNode: Node) {
+    private fun setSubMenuIcon(menuItem: MenuItem, poiImage: String) {
+        Glide.with(requireContext())
+            .asBitmap()
+            .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poiImage}")
+            .into(object : CustomTarget<Bitmap?>() {
+                override fun onResourceReady(
+                    resource: Bitmap,
+                    @Nullable transition: Transition<in Bitmap?>?
+                ) {
+                    val loadedIcon: Drawable = BitmapDrawable(resources, resource)
+                    menuItem.icon = loadedIcon
+                }
+
+                override fun onLoadCleared(@Nullable placeholder: Drawable?) {
+                    menuItem.setIcon(R.drawable.testlogo2)
+                }
+            })
+    }
+
+    private fun setSubMenuItemClickListener(poi: Poi) {
+        val cubeNode = Node()
+        cubeNode.renderable = cubeRenderable
+        // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
+        //cubeNode.localScale = Vector3(25f, 25f, 25f)
+        cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
+
+        cubeNode.setOnTapListener { _, _ ->
+            setNodeRemovalAlertBuilder(poi, cubeNode)
+        }
+
+        cubeNode.parent = modelNode
+    }
+
+    private fun setNodeRemovalAlertBuilder(poi: Poi, cubeNode: Node) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
