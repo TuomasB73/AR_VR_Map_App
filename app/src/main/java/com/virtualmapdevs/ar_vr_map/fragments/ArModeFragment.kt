@@ -43,6 +43,7 @@ import androidx.annotation.Nullable
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.BitmapDrawable
+import kotlinx.coroutines.*
 
 
 class ArModeFragment : Fragment(), SensorEventListener {
@@ -386,22 +387,26 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     val trackable = hit.trackable
 
                     if (trackable is Plane) {
-                        val anchor = hit!!.createAnchor()
-                        anchorNode = AnchorNode(anchor)
-                        anchorNode?.parent = arFragment.arSceneView.scene
-                        modelNode = TransformableNode(arFragment.transformationSystem)
-                        modelNode?.renderable = modelRenderable
-                        //modelNode?.scaleController?.minScale = 0.01f
-                        //modelNode?.scaleController?.maxScale = 0.03f
-                        anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
-                        modelNode?.parent = anchorNode
-                        modelNode?.select()
+                        GlobalScope.launch(Dispatchers.Main) {
+                            loadingModelTextView.visibility = View.VISIBLE
+                            delay(1)
 
-                        addInfoDashboard(anchorNode!!)
-                        showArSceneButton.visibility = View.GONE
-                        loadingModelTextView.visibility = View.GONE
-                        arFragment.arSceneView.planeRenderer.isVisible = false
+                            val anchor = hit!!.createAnchor()
+                            anchorNode = AnchorNode(anchor)
+                            anchorNode?.parent = arFragment.arSceneView.scene
+                            modelNode = TransformableNode(arFragment.transformationSystem)
+                            modelNode?.renderable = modelRenderable
+                            //modelNode?.scaleController?.minScale = 0.01f
+                            //modelNode?.scaleController?.maxScale = 0.03f
+                            anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
+                            modelNode?.parent = anchorNode
+                            modelNode?.select()
 
+                            addInfoDashboard(anchorNode!!)
+                            showArSceneButton.visibility = View.GONE
+                            loadingModelTextView.visibility = View.GONE
+                            arFragment.arSceneView.planeRenderer.isVisible = false
+                        }
                         break
                     } else {
                         Toast.makeText(
