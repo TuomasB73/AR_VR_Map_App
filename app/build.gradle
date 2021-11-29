@@ -77,4 +77,6 @@ dependencies {
 
     // Maps
     implementation 'org.osmdroid:osmdroid-android:6.1.10'
+    implementation 'androidx.preference:preference-ktx:1.1.1'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 }

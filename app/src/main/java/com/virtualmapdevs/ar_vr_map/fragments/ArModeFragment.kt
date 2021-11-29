@@ -1,7 +1,9 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.hardware.Sensor
@@ -38,15 +40,22 @@ import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.BitmapDrawable
 import android.location.Location
+import android.os.Looper
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
+import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
+import com.virtualmapdevs.ar_vr_map.utils.LocationManager
 import kotlinx.coroutines.*
+import org.osmdroid.util.GeoPoint
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
     private lateinit var poiList: List<Poi>
+    private lateinit var locationManager: LocationManager
     private var anchorNode: AnchorNode? = null
     private var modelNode: TransformableNode? = null
     private var cubeRenderable: ModelRenderable? = null
@@ -80,6 +89,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        locationManager = LocationManager(requireContext(), this)
+        locationManager.initLocationClientRequestAndCallback()
+        locationManager.checkSelfPermissions()
 
         arItemId = requireArguments().getString("arItemId")
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
@@ -141,7 +154,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 distancesList.sortedByDescending { it.distance }.reversed().first()
             val sphereNode = Node()
             sphereNode.renderable = sphereRenderable
-            // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
             sphereNode.localPosition = Vector3(
                 closestPointOfInterest.x,
                 closestPointOfInterest.y,
@@ -592,5 +604,36 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        locationManager.fusedLocationClient.removeLocationUpdates(locationManager.locationCallback)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        locationManager.fusedLocationClient.requestLocationUpdates(
+                            locationManager.locationRequest!!,
+                            locationManager.locationCallback, Looper.getMainLooper()
+                        )
+
+                    }
+                } else {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
     }
 }
