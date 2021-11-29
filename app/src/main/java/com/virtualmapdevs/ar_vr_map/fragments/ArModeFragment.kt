@@ -37,16 +37,20 @@ import androidx.annotation.Nullable
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.BitmapDrawable
+import android.location.Location
 import android.widget.*
 import androidx.cardview.widget.CardView
+import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import kotlinx.coroutines.*
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
+    private lateinit var poiList: List<Poi>
     private var anchorNode: AnchorNode? = null
     private var modelNode: TransformableNode? = null
     private var cubeRenderable: ModelRenderable? = null
+    private var sphereRenderable: ModelRenderable? = null
     private var modelRenderable: ModelRenderable? = null
     private var infoDashboard: ViewRenderable? = null
     private val viewModel: MainViewModel by viewModels()
@@ -83,7 +87,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
-        motionGesturesInstructionsCardView = view.findViewById(R.id.motionGesturesInstructionsCardView)
+        motionGesturesInstructionsCardView =
+            view.findViewById(R.id.motionGesturesInstructionsCardView)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
@@ -92,6 +97,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
         fetchARItemData()
 
         createCube()
+
+        createSphere()
 
         setUpSensor()
 
@@ -113,6 +120,42 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         view.findViewById<Button>(R.id.closeGestureInstructionsButton).setOnClickListener {
             motionGesturesInstructionsCardView.visibility = View.GONE
+        }
+
+        view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
+            Log.d("pois", poiList.toString())
+            val currentLocation = Location("currentLocation")
+            currentLocation.latitude = 60.22345625910894
+            currentLocation.longitude = 24.758567780994856
+
+            val distancesList = mutableListOf<ReducedPoi>()
+            poiList.forEach { poi ->
+                val destinationLocation = Location("destinationLocation").also {
+                    it.latitude = poi.latitude
+                    it.longitude = poi.longitude
+                }
+                val distance = currentLocation.distanceTo(destinationLocation).toInt()
+                distancesList.add(ReducedPoi(poi.name, distance, poi.x, poi.y, poi.z))
+            }
+            val closestPointOfInterest =
+                distancesList.sortedByDescending { it.distance }.reversed().first()
+            val sphereNode = Node()
+            sphereNode.renderable = sphereRenderable
+            // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
+            sphereNode.localPosition = Vector3(
+                closestPointOfInterest.x,
+                closestPointOfInterest.y,
+                closestPointOfInterest.z
+            )
+
+            sphereNode.setOnTapListener { _, _ ->
+                Toast.makeText(requireContext(), "You are around this area!", Toast.LENGTH_SHORT)
+                    .show()
+            }
+
+            sphereNode.parent = modelNode
+
+
         }
     }
 
@@ -222,6 +265,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 val itemModelUri = response.body()?.objectReference
                 val logoReference = response.body()?.logoImageReference
                 val pois = response.body()?.pois
+                poiList = response.body()?.pois!!
 
                 if (itemModelUri != null) {
                     val fullItemModelUri =
@@ -442,6 +486,17 @@ class ArModeFragment : Fragment(), SensorEventListener {
                         Vector3(2.5f, 2.5f, 2.5f),
                         Vector3(0.0f, 1f, 0.0f),
                         material
+                    )
+            }
+    }
+
+    private fun createSphere() {
+        MaterialFactory.makeOpaqueWithColor(requireContext(), Color(0f, 255f, 0f))
+            .thenAccept { material: Material? ->
+                sphereRenderable =
+                        //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
+                    ShapeFactory.makeSphere(
+                        2f, Vector3(0.0f, 1f, 0.0f), material
                     )
             }
     }

@@ -37,6 +37,18 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <Button
+            android:id="@+id/check_location_btn"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:drawableLeft="@drawable/ic_baseline_my_location_24"
+            android:padding="16dp"
+            android:textSize="24sp"
+            app:layout_constraintStart_toEndOf="@+id/arModeBackButton"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
             android:id="@+id/motionGesturesInstructionsButton"
             style="@style/Widget.MaterialComponents.Button.TextButton"
             android:layout_width="60dp"
