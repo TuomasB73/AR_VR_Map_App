@@ -170,10 +170,11 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
     private fun updateRecyclerView() {
         binding.savedItemsRecyclerView.apply {
-            //savedItemAdapter. = matchedMaps
+/*            savedItemAdapter.arItemsList = matchedMaps
                     //savedItemsRecyclerView.adapter = SavedItemAdapter(matchedMaps, this)
 
-            savedItemAdapter.notifyDataSetChanged()
+            savedItemAdapter.notifyDataSetChanged()*/
+            savedItemAdapter.updateData(matchedMaps)
         }
     }
 }
