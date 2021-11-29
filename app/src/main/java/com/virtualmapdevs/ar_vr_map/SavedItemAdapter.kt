@@ -55,9 +55,9 @@ class SavedItemAdapter(
         fun onDeleteButtonPressed(arItemId: String?)
     }
 
-    fun updateData(updatedList: List<ARItem>){
+/*    fun updateData(updatedList: List<ARItem>){
         arItemsList = updatedList
         Log.d("test", updatedList.toString())
         notifyDataSetChanged()
-    }
+    }*/
 }
