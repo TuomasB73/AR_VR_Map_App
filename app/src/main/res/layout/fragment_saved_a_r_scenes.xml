@@ -18,7 +18,7 @@
         android:layout_height="match_parent"
         android:cropToPadding="false"
         android:scaleType="centerCrop"
-        android:src="@drawable/testbackround2"
+        android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"

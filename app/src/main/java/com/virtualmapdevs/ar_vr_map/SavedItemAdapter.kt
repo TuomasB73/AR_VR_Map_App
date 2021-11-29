@@ -35,7 +35,7 @@ class SavedItemAdapter(
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
         // just a placeholder image
-        holder.imageView.setImageResource(R.drawable.testlogo3)
+        holder.imageView.setImageResource(R.drawable.testlogo4)
 
         holder.imageView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
