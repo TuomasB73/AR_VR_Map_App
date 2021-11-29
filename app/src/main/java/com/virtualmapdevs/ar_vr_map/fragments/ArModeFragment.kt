@@ -13,10 +13,6 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
 import android.view.*
-import android.widget.Button
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -37,14 +33,13 @@ import com.virtualmapdevs.ar_vr_map.utils.Constants
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import android.graphics.drawable.Drawable
-
 import androidx.annotation.Nullable
-
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.BitmapDrawable
+import android.widget.*
+import androidx.cardview.widget.CardView
 import kotlinx.coroutines.*
-
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -61,6 +56,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var showArSceneButton: Button
     private lateinit var saveItemButton: Button
     private lateinit var loadingModelTextView: TextView
+    private lateinit var motionGesturesInstructionsCardView: CardView
     private lateinit var sensorManager: SensorManager
     private var sensorLinearAcceleration: Sensor? = null
     private var lastXAxisAccelerationValue = 0.0f
@@ -87,6 +83,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
+        motionGesturesInstructionsCardView = view.findViewById(R.id.motionGesturesInstructionsCardView)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
@@ -108,6 +105,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         view.findViewById<Button>(R.id.arModeBackButton).setOnClickListener {
             requireActivity().onBackPressed()
+        }
+
+        view.findViewById<Button>(R.id.motionGesturesInstructionsButton).setOnClickListener {
+            motionGesturesInstructionsCardView.visibility = View.VISIBLE
+        }
+
+        view.findViewById<Button>(R.id.closeGestureInstructionsButton).setOnClickListener {
+            motionGesturesInstructionsCardView.visibility = View.GONE
         }
     }
 
