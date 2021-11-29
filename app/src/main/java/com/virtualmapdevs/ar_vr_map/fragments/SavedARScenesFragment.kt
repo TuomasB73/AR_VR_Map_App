@@ -52,15 +52,11 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
         fetchSavedItemsAndSetAdapter()
-        //performSearch()
+        performSearch()
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
             requireActivity().onBackPressed()
         }
-
-
-
-
     }
 
     private fun fetchSavedItemsAndSetAdapter() {
@@ -78,7 +74,8 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
                 }
 
 
-                savedItemAdapter = SavedItemAdapter(maps, this).also {
+
+                savedItemsRecyclerView.adapter = SavedItemAdapter(maps, this).also {
                     binding.savedItemsRecyclerView.adapter = it
                     binding.savedItemsRecyclerView.adapter!!.notifyDataSetChanged()
                 }
@@ -174,6 +171,8 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private fun updateRecyclerView() {
         binding.savedItemsRecyclerView.apply {
             //savedItemAdapter. = matchedMaps
+                    //savedItemsRecyclerView.adapter = SavedItemAdapter(matchedMaps, this)
+
             savedItemAdapter.notifyDataSetChanged()
         }
     }
