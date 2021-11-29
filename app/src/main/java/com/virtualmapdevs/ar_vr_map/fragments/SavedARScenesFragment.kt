@@ -14,7 +14,6 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.databinding.FragmentSavedARScenesBinding
@@ -25,12 +24,9 @@ import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private var userToken: String? = null
     private val viewModel: MainViewModel by viewModels()
-    private lateinit var savedItemsRecyclerView: RecyclerView
     private var maps: List<ARItem> = arrayListOf()
     private var matchedMaps: List<ARItem> = arrayListOf()
-    private var savedItemAdapter: SavedItemAdapter = SavedItemAdapter(maps, this)
-
-
+    private lateinit var savedItemAdapter: SavedItemAdapter
     private lateinit var binding: FragmentSavedARScenesBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,9 +41,8 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        savedItemsRecyclerView = view.findViewById(R.id.savedItemsRecyclerView)
         val layoutManager = GridLayoutManager(this.context, 2)
-        savedItemsRecyclerView.layoutManager = layoutManager
+        binding.savedItemsRecyclerView.layoutManager = layoutManager
 
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
@@ -68,19 +63,13 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
             if (response.isSuccessful) {
                 val savedArItems = response.body()?.reversed()
 
-
                 if (savedArItems != null) {
                     maps = savedArItems
                 }
 
-
-
-                savedItemsRecyclerView.adapter = SavedItemAdapter(maps, this).also {
-                    binding.savedItemsRecyclerView.adapter = it
-                    binding.savedItemsRecyclerView.adapter!!.notifyDataSetChanged()
-                }
+                savedItemAdapter = SavedItemAdapter(maps.toMutableList(), this)
+                binding.savedItemsRecyclerView.adapter = savedItemAdapter
                 binding.searchView.isSubmitButtonEnabled = true
-
             }
         })
     }
@@ -131,7 +120,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     override fun onResume() {
-
         fetchSavedItemsAndSetAdapter()
         super.onResume()
     }
@@ -158,7 +146,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
                 if (mapName.name.contains(text, true)
                 ) {
                     (matchedMaps as ArrayList<ARItem>).add(mapName)
-                    updateRecyclerView()
                 }
             }
             if (matchedMaps.isEmpty()) {
@@ -169,12 +156,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     private fun updateRecyclerView() {
-        binding.savedItemsRecyclerView.apply {
-           savedItemAdapter.arItemsList = matchedMaps
-            
-            //savedItemAdapter.updateData(matchedMaps)
-            //savedItemAdapter.notifyDataSetChanged()
-        }
-        savedItemsRecyclerView.adapter = SavedItemAdapter(matchedMaps, this)
+        savedItemAdapter.updateData(matchedMaps)
     }
 }

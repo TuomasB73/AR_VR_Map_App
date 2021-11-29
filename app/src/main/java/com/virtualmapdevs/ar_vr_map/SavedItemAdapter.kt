@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 
 class SavedItemAdapter(
-    var arItemsList: List<ARItem>?,
+    private var arItemsList: MutableList<ARItem>?,
     private val clickListener: ClickListener
 ) :
     RecyclerView.Adapter<SavedItemAdapter.ArItemViewHolder>() {
@@ -50,14 +49,15 @@ class SavedItemAdapter(
         }
     }
 
+    fun updateData(updatedList: List<ARItem>) {
+        arItemsList?.clear()
+        arItemsList?.addAll(updatedList)
+        arItemsList = updatedList.toMutableList()
+        notifyDataSetChanged()
+    }
+
     interface ClickListener {
         fun onItemClick(arItemId: String?)
         fun onDeleteButtonPressed(arItemId: String?)
     }
-
-/*    fun updateData(updatedList: List<ARItem>){
-        arItemsList = updatedList
-        Log.d("test", updatedList.toString())
-        notifyDataSetChanged()
-    }*/
 }
