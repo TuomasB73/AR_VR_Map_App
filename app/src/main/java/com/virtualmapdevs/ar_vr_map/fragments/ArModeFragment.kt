@@ -1,7 +1,9 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.Manifest
 import android.content.ContentValues
 import android.content.Context
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.Point
 import android.hardware.Sensor
@@ -37,16 +39,27 @@ import androidx.annotation.Nullable
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
 import android.graphics.drawable.BitmapDrawable
+import android.location.Location
+import android.os.Looper
 import android.widget.*
 import androidx.cardview.widget.CardView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
+import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
+import com.virtualmapdevs.ar_vr_map.utils.LocationManager
 import kotlinx.coroutines.*
+import org.osmdroid.util.GeoPoint
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
     private lateinit var navView: NavigationView
+    private lateinit var poiList: List<Poi>
+    private lateinit var locationManager: LocationManager
     private var anchorNode: AnchorNode? = null
     private var modelNode: TransformableNode? = null
     private var cubeRenderable: ModelRenderable? = null
+    private var sphereRenderable: ModelRenderable? = null
     private var modelRenderable: ModelRenderable? = null
     private var infoDashboard: ViewRenderable? = null
     private val viewModel: MainViewModel by viewModels()
@@ -77,13 +90,18 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        locationManager = LocationManager(requireContext(), this)
+        locationManager.initLocationClientRequestAndCallback()
+        locationManager.checkSelfPermissions()
+
         arItemId = requireArguments().getString("arItemId")
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
         showArSceneButton = view.findViewById(R.id.showArSceneButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
-        motionGesturesInstructionsCardView = view.findViewById(R.id.motionGesturesInstructionsCardView)
+        motionGesturesInstructionsCardView =
+            view.findViewById(R.id.motionGesturesInstructionsCardView)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
         navView = view.findViewById(R.id.nav_view)
@@ -92,6 +110,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
         fetchARItemData()
 
         createCube()
+
+        createSphere()
 
         setUpSensor()
 
@@ -114,6 +134,46 @@ class ArModeFragment : Fragment(), SensorEventListener {
         view.findViewById<Button>(R.id.closeGestureInstructionsButton).setOnClickListener {
             motionGesturesInstructionsCardView.visibility = View.GONE
         }
+
+        view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
+            findApproximateUserLocation()
+        }
+    }
+
+    private fun findApproximateUserLocation() {
+        val currentLocation = Location("currentLocation")
+        currentLocation.latitude = locationManager.userLocation?.latitude!!
+        currentLocation.longitude = locationManager.userLocation?.longitude!!
+
+        val distancesList = mutableListOf<ReducedPoi>()
+        poiList.forEach { poi ->
+            val destinationLocation = Location("destinationLocation").also {
+                it.latitude = poi.latitude
+                it.longitude = poi.longitude
+            }
+            val distance = currentLocation.distanceTo(destinationLocation).toInt()
+            distancesList.add(ReducedPoi(poi.name, distance, poi.x, poi.y, poi.z))
+        }
+        val closestPointOfInterest =
+            distancesList.sortedByDescending { it.distance }.reversed().first()
+        val sphereNode = Node()
+        sphereNode.renderable = sphereRenderable
+        sphereNode.localPosition = Vector3(
+            closestPointOfInterest.x,
+            closestPointOfInterest.y,
+            closestPointOfInterest.z
+        )
+
+        sphereNode.setOnTapListener { _, _ ->
+            Toast.makeText(
+                requireContext(),
+                "You are around this area! ${closestPointOfInterest.name}",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+
+        sphereNode.parent = modelNode
     }
 
     private fun checkIfItemIsAlreadySaved() {
@@ -222,6 +282,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 val itemModelUri = response.body()?.objectReference
                 val logoReference = response.body()?.logoImageReference
                 val pois = response.body()?.pois
+                poiList = response.body()?.pois!!
 
                 if (itemModelUri != null) {
                     val fullItemModelUri =
@@ -446,6 +507,17 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
     }
 
+    private fun createSphere() {
+        MaterialFactory.makeOpaqueWithColor(requireContext(), Color(0f, 255f, 0f))
+            .thenAccept { material: Material? ->
+                sphereRenderable =
+                        //ShapeFactory.makeSphere(0.05f, Vector3(0.0f, 0.15f, 0.0f), material)
+                    ShapeFactory.makeSphere(
+                        2f, Vector3(0.0f, 1f, 0.0f), material
+                    )
+            }
+    }
+
     private fun removePointsOfInterest() {
         val poiNodes = modelNode?.children?.toList()
 
@@ -537,5 +609,36 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onPause() {
         super.onPause()
         sensorManager.unregisterListener(this)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        locationManager.fusedLocationClient.removeLocationUpdates(locationManager.locationCallback)
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<String>, grantResults: IntArray
+    ) {
+        when (requestCode) {
+            PERMISSIONS_REQUEST_LOCATION -> {
+                // If request is cancelled, the result arrays are empty.
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // permission was granted
+                    if (ContextCompat.checkSelfPermission(
+                            requireContext(),
+                            Manifest.permission.ACCESS_FINE_LOCATION
+                        ) == PackageManager.PERMISSION_GRANTED
+                    ) {
+                        locationManager.fusedLocationClient.requestLocationUpdates(
+                            locationManager.locationRequest!!,
+                            locationManager.locationCallback, Looper.getMainLooper()
+                        )
+
+                    }
+                } else {
+                    TODO("Not yet implemented")
+                }
+            }
+        }
     }
 }
