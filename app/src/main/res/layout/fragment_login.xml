@@ -13,7 +13,7 @@
         android:layout_height="match_parent"
         android:cropToPadding="false"
         android:scaleType="centerCrop"
-        android:src="@drawable/testbackround2"
+        android:src="@drawable/background"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -115,7 +115,7 @@
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
         android:text="@string/register"
-        android:textColor="@color/button"
+        android:textColor="@color/button_stroke"
         android:textSize="12sp"
         app:layout_constraintStart_toEndOf="@+id/registrationTxtView"
         app:layout_constraintTop_toBottomOf="@+id/passwordTextInputLayout" />
