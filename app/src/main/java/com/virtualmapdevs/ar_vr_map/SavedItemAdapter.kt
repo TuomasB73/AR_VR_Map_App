@@ -1,17 +1,22 @@
 package com.virtualmapdevs.ar_vr_map
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.virtualmapdevs.ar_vr_map.model.ARItem
+import com.virtualmapdevs.ar_vr_map.utils.Constants
 
 class SavedItemAdapter(
     private var arItemsList: MutableList<ARItem>?,
-    private val clickListener: ClickListener
+    private val clickListener: ClickListener,
+    val context : Context
 ) :
     RecyclerView.Adapter<SavedItemAdapter.ArItemViewHolder>() {
 
@@ -33,8 +38,14 @@ class SavedItemAdapter(
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
+
+        Glide.with(context).load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
+            .error(R.drawable.testlogo4)
+            .into(holder.imageView)
+
+
         // just a placeholder image
-        holder.imageView.setImageResource(R.drawable.testlogo4)
+        //holder.imageView.setImageResource(R.drawable.testlogo4)
 
         holder.imageView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
