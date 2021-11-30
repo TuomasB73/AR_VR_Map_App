@@ -43,13 +43,13 @@ import android.location.Location
 import android.os.Looper
 import android.widget.*
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
 import kotlinx.coroutines.*
-import org.osmdroid.util.GeoPoint
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -137,6 +137,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
             findApproximateUserLocation()
+        }
+
+        view.findViewById<ImageView>(R.id.navDrawerIndicatorImageView).setOnClickListener {
+            view.findViewById<DrawerLayout>(R.id.drawer_layout).openDrawer(GravityCompat.START)
         }
     }
 
@@ -571,8 +575,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
         if (event != null) {
             val yAxisAccelerationValue = event.values[1]
 
-            if ((yAxisAccelerationValue >= 3.0 && lastYAxisAccelerationValue < 3.0) ||
-                (yAxisAccelerationValue <= -3.0 && lastYAxisAccelerationValue > -3.0)
+            if ((yAxisAccelerationValue >= 4.0 && lastYAxisAccelerationValue < 4.0) ||
+                (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
                 removePointsOfInterest()
             }
@@ -585,9 +589,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
         if (event != null) {
             val xAxisAccelerationValue = event.values[0]
 
-            if (xAxisAccelerationValue >= 3.0 && lastXAxisAccelerationValue < 3.0) {
+            if (xAxisAccelerationValue >= 4.0 && lastXAxisAccelerationValue < 4.0) {
                 zoomMapModel(true)
-            } else if (xAxisAccelerationValue <= -3.0 && lastXAxisAccelerationValue > -3.0) {
+            } else if (xAxisAccelerationValue <= -4.0 && lastXAxisAccelerationValue > -4.0) {
                 zoomMapModel(false)
             }
 
