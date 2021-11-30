@@ -10,7 +10,7 @@
         android:id="@+id/card"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp">
+        android:layout_margin="0dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -22,9 +22,9 @@
                 android:id="@+id/mapImageView"
                 android:layout_width="match_parent"
                 android:layout_height="194dp"
-                android:scaleType="centerCrop"
-                android:contentDescription="@string/ARmap"
-                />
+                android:scaleType="centerInside"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/ARmap" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -37,9 +37,8 @@
                     android:id="@+id/itemNameTextView"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    tools:text="Item title"
                     android:textAppearance="?attr/textAppearanceHeadline6"
-                    />
+                    tools:text="Item title" />
 
             </LinearLayout>
 
@@ -49,14 +48,14 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 android:orientation="horizontal">
+
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteSavedItemButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    app:icon="@drawable/ic_baseline_delete_24"
                     style="?attr/borderlessButtonStyle"
-                    />
+                    android:layout_width="57dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginEnd="8dp"
+                    app:icon="@drawable/ic_baseline_delete_24" />
             </LinearLayout>
 
         </LinearLayout>

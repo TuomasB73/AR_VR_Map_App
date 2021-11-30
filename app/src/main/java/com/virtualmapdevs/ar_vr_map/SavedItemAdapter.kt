@@ -43,10 +43,6 @@ class SavedItemAdapter(
             .error(R.drawable.testlogo4)
             .into(holder.imageView)
 
-
-        // just a placeholder image
-        //holder.imageView.setImageResource(R.drawable.testlogo4)
-
         holder.imageView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
         }
