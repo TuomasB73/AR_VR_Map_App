@@ -67,7 +67,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
                     maps = savedArItems
                 }
 
-                savedItemAdapter = SavedItemAdapter(maps.toMutableList(), this)
+                savedItemAdapter = SavedItemAdapter(maps.toMutableList(), this, requireContext())
                 binding.savedItemsRecyclerView.adapter = savedItemAdapter
                 binding.searchView.isSubmitButtonEnabled = true
             }
