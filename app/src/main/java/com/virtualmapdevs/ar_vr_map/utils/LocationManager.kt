@@ -20,10 +20,10 @@ class LocationManager(val context: Context, val fragment: ArModeFragment) {
             FusedLocationProviderClient
     lateinit var locationCallback: LocationCallback
     var locationRequest: LocationRequest? = null
+    var userLocation : GeoPoint? = null
 
     fun initLocationClientRequestAndCallback() {
 
-        Log.d("location", "initLocationClientRequestAndCallback")
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
 
 
@@ -35,11 +35,9 @@ class LocationManager(val context: Context, val fragment: ArModeFragment) {
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
-                Log.d("location", "got into callback")
                 locationResult ?: return
                 for (location in locationResult.locations) {
-                    val geoPoint = GeoPoint(location.latitude, location.longitude)
-                    Log.d("location", geoPoint.toDoubleString())
+                    userLocation = GeoPoint(location.latitude, location.longitude)
                 }
             }
         }

@@ -136,39 +136,44 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
 
         view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
-            Log.d("pois", poiList.toString())
-            val currentLocation = Location("currentLocation")
-            currentLocation.latitude = 60.22345625910894
-            currentLocation.longitude = 24.758567780994856
-
-            val distancesList = mutableListOf<ReducedPoi>()
-            poiList.forEach { poi ->
-                val destinationLocation = Location("destinationLocation").also {
-                    it.latitude = poi.latitude
-                    it.longitude = poi.longitude
-                }
-                val distance = currentLocation.distanceTo(destinationLocation).toInt()
-                distancesList.add(ReducedPoi(poi.name, distance, poi.x, poi.y, poi.z))
-            }
-            val closestPointOfInterest =
-                distancesList.sortedByDescending { it.distance }.reversed().first()
-            val sphereNode = Node()
-            sphereNode.renderable = sphereRenderable
-            sphereNode.localPosition = Vector3(
-                closestPointOfInterest.x,
-                closestPointOfInterest.y,
-                closestPointOfInterest.z
-            )
-
-            sphereNode.setOnTapListener { _, _ ->
-                Toast.makeText(requireContext(), "You are around this area!", Toast.LENGTH_SHORT)
-                    .show()
-            }
-
-            sphereNode.parent = modelNode
-
-
+            findApproximateUserLocation()
         }
+    }
+
+    private fun findApproximateUserLocation() {
+        val currentLocation = Location("currentLocation")
+        currentLocation.latitude = locationManager.userLocation?.latitude!!
+        currentLocation.longitude = locationManager.userLocation?.longitude!!
+
+        val distancesList = mutableListOf<ReducedPoi>()
+        poiList.forEach { poi ->
+            val destinationLocation = Location("destinationLocation").also {
+                it.latitude = poi.latitude
+                it.longitude = poi.longitude
+            }
+            val distance = currentLocation.distanceTo(destinationLocation).toInt()
+            distancesList.add(ReducedPoi(poi.name, distance, poi.x, poi.y, poi.z))
+        }
+        val closestPointOfInterest =
+            distancesList.sortedByDescending { it.distance }.reversed().first()
+        val sphereNode = Node()
+        sphereNode.renderable = sphereRenderable
+        sphereNode.localPosition = Vector3(
+            closestPointOfInterest.x,
+            closestPointOfInterest.y,
+            closestPointOfInterest.z
+        )
+
+        sphereNode.setOnTapListener { _, _ ->
+            Toast.makeText(
+                requireContext(),
+                "You are around this area! ${closestPointOfInterest.name}",
+                Toast.LENGTH_SHORT
+            )
+                .show()
+        }
+
+        sphereNode.parent = modelNode
     }
 
     private fun checkIfItemIsAlreadySaved() {
