@@ -46,7 +46,6 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
-import androidx.lifecycle.lifecycleScope
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
@@ -351,7 +350,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
                     subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
-                        Toast.makeText(requireContext(), "Added item to map!", Toast.LENGTH_SHORT)
+                        Toast.makeText(requireContext(), "Added item ${poi.name} to map!",
+                            Toast.LENGTH_SHORT
+                        )
                             .show()
                         setSubMenuItemClickListener(poi)
                         false
@@ -391,33 +392,32 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .build()
             .thenAccept { renderable ->
                 pointOfInterestRenderable = renderable
-                val pointOfInterestNode = TransformableNode(arFragment.transformationSystem)
+                TransformableNode(arFragment.transformationSystem).let { node ->
+                    node.renderable = pointOfInterestRenderable
+                    node.localPosition = Vector3(poi.x, 3f, poi.z)
+                    node.scaleController.minScale = 4f
+                    node.scaleController.maxScale = 15f
+                    node.localScale = Vector3(8f, 8f, 8f)
+                    pointOfInterestRenderable!!.isShadowCaster = false
+                    pointOfInterestRenderable!!.isShadowReceiver = false
+                    node.setOnTapListener { _, _ ->
+                        setNodeRemovalAlertBuilder(poi, node)
+                    }
+                    node.parent = modelNode
 
-                pointOfInterestNode.renderable = pointOfInterestRenderable
-                pointOfInterestNode.localPosition = Vector3(poi.x, 3f, poi.z)
-                pointOfInterestNode.scaleController.minScale = 4f
-                pointOfInterestNode.scaleController.maxScale = 15f
-                pointOfInterestNode.localScale = Vector3(8f, 8f, 8f)
-                pointOfInterestRenderable!!.isShadowCaster = false
-                pointOfInterestRenderable!!.isShadowReceiver = false
-                pointOfInterestNode.setOnTapListener { _, _ ->
-                    setNodeRemovalAlertBuilder(poi, pointOfInterestNode)
-                    Toast.makeText(requireContext(), "Tapped node ${poi.name}", Toast.LENGTH_SHORT)
-                        .show()
+                    val poiImageView =
+                        pointOfInterestRenderable!!.view.findViewById<ImageView>(R.id.poi_iv)
+                    if (poi.poiImage != "poiimages/poidefault.jpg") {
+                        Glide.with(requireContext())
+                            .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
+                            .error(R.drawable.testlogo2)
+                            .into(poiImageView)
+                    } else {
+                        poiImageView.visibility = View.GONE
+                    }
+                    pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text =
+                        poi.name
                 }
-                pointOfInterestNode.parent = modelNode
-
-
-                val poiImageVIew =
-                    pointOfInterestRenderable!!.view.findViewById<ImageView>(R.id.poi_iv)
-
-                Glide.with(requireContext())
-                    .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
-                    .error(R.drawable.testlogo2)
-                    .into(poiImageVIew)
-
-                pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text = poi.name
-
             }
 
     }
