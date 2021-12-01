@@ -1,6 +1,7 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.Manifest
+import android.app.Dialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.pm.PackageManager
@@ -72,6 +73,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var sensorLinearAcceleration: Sensor? = null
     private var lastXAxisAccelerationValue = 0.0f
     private var lastYAxisAccelerationValue = 0.0f
+
+    private val sharedPrefFile = "userSharedPreferences"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -675,5 +678,48 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
             }
         }
+    }
+
+    private fun showInstructionVideo() {
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val videoShown = sharedPreference?.getString("videoShown", "no")
+
+        if (videoShown == "no") {
+            val dialog = Dialog(this.requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.video_dialog)
+            val skipBtn = dialog.findViewById(R.id.skipButton) as Button
+            val video = dialog.findViewById(R.id.dialogVideoView) as VideoView
+
+            val mediaController = MediaController(this.requireContext())
+            mediaController.setAnchorView(video)
+
+            val offlineUri: Uri =
+                Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.testvideo)
+
+            skipBtn.setOnClickListener {
+
+                val editor = sharedPreference.edit()
+                editor?.putString("videoShown", "yes")
+                editor?.apply()
+
+                dialog.dismiss()
+            }
+
+            dialog.show()
+
+            video.setMediaController(mediaController)
+            video.setVideoURI(offlineUri)
+            video.requestFocus()
+            video.start()
+        }
+    }
+
+    private fun resetShowInstructionVideo() {
+        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreference?.edit()
+        editor?.clear()
+        editor?.apply()
     }
 }
