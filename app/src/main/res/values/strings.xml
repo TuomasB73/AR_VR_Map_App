@@ -25,4 +25,10 @@
     <string name="zoom_gesture_instruction_text">Move the phone quickly right to zoom in the map and left to zoom out the map.</string>
     <string name="remove_points_of_interest_gesture_instruction_text">Shake the phone vertically to remove all the points of interest from the map.</string>
     <string name="close_gesture_instructions_button_text">Close</string>
+    <string name="zoom_gesture_min_size_text">This is the minimum size!</string>
+    <string name="zoom_gesture_max_size_text">This is the maximum size!</string>
+    <string name="remove_all_pois_dialog_title_text">Remove all points of interest</string>
+    <string name="remove_all_pois_dialog_message_text">Are you sure you want to remove all the points of interest from the map?</string>
+    <string name="network_error_text">Network error. Try again later.</string>
+    <string name="no_pois_added_text">No points of interest added</string>
 </resources>

@@ -3,12 +3,16 @@ package com.virtualmapdevs.ar_vr_map
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import com.virtualmapdevs.ar_vr_map.fragments.HomeFragment
 import com.virtualmapdevs.ar_vr_map.fragments.LoginFragment
+import com.virtualmapdevs.ar_vr_map.utils.NetworkMonitor
+import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
@@ -19,6 +23,14 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        /*NetworkMonitor(application).startNetworkCallback()
+
+        if (NetworkVariables.isNetworkConnected) {
+            checkIsUserLoggedIn()
+        } else {
+            findViewById<TextView>(R.id.networkErrorMessageTextView).visibility = View.VISIBLE
+        }*/
 
         checkIsUserLoggedIn()
     }
