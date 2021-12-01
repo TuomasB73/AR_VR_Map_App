@@ -46,6 +46,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
@@ -145,6 +146,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun findApproximateUserLocation() {
+        locationManager.userLocation?.latitude ?: return
+        locationManager.userLocation?.longitude ?: return
+
         val currentLocation = Location("currentLocation")
         currentLocation.latitude = locationManager.userLocation?.latitude!!
         currentLocation.longitude = locationManager.userLocation?.longitude!!
@@ -347,6 +351,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
                     subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
+                        Toast.makeText(requireContext(), "Added item to map!", Toast.LENGTH_SHORT)
+                            .show()
                         setSubMenuItemClickListener(poi)
                         false
                     }.also {
@@ -377,28 +383,55 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun setSubMenuItemClickListener(poi: Poi) {
-        val cubeNode = Node()
-        cubeNode.renderable = cubeRenderable
-        // TODO: Add a property in ARItem response which indicates the size of the item? (x, y, z)
-        //cubeNode.localScale = Vector3(25f, 25f, 25f)
-        cubeNode.localPosition = Vector3(poi.x, poi.y, poi.z)
 
-        cubeNode.setOnTapListener { _, _ ->
-            setNodeRemovalAlertBuilder(poi, cubeNode)
-        }
+        var pointOfInterestRenderable: ViewRenderable?
 
-        cubeNode.parent = modelNode
+        ViewRenderable.builder()
+            .setView(requireContext(), R.layout.point_of_interest_layout)
+            .build()
+            .thenAccept { renderable ->
+                pointOfInterestRenderable = renderable
+                val pointOfInterestNode = TransformableNode(arFragment.transformationSystem)
+
+                pointOfInterestNode.renderable = pointOfInterestRenderable
+                pointOfInterestNode.localPosition = Vector3(poi.x, 3f, poi.z)
+                pointOfInterestNode.scaleController.minScale = 4f
+                pointOfInterestNode.scaleController.maxScale = 15f
+                pointOfInterestNode.localScale = Vector3(8f, 8f, 8f)
+                pointOfInterestRenderable!!.isShadowCaster = false
+                pointOfInterestRenderable!!.isShadowReceiver = false
+                pointOfInterestNode.setOnTapListener { _, _ ->
+                    setNodeRemovalAlertBuilder(poi, pointOfInterestNode)
+                    Toast.makeText(requireContext(), "Tapped node ${poi.name}", Toast.LENGTH_SHORT)
+                        .show()
+                }
+                pointOfInterestNode.parent = modelNode
+
+
+                val poiImageVIew =
+                    pointOfInterestRenderable!!.view.findViewById<ImageView>(R.id.poi_iv)
+
+                Glide.with(requireContext())
+                    .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
+                    .error(R.drawable.testlogo2)
+                    .into(poiImageVIew)
+
+                pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text = poi.name
+
+            }
+
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Poi, cubeNode: Node) {
+    private fun setNodeRemovalAlertBuilder(poi: Poi, pointOfInterestNode: TransformableNode) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
         builder.setIcon(android.R.drawable.ic_dialog_alert)
         builder.setPositiveButton("Remove from map") { _, _ ->
-            arFragment.arSceneView.scene.removeChild(cubeNode)
-            cubeNode.parent = null
-            cubeNode.renderable = null
+            arFragment.arSceneView.scene.removeChild(pointOfInterestNode)
+            pointOfInterestNode.parent = null
+            pointOfInterestNode.renderable = null
+            Toast.makeText(requireContext(), "Removed item from map", Toast.LENGTH_SHORT).show()
         }
         builder.setNeutralButton("Cancel") { _, _ ->
         }
