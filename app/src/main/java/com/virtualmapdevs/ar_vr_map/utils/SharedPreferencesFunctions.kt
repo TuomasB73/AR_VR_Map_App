@@ -24,4 +24,23 @@ object SharedPreferencesFunctions {
         editor.remove("userToken")
         editor.apply()
     }
+
+    fun saveVideoShown(activity: Activity) {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreference.edit()
+        editor?.putString("videoShown", "yes")
+        editor?.apply()
+    }
+
+    fun resetVideoShown(activity: Activity) {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreference?.edit()
+        editor?.putString("videoShown", "no")
+        editor?.apply()
+    }
+
+    fun isVideoShownCheck(activity: Activity): String? {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        return sharedPreference?.getString("videoShown", "no")
+    }
 }

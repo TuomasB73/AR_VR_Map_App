@@ -74,8 +74,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var lastXAxisAccelerationValue = 0.0f
     private var lastYAxisAccelerationValue = 0.0f
 
-    private val sharedPrefFile = "userSharedPreferences"
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
@@ -90,6 +88,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        showInstructionVideo()
 
         locationManager = LocationManager(requireContext(), this)
         locationManager.initLocationClientRequestAndCallback()
@@ -681,10 +681,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun showInstructionVideo() {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val videoShown = sharedPreference?.getString("videoShown", "no")
 
-        if (videoShown == "no") {
+        if (SharedPreferencesFunctions.isVideoShownCheck(requireActivity()) == "no") {
             val dialog = Dialog(this.requireContext())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(false)
@@ -699,11 +697,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.testvideo)
 
             skipBtn.setOnClickListener {
-
-                val editor = sharedPreference.edit()
-                editor?.putString("videoShown", "yes")
-                editor?.apply()
-
+                SharedPreferencesFunctions.saveVideoShown(requireActivity())
                 dialog.dismiss()
             }
 
@@ -717,9 +711,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun resetShowInstructionVideo() {
-        val sharedPreference = activity?.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        val editor = sharedPreference?.edit()
-        editor?.clear()
-        editor?.apply()
+        SharedPreferencesFunctions.resetVideoShown(requireActivity())
     }
 }
