@@ -89,8 +89,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        showInstructionVideo()
-
         locationManager = LocationManager(requireContext(), this)
         locationManager.initLocationClientRequestAndCallback()
         locationManager.checkSelfPermissions()
@@ -107,13 +105,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         navView = view.findViewById(R.id.nav_view)
 
+        showInstructionVideo()
         checkIfItemIsAlreadySaved()
         fetchARItemData()
-
         createCube()
-
         createSphere()
-
         setUpSensor()
 
         showArSceneButton.setOnClickListener {
@@ -681,7 +677,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun showInstructionVideo() {
-
         if (SharedPreferencesFunctions.isVideoShownCheck(requireActivity()) == "no") {
             val dialog = Dialog(this.requireContext())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
