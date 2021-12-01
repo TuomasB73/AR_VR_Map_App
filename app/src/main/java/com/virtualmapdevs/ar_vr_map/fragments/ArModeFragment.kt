@@ -31,8 +31,6 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.model.Poi
-import com.virtualmapdevs.ar_vr_map.utils.Constants
-import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import android.graphics.drawable.Drawable
 import androidx.annotation.Nullable
@@ -47,8 +45,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
+import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
-import com.virtualmapdevs.ar_vr_map.utils.LocationManager
 import kotlinx.coroutines.*
 
 class ArModeFragment : Fragment(), SensorEventListener {
@@ -350,8 +348,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
                     subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
-                        Toast.makeText(requireContext(), "Added item ${poi.name} to map!",
-                            Toast.LENGTH_SHORT
+                        Toast.makeText(
+                            requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT
                         )
                             .show()
                         setSubMenuItemClickListener(poi)
@@ -392,7 +390,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .build()
             .thenAccept { renderable ->
                 pointOfInterestRenderable = renderable
-                TransformableNode(arFragment.transformationSystem).let { node ->
+                RotatingNode(arFragment.transformationSystem).let { node ->
                     node.renderable = pointOfInterestRenderable
                     node.localPosition = Vector3(poi.x, 3f, poi.z)
                     node.scaleController.minScale = 4f
