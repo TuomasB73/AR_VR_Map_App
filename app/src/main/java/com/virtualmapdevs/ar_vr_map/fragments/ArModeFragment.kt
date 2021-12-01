@@ -32,6 +32,8 @@ import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.model.Poi
+import com.virtualmapdevs.ar_vr_map.utils.Constants
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import android.graphics.drawable.Drawable
 import androidx.annotation.Nullable
@@ -48,6 +50,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
+import com.virtualmapdevs.ar_vr_map.utils.LocationManager
+import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import kotlinx.coroutines.*
 
 class ArModeFragment : Fragment(), SensorEventListener {
@@ -105,9 +109,17 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         navView = view.findViewById(R.id.nav_view)
 
-        showInstructionVideo()
+        /*if (NetworkVariables.isNetworkConnected) {
+            checkIfItemIsAlreadySaved()
+            fetchARItemData()
+        } else {
+            Toast.makeText(activity, getString(R.string.network_error_text), Toast.LENGTH_LONG).show()
+        }*/
+
         checkIfItemIsAlreadySaved()
         fetchARItemData()
+
+        showInstructionVideo()
         createCube()
         createSphere()
         setUpSensor()
@@ -437,6 +449,27 @@ class ArModeFragment : Fragment(), SensorEventListener {
         alertDialog.show()
     }
 
+    private fun setRemoveAllPoisAlertBuilder() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle(getString(R.string.remove_all_pois_dialog_title_text))
+        builder.setMessage(getString(R.string.remove_all_pois_dialog_message_text))
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Yes") { _, _ ->
+            removePointsOfInterest()
+            sensorLinearAcceleration?.also {
+                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+            }
+        }
+        builder.setNeutralButton("Cancel") { _, _ ->
+            sensorLinearAcceleration?.also {
+                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+            }
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+    }
+
     private fun load3DModel(itemModelUri: Uri) {
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
@@ -496,8 +529,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             anchorNode?.parent = arFragment.arSceneView.scene
                             modelNode = TransformableNode(arFragment.transformationSystem)
                             modelNode?.renderable = modelRenderable
-                            //modelNode?.scaleController?.minScale = 0.01f
-                            //modelNode?.scaleController?.maxScale = 0.03f
+                            modelNode?.scaleController?.minScale = 0.5f
+                            modelNode?.scaleController?.maxScale = 2.5f
                             anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
                             modelNode?.parent = anchorNode
                             modelNode?.select()
@@ -553,10 +586,15 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun removePointsOfInterest() {
-        val poiNodes = modelNode?.children?.toList()
+        val allChildNodes = modelNode?.children?.toList()
 
-        poiNodes?.forEach {
-            modelNode?.removeChild(it)
+        if (allChildNodes != null) {
+            for (i in allChildNodes.indices) {
+                // The first child node is the info dashboard, which won't be removed.
+                if (i != 0) {
+                    modelNode?.removeChild(allChildNodes[i])
+                }
+            }
         }
     }
 
@@ -564,16 +602,27 @@ class ArModeFragment : Fragment(), SensorEventListener {
         val currentScale = anchorNode?.localScale?.x
 
         if (currentScale != null) {
-            val zoomLevel = 0.005f
-            val newScale: Float
+            val zoomLevel = 0.003f
 
             if (shrink) {
-                newScale = currentScale - zoomLevel
+                if (currentScale > 0.004) {
+                    val newScale = currentScale - zoomLevel
+                    anchorNode?.localScale = Vector3(newScale, newScale, newScale)
+                } else {
+                    Toast.makeText(
+                        activity, getString(R.string.zoom_gesture_min_size_text), Toast.LENGTH_SHORT
+                    ).show()
+                }
             } else {
-                newScale = currentScale + zoomLevel
+                if (currentScale < 0.02) {
+                    val newScale = currentScale + zoomLevel
+                    anchorNode?.localScale = Vector3(newScale, newScale, newScale)
+                } else {
+                    Toast.makeText(
+                        activity, getString(R.string.zoom_gesture_max_size_text), Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
-
-            anchorNode?.localScale = Vector3(newScale, newScale, newScale)
         }
     }
 
@@ -596,6 +645,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         event ?: return
         if (event.sensor == sensorLinearAcceleration) {
+            Log.d("sensor", event.values[0].toString())
             determineVerticalMovement(event)
             determineHorizontalMovement(event)
         }
@@ -604,11 +654,24 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private fun determineVerticalMovement(event: SensorEvent?) {
         if (event != null) {
             val yAxisAccelerationValue = event.values[1]
+            val childNodeCount = modelNode?.children?.toList()?.size
 
             if ((yAxisAccelerationValue >= 4.0 && lastYAxisAccelerationValue < 4.0) ||
                 (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
-                removePointsOfInterest()
+                if (childNodeCount != null) {
+                    if (childNodeCount > 1) {
+                        setRemoveAllPoisAlertBuilder()
+                        sensorManager.unregisterListener(this)
+                    } else {
+                        Toast.makeText(
+                            activity,
+                            getString(R.string.no_pois_added_text),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        reRegisterSensorListenerAfterDelay()
+                    }
+                }
             }
 
             lastYAxisAccelerationValue = yAxisAccelerationValue
@@ -621,11 +684,27 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
             if (xAxisAccelerationValue >= 4.0 && lastXAxisAccelerationValue < 4.0) {
                 zoomMapModel(true)
+                reRegisterSensorListenerAfterDelay()
             } else if (xAxisAccelerationValue <= -4.0 && lastXAxisAccelerationValue > -4.0) {
                 zoomMapModel(false)
+                reRegisterSensorListenerAfterDelay()
             }
 
             lastXAxisAccelerationValue = xAxisAccelerationValue
+        }
+    }
+
+    private fun reRegisterSensorListenerAfterDelay() {
+        GlobalScope.launch(Dispatchers.Main) {
+            sensorManager.unregisterListener(this@ArModeFragment)
+            delay(400)
+            sensorLinearAcceleration?.also {
+                sensorManager.registerListener(
+                    this@ArModeFragment,
+                    it,
+                    SensorManager.SENSOR_DELAY_UI
+                )
+            }
         }
     }
 
