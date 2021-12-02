@@ -1,12 +1,16 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.app.Dialog
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -14,6 +18,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.fragment.app.viewModels
+import androidx.preference.PreferenceManager
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
 import com.budiyev.android.codescanner.CodeScannerView
@@ -22,9 +28,20 @@ import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.google.zxing.Result
 import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.model.Poi
+import com.virtualmapdevs.ar_vr_map.utils.Constants
+import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
+import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.ItemizedIconOverlay
+import org.osmdroid.views.overlay.OverlayItem
 
 class QRScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
+    private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,6 +49,10 @@ class QRScannerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Open Street Map API registering
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
 
         checkPermissions()
         startScanning()
@@ -145,7 +166,8 @@ class QRScannerFragment : Fragment() {
 
         if (inTest.length == 24) {
             if (isLettersOrNumbers(inTest)){
-                openAR(result)
+                fetchQRItemData(inTest)
+                //openAR(result)
             } else{
                 Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
             }
@@ -164,4 +186,127 @@ class QRScannerFragment : Fragment() {
         return true
     }
 
+    private fun fetchQRItemData(arItemId: String?) {
+        val userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
+        if (arItemId != null) {
+            viewModel.getArItemById(userToken, arItemId)
+        }
+
+        viewModel.arItembyIdMsg.observe(viewLifecycleOwner) { response ->
+            if (response.isSuccessful) {
+                val itemTitle = response.body()?.name
+                val itemDescription = response.body()?.description
+                val latitude = response.body()?.latitude
+                val longitude = response.body()?.longitude
+
+                if (itemTitle != null && itemDescription != null && latitude != null && longitude != null) {
+                    mapActionsDialog(arItemId, itemDescription, latitude, longitude)
+                } else {
+                    Log.d("ARItemFetch", "Item title and/or description not found")
+                    Toast.makeText(
+                        activity,
+                        "Item title and/or description not found",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    private fun mapActionsDialog(
+        arItemId: String?,
+        description: String?,
+        latitude: Double?,
+        longitude: Double?
+    ) {
+
+        val dialog = Dialog(this.requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.map_actions_dialog_qr)
+
+        val descriptionText = dialog.findViewById(R.id.mapDescriptionTextView) as TextView
+        val openArBtn = dialog.findViewById(R.id.openARbtn) as Button
+        val showInMapBtn = dialog.findViewById(R.id.openInMapBtn) as Button
+        val cancelBtn = dialog.findViewById(R.id.cancelButton) as Button
+
+        descriptionText.text = description
+
+        openArBtn.setOnClickListener {
+            dialog.dismiss()
+            val bundle = bundleOf("arItemId" to arItemId)
+
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
+                addToBackStack(null)
+            }
+        }
+
+        showInMapBtn.setOnClickListener {
+            locationMapDialog(latitude, longitude)
+        }
+
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<HomeFragment>(R.id.fragmentContainer)
+                addToBackStack(null)
+            }
+        }
+
+        dialog.show()
+    }
+
+    private fun locationMapDialog(latitude: Double?, longitude: Double?) {
+
+        if (latitude != null && longitude != null) {
+
+            val dialog = Dialog(this.requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.location_map_dialog)
+
+            val cancelBtn = dialog.findViewById(R.id.lMcancelBtn) as Button
+            val map = dialog.findViewById(R.id.dialogMapView) as MapView
+
+            cancelBtn.setOnClickListener {
+                dialog.dismiss()
+            }
+
+            map.setTileSource(TileSourceFactory.MAPNIK) //render
+            map.setMultiTouchControls(true)
+
+            val mapController = map.controller
+            mapController.setZoom(12.0)
+            val startPoint = GeoPoint(latitude, longitude)
+            mapController.setCenter(startPoint)
+
+
+/*        marker = Marker(map)
+        marker.icon = AppCompatResources.getDrawable(this.requireContext(), R.drawable.ic_pin)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker.textLabelFontSize = 20*/
+
+            val items = java.util.ArrayList<OverlayItem>()
+            items.add(OverlayItem("Title", "Snippet", GeoPoint(latitude, longitude)))
+
+            val mOverlay = ItemizedIconOverlay(context,
+                items, object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem?> {
+                    override fun onItemSingleTapUp(index: Int, item: OverlayItem?): Boolean {
+                        return true
+                    }
+
+                    override fun onItemLongPress(index: Int, item: OverlayItem?): Boolean {
+                        return false
+                    }
+                })
+            mOverlay.focus
+            map.overlays.add(mOverlay)
+
+            dialog.show()
+        }
+    }
 }

@@ -258,7 +258,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         marker.textLabelFontSize = 20*/
 
             val items = java.util.ArrayList<OverlayItem>()
-            items.add(OverlayItem("Espoo", "Karaportti", GeoPoint(latitude, longitude)))
+            items.add(OverlayItem("Title", "Snippet", GeoPoint(latitude, longitude)))
 
             val mOverlay = ItemizedIconOverlay(context,
                 items, object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem?> {
