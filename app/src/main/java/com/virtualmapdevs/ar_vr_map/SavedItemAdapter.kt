@@ -30,14 +30,10 @@ class SavedItemAdapter(
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
         var imageView: ImageView = view.findViewById(R.id.mapImageView)
-
-        //var descriptionTextView: TextView = view.findViewById(R.id.mapDescriptionTextView)
     }
 
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
-
-        //holder.descriptionTextView.text = arItemsList?.get(position)?.description
 
         Glide.with(context)
             .load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")

@@ -165,20 +165,19 @@ class QRScannerFragment : Fragment() {
         val inTest = result.toString()
 
         if (inTest.length == 24) {
-            if (isLettersOrNumbers(inTest)){
+            if (isLettersOrNumbers(inTest)) {
                 fetchQRItemData(inTest)
                 //openAR(result)
-            } else{
+            } else {
                 Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
             }
-        }else{
+        } else {
             Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
         }
     }
 
     private fun isLettersOrNumbers(string: String): Boolean {
-        for (c in string)
-        {
+        for (c in string) {
             if (c !in 'A'..'Z' && c !in 'a'..'z' && c !in '0'..'9') {
                 return false
             }
