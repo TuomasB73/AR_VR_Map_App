@@ -230,7 +230,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private fun locationMapDialog(latitude: Double?, longitude: Double?) {
 
         if (latitude != null && longitude != null) {
-            
+
             val dialog = Dialog(this.requireContext())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.setCancelable(false)
