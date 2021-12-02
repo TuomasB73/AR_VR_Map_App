@@ -18,16 +18,21 @@ data class ARItem(
 
 data class Poi(
 
-    @SerializedName("poiId") val poiId: String,
-    @SerializedName("name") val name: String,
-    @SerializedName("description") val description: String,
-    @SerializedName("category") val category: String,
-    @SerializedName("latitude") val latitude: Double,
-    @SerializedName("longitude") val longitude: Double,
-    @SerializedName("x") val x: Float,
-    @SerializedName("y") val y: Float,
-    @SerializedName("z") val z: Float,
-    @SerializedName("poiImage") val poiImage: String
+    @SerializedName("poiId") val poiId : String,
+    @SerializedName("name") val name : String,
+    @SerializedName("description") val description : String,
+    @SerializedName("category") val category : String,
+    @SerializedName("latitude") val latitude : Double,
+    @SerializedName("longitude") val longitude : Double,
+    @SerializedName("mapCoordinates") val mapCoordinates : MapCoordinates,
+    @SerializedName("poiImage") val poiImage : String
+)
+
+data class MapCoordinates (
+
+    @SerializedName("x") val x : Float,
+    @SerializedName("y") val y : Float,
+    @SerializedName("z") val z : Float
 )
 
 data class ReducedPoi(

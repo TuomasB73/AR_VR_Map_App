@@ -178,7 +178,15 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 it.longitude = poi.longitude
             }
             val distance = currentLocation.distanceTo(destinationLocation).toInt()
-            distancesList.add(ReducedPoi(poi.name, distance, poi.x, poi.y, poi.z))
+            distancesList.add(
+                ReducedPoi(
+                    poi.name,
+                    distance,
+                    poi.mapCoordinates.x,
+                    poi.mapCoordinates.y,
+                    poi.mapCoordinates.z
+                )
+            )
         }
         val closestPointOfInterest =
             distancesList.sortedByDescending { it.distance }.reversed().first()
@@ -413,7 +421,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 pointOfInterestRenderable = renderable
                 RotatingNode(arFragment.transformationSystem).let { node ->
                     node.renderable = pointOfInterestRenderable
-                    node.localPosition = Vector3(poi.x, 3f, poi.z)
+                    node.localPosition = Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
                     node.scaleController.minScale = 4f
                     node.scaleController.maxScale = 15f
                     node.localScale = Vector3(8f, 8f, 8f)
