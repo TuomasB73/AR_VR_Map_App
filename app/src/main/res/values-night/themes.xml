@@ -17,5 +17,14 @@
         <item name="android:editTextColor">@color/white</item>
 
         <item name="android:fontFamily">@font/cabin</item>
+        <item name="switchStyle">@style/Widget.App.Switch</item>
+    </style>
+
+    <style name="Widget.App.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
+        <item name="materialThemeOverlay">@style/ThemeOverlay.App.Switch</item>
+    </style>
+
+    <style name="ThemeOverlay.App.Switch" parent="">
+        <item name="colorSecondary">@color/blue_button</item>
     </style>
 </resources>
