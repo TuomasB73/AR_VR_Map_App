@@ -32,4 +32,7 @@
     <string name="network_error_text">Network error. Try again later.</string>
     <string name="no_pois_added_text">No points of interest added</string>
     <string name="cancel">cancel</string>
+    <string name="description">Description</string>
+    <string name="open_in_ar">Open in AR</string>
+    <string name="show_location_in_map">Show location in map</string>
 </resources>

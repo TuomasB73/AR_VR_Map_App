@@ -7,8 +7,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import android.widget.*
-import androidx.appcompat.content.res.AppCompatResources
+import android.widget.Button
+import android.widget.SearchView
+import android.widget.TextView
+import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -27,7 +29,6 @@ import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.ItemizedIconOverlay
-import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
 import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.OverlayItem
 
@@ -93,8 +94,13 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         })
     }
 
-    override fun onItemClick(arItemId: String?) {
-        mapActionsDialog(arItemId)
+    override fun onItemClick(
+        arItemId: String?,
+        description: String?,
+        latitude: Double?,
+        longitude: Double?
+    ) {
+        mapActionsDialog(arItemId, description, latitude, longitude)
     }
 
     override fun onDeleteButtonPressed(arItemId: String?) {
@@ -173,7 +179,12 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
 
-    private fun mapActionsDialog(arItemId: String?) {
+    private fun mapActionsDialog(
+        arItemId: String?,
+        description: String?,
+        latitude: Double?,
+        longitude: Double?
+    ) {
 
         val dialog = Dialog(this.requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
@@ -186,7 +197,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         val showInMapBtn = dialog.findViewById(R.id.openInMapBtn) as Button
         val cancelBtn = dialog.findViewById(R.id.cancelButton) as Button
 
-        //descriptionText.text = savedItemAdapter.getItem(arItemId)?.description
+        descriptionText.text = description
 
         openArBtn.setOnClickListener {
             dialog.dismiss()
@@ -200,7 +211,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         }
 
         showInMapBtn.setOnClickListener {
-            locationMapDialog()
+            locationMapDialog(latitude, longitude)
             dialog.dismiss()
         }
 
@@ -216,27 +227,29 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         dialog.show()
     }
 
-    private fun locationMapDialog() {
+    private fun locationMapDialog(latitude: Double?, longitude: Double?) {
 
-        val dialog = Dialog(this.requireContext())
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
-        dialog.setContentView(R.layout.location_map_dialog)
+        if (latitude != null && longitude != null) {
+            
+            val dialog = Dialog(this.requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setCancelable(false)
+            dialog.setContentView(R.layout.location_map_dialog)
 
-        val cancelBtn = dialog.findViewById(R.id.lMcancelBtn) as Button
-        val map = dialog.findViewById(R.id.dialogMapView) as MapView
+            val cancelBtn = dialog.findViewById(R.id.lMcancelBtn) as Button
+            val map = dialog.findViewById(R.id.dialogMapView) as MapView
 
-        cancelBtn.setOnClickListener {
-            dialog.dismiss()
-        }
+            cancelBtn.setOnClickListener {
+                dialog.dismiss()
+            }
 
-        map.setTileSource(TileSourceFactory.MAPNIK) //render
-        map.setMultiTouchControls(true)
+            map.setTileSource(TileSourceFactory.MAPNIK) //render
+            map.setMultiTouchControls(true)
 
-        val mapController = map.controller
-        mapController.setZoom(12.0)
-        val startPoint = GeoPoint(60.224305, 24.757239)
-        mapController.setCenter(startPoint)
+            val mapController = map.controller
+            mapController.setZoom(12.0)
+            val startPoint = GeoPoint(latitude, longitude)
+            mapController.setCenter(startPoint)
 
 
 /*        marker = Marker(map)
@@ -244,22 +257,23 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
         marker.textLabelFontSize = 20*/
 
-        val items = java.util.ArrayList<OverlayItem>()
-        items.add(OverlayItem("Espoo", "Karaportti", GeoPoint(60.224305, 24.757239)))
+            val items = java.util.ArrayList<OverlayItem>()
+            items.add(OverlayItem("Espoo", "Karaportti", GeoPoint(latitude, longitude)))
 
-        val mOverlay = ItemizedIconOverlay(context,
-            items, object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem?> {
-                override fun onItemSingleTapUp(index: Int, item: OverlayItem?): Boolean {
-                    return true
-                }
+            val mOverlay = ItemizedIconOverlay(context,
+                items, object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem?> {
+                    override fun onItemSingleTapUp(index: Int, item: OverlayItem?): Boolean {
+                        return true
+                    }
 
-                override fun onItemLongPress(index: Int, item: OverlayItem?): Boolean {
-                    return false
-                }
-            })
-        mOverlay.focus
-        map.overlays.add(mOverlay)
+                    override fun onItemLongPress(index: Int, item: OverlayItem?): Boolean {
+                        return false
+                    }
+                })
+            mOverlay.focus
+            map.overlays.add(mOverlay)
 
-        dialog.show()
+            dialog.show()
+        }
     }
 }

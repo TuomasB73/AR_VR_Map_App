@@ -15,7 +15,7 @@ import com.virtualmapdevs.ar_vr_map.utils.Constants
 class SavedItemAdapter(
     private var arItemsList: MutableList<ARItem>?,
     private val clickListener: ClickListener,
-    val context : Context
+    val context: Context
 ) :
     RecyclerView.Adapter<SavedItemAdapter.ArItemViewHolder>() {
 
@@ -39,16 +39,27 @@ class SavedItemAdapter(
 
         //holder.descriptionTextView.text = arItemsList?.get(position)?.description
 
-        Glide.with(context).load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
+        Glide.with(context)
+            .load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
             .error(R.drawable.testlogo4)
             .into(holder.imageView)
 
         holder.imageView.setOnClickListener {
-            clickListener.onItemClick(arItemsList?.get(position)?._id)
+            clickListener.onItemClick(
+                arItemsList?.get(position)?._id,
+                arItemsList?.get(position)?.description,
+                arItemsList?.get(position)?.latitude,
+                arItemsList?.get(position)?.longitude
+            )
         }
 
         holder.itemNameTextView.setOnClickListener {
-            clickListener.onItemClick(arItemsList?.get(position)?._id)
+            clickListener.onItemClick(
+                arItemsList?.get(position)?._id,
+                arItemsList?.get(position)?.description,
+                arItemsList?.get(position)?.latitude,
+                arItemsList?.get(position)?.longitude
+            )
         }
     }
 
@@ -60,7 +71,13 @@ class SavedItemAdapter(
     }
 
     interface ClickListener {
-        fun onItemClick(arItemId: String?)
+        fun onItemClick(
+            arItemId: String?,
+            description: String?,
+            latitude: Double?,
+            longitude: Double?
+        )
+
         fun onDeleteButtonPressed(arItemId: String?)
     }
 }
