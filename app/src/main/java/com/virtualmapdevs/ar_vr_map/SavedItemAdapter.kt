@@ -4,13 +4,13 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.Constants
+
 
 class SavedItemAdapter(
     private var arItemsList: MutableList<ARItem>?,
@@ -30,12 +30,14 @@ class SavedItemAdapter(
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
         var imageView: ImageView = view.findViewById(R.id.mapImageView)
+
+        //var descriptionTextView: TextView = view.findViewById(R.id.mapDescriptionTextView)
     }
 
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
-        var descriptionText = arItemsList?.get(position)?.description
+        //holder.descriptionTextView.text = arItemsList?.get(position)?.description
 
         Glide.with(context).load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
             .error(R.drawable.testlogo4)

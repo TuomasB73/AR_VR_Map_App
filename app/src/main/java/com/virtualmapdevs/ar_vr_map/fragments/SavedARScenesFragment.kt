@@ -2,18 +2,19 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
 import android.widget.*
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
+import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
@@ -21,6 +22,14 @@ import com.virtualmapdevs.ar_vr_map.databinding.FragmentSavedARScenesBinding
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import org.osmdroid.config.Configuration
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.ItemizedIconOverlay
+import org.osmdroid.views.overlay.ItemizedOverlayWithFocus
+import org.osmdroid.views.overlay.Marker
+import org.osmdroid.views.overlay.OverlayItem
 
 class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private var userToken: String? = null
@@ -29,18 +38,27 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private var matchedMaps: List<ARItem> = arrayListOf()
     private lateinit var savedItemAdapter: SavedItemAdapter
     private lateinit var binding: FragmentSavedARScenesBinding
+    private lateinit var marker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         binding = FragmentSavedARScenesBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Open Street Map API registering
+        Configuration.getInstance()
+            .load(context, PreferenceManager.getDefaultSharedPreferences(context))
 
         val layoutManager = GridLayoutManager(this.context, 2)
         binding.savedItemsRecyclerView.layoutManager = layoutManager
@@ -162,14 +180,13 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         dialog.setCancelable(false)
         dialog.setContentView(R.layout.map_actions_dialog)
 
-
         val descriptionText = dialog.findViewById(R.id.mapDescriptionTextView) as TextView
         val deleteBtn = dialog.findViewById(R.id.deleteSavedItemButton) as Button
         val openArBtn = dialog.findViewById(R.id.openARbtn) as Button
         val showInMapBtn = dialog.findViewById(R.id.openInMapBtn) as Button
         val cancelBtn = dialog.findViewById(R.id.cancelButton) as Button
 
-
+        //descriptionText.text = savedItemAdapter.getItem(arItemId)?.description
 
         openArBtn.setOnClickListener {
             dialog.dismiss()
@@ -182,13 +199,66 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
             }
         }
 
+        showInMapBtn.setOnClickListener {
+            locationMapDialog()
+            dialog.dismiss()
+        }
+
         deleteBtn.setOnClickListener {
             onDeleteButtonPressed(arItemId)
+            dialog.dismiss()
         }
 
         cancelBtn.setOnClickListener {
             dialog.dismiss()
         }
+
+        dialog.show()
+    }
+
+    private fun locationMapDialog() {
+
+        val dialog = Dialog(this.requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.location_map_dialog)
+
+        val cancelBtn = dialog.findViewById(R.id.lMcancelBtn) as Button
+        val map = dialog.findViewById(R.id.dialogMapView) as MapView
+
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        map.setTileSource(TileSourceFactory.MAPNIK) //render
+        map.setMultiTouchControls(true)
+
+        val mapController = map.controller
+        mapController.setZoom(12.0)
+        val startPoint = GeoPoint(60.224305, 24.757239)
+        mapController.setCenter(startPoint)
+
+
+/*        marker = Marker(map)
+        marker.icon = AppCompatResources.getDrawable(this.requireContext(), R.drawable.ic_pin)
+        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+        marker.textLabelFontSize = 20*/
+
+        val items = java.util.ArrayList<OverlayItem>()
+        items.add(OverlayItem("Espoo", "Karaportti", GeoPoint(60.224305, 24.757239)))
+
+        val mOverlay = ItemizedIconOverlay(context,
+            items, object : ItemizedIconOverlay.OnItemGestureListener<OverlayItem?> {
+                override fun onItemSingleTapUp(index: Int, item: OverlayItem?): Boolean {
+                    return true
+                }
+
+                override fun onItemLongPress(index: Int, item: OverlayItem?): Boolean {
+                    return false
+                }
+            })
+        mOverlay.focus
+        map.overlays.add(mOverlay)
 
         dialog.show()
     }
