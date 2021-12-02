@@ -1,13 +1,14 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.app.AlertDialog
+import android.app.Dialog
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.SearchView
-import android.widget.Toast
+import android.view.Window
+import android.widget.*
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
@@ -75,13 +76,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     }
 
     override fun onItemClick(arItemId: String?) {
-        val bundle = bundleOf("arItemId" to arItemId)
-
-        requireActivity().supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            addToBackStack(null)
-        }
+        mapActionsDialog(arItemId)
     }
 
     override fun onDeleteButtonPressed(arItemId: String?) {
@@ -157,5 +152,44 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
     private fun updateRecyclerView() {
         savedItemAdapter.updateData(matchedMaps)
+    }
+
+
+    private fun mapActionsDialog(arItemId: String?) {
+
+        val dialog = Dialog(this.requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.map_actions_dialog)
+
+
+        val descriptionText = dialog.findViewById(R.id.mapDescriptionTextView) as TextView
+        val deleteBtn = dialog.findViewById(R.id.deleteSavedItemButton) as Button
+        val openArBtn = dialog.findViewById(R.id.openARbtn) as Button
+        val showInMapBtn = dialog.findViewById(R.id.openInMapBtn) as Button
+        val cancelBtn = dialog.findViewById(R.id.cancelButton) as Button
+
+
+
+        openArBtn.setOnClickListener {
+            dialog.dismiss()
+            val bundle = bundleOf("arItemId" to arItemId)
+
+            requireActivity().supportFragmentManager.commit {
+                setReorderingAllowed(true)
+                replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
+                addToBackStack(null)
+            }
+        }
+
+        deleteBtn.setOnClickListener {
+            onDeleteButtonPressed(arItemId)
+        }
+
+        cancelBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

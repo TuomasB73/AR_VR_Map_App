@@ -40,13 +40,13 @@
                     android:textAppearance="?attr/textAppearanceHeadline6"
                     tools:text="Item title" />
 
-                <com.google.android.material.button.MaterialButton
+<!--                <com.google.android.material.button.MaterialButton
                     android:id="@+id/deleteSavedItemButton"
                     style="?attr/borderlessButtonStyle"
                     android:layout_width="57dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="8dp"
-                    app:icon="@drawable/ic_baseline_delete_24" />
+                    app:icon="@drawable/ic_baseline_delete_24" />-->
 
             </LinearLayout>
 

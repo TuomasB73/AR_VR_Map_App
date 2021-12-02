@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.virtualmapdevs.ar_vr_map.model.ARItem
@@ -31,13 +30,12 @@ class SavedItemAdapter(
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
         var imageView: ImageView = view.findViewById(R.id.mapImageView)
-        var deleteSavedItemButton: Button = view.findViewById(R.id.deleteSavedItemButton)
-
     }
 
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
+        var descriptionText = arItemsList?.get(position)?.description
 
         Glide.with(context).load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
             .error(R.drawable.testlogo4)
@@ -49,10 +47,6 @@ class SavedItemAdapter(
 
         holder.itemNameTextView.setOnClickListener {
             clickListener.onItemClick(arItemsList?.get(position)?._id)
-        }
-
-        holder.deleteSavedItemButton.setOnClickListener {
-            clickListener.onDeleteButtonPressed(arItemsList?.get(position)?._id)
         }
     }
 
