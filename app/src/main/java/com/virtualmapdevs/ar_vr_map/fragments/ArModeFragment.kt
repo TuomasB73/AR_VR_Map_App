@@ -47,6 +47,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.switchmaterial.SwitchMaterial
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
@@ -151,6 +152,15 @@ class ArModeFragment : Fragment(), SensorEventListener {
         view.findViewById<ImageView>(R.id.navDrawerIndicatorImageView).setOnClickListener {
             view.findViewById<DrawerLayout>(R.id.drawer_layout).openDrawer(GravityCompat.START)
         }
+
+        view.findViewById<SwitchMaterial>(R.id.motionGesturesSwitch)
+            .setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    registerSensorListener()
+                } else {
+                    unRegisterSensorListener()
+                }
+            }
     }
 
     private fun findApproximateUserLocation() {
@@ -456,14 +466,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
         builder.setIcon(android.R.drawable.ic_dialog_alert)
         builder.setPositiveButton("Yes") { _, _ ->
             removePointsOfInterest()
-            sensorLinearAcceleration?.also {
-                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-            }
+            registerSensorListener()
         }
         builder.setNeutralButton("Cancel") { _, _ ->
-            sensorLinearAcceleration?.also {
-                sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-            }
+            registerSensorListener()
         }
         val alertDialog: AlertDialog = builder.create()
         alertDialog.setCancelable(false)
@@ -662,7 +668,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 if (childNodeCount != null) {
                     if (childNodeCount > 1) {
                         setRemoveAllPoisAlertBuilder()
-                        sensorManager.unregisterListener(this)
+                        unRegisterSensorListener()
                     } else {
                         Toast.makeText(
                             activity,
@@ -694,17 +700,21 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    private fun registerSensorListener() {
+        sensorLinearAcceleration?.also {
+            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
+        }
+    }
+
+    private fun unRegisterSensorListener() {
+        sensorManager.unregisterListener(this)
+    }
+
     private fun reRegisterSensorListenerAfterDelay() {
         GlobalScope.launch(Dispatchers.Main) {
-            sensorManager.unregisterListener(this@ArModeFragment)
+            unRegisterSensorListener()
             delay(400)
-            sensorLinearAcceleration?.also {
-                sensorManager.registerListener(
-                    this@ArModeFragment,
-                    it,
-                    SensorManager.SENSOR_DELAY_UI
-                )
-            }
+            registerSensorListener()
         }
     }
 
@@ -714,14 +724,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     override fun onResume() {
         super.onResume()
-        sensorLinearAcceleration?.also {
-            sensorManager.registerListener(this, it, SensorManager.SENSOR_DELAY_UI)
-        }
+        registerSensorListener()
     }
 
     override fun onPause() {
         super.onPause()
-        sensorManager.unregisterListener(this)
+        unRegisterSensorListener()
     }
 
     override fun onDestroyView() {

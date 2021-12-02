@@ -35,4 +35,5 @@
     <string name="description">Description</string>
     <string name="open_in_ar">Open in AR</string>
     <string name="show_location_in_map">Show location in map</string>
+    <string name="motion_gestures_switch_text">Motion gestures</string>
 </resources>

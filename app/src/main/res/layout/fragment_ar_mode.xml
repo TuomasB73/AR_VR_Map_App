@@ -27,6 +27,7 @@
             android:id="@+id/topButtonsLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
             android:baselineAligned="false"
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
@@ -42,13 +43,17 @@
 
                 <Button
                     android:id="@+id/arModeBackButton"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_margin="8dp"
-                    android:drawableLeft="@drawable/ic_baseline_arrow_back_24_white"
-                    android:padding="16dp"
-                    android:textSize="24sp" />
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:textSize="24sp"
+                    app:icon="@drawable/ic_baseline_arrow_back_24_white"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -60,31 +65,18 @@
 
                 <Button
                     android:id="@+id/check_location_btn"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_margin="8dp"
-                    android:drawableLeft="@drawable/ic_baseline_my_location_24"
-                    android:padding="16dp"
-                    android:textSize="24sp" />
-            </LinearLayout>
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:textSize="24sp"
+                    app:icon="@drawable/ic_baseline_my_location_24"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/motionGesturesInstructionsButton"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_margin="8dp"
-                    android:drawableLeft="@drawable/ic_baseline_info_24_white"
-                    android:padding="16dp"
-                    android:textSize="24sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -96,14 +88,60 @@
 
                 <Button
                     android:id="@+id/saveBtn"
-                    style="@style/Widget.MaterialComponents.Button.TextButton"
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:layout_margin="8dp"
-                    android:enabled="false"
-                    android:padding="16dp"
-                    android:textSize="24sp" />
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:paddingEnd="0dp"
+                    android:textSize="24sp"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/motionGesturesInstructionsButton"
+                    style="@style/Widget.AppCompat.Button.Borderless"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:insetLeft="0dp"
+                    android:insetTop="0dp"
+                    android:insetRight="0dp"
+                    android:insetBottom="0dp"
+                    android:textSize="24sp"
+                    app:icon="@drawable/ic_baseline_info_24_white"
+                    app:iconGravity="textStart"
+                    app:iconPadding="0dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="3"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+
+                <com.google.android.material.switchmaterial.SwitchMaterial
+                    android:id="@+id/motionGesturesSwitch"
+                    android:layout_width="100dp"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
+                    android:text="@string/motion_gestures_switch_text"
+                    android:textColor="@color/white" />
+            </LinearLayout>
+
         </LinearLayout>
 
         <ImageView
