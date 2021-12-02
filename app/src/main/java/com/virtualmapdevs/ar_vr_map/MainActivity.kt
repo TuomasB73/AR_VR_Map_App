@@ -3,16 +3,21 @@ package com.virtualmapdevs.ar_vr_map
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.lifecycleScope
 import com.virtualmapdevs.ar_vr_map.fragments.HomeFragment
 import com.virtualmapdevs.ar_vr_map.fragments.LoginFragment
 import com.virtualmapdevs.ar_vr_map.utils.NetworkMonitor
 import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
@@ -22,16 +27,35 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        /*NetworkMonitor(application).startNetworkCallback()
+        NetworkMonitor(application).startNetworkCallback()
 
-        if (NetworkVariables.isNetworkConnected) {
-            checkIsUserLoggedIn()
-        } else {
-            findViewById<TextView>(R.id.networkErrorMessageTextView).visibility = View.VISIBLE
-        }*/
-
-        checkIsUserLoggedIn()
+        lifecycleScope.launch {
+            if (NetworkVariables.isNetworkConnected) {
+                checkIsUserLoggedIn()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
     }
+
+    private fun showNoConnectionDialog() {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("No connection")
+        builder.setMessage("Check your Internet connection and try again")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Test connection") { dialogInterface, which ->
+            if (NetworkVariables.isNetworkConnected) {
+                checkIsUserLoggedIn()
+            } else {
+                Toast.makeText(applicationContext, "No connection", Toast.LENGTH_LONG).show()
+                showNoConnectionDialog()
+            }
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
+    }
+
 
     private fun checkIsUserLoggedIn() {
         userToken = SharedPreferencesFunctions.getUserToken(this)
@@ -74,7 +98,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount > 1 &&
-            supportFragmentManager.getBackStackEntryAt(0).name == "QRScannerFragment") {
+            supportFragmentManager.getBackStackEntryAt(0).name == "QRScannerFragment"
+        ) {
             for (i in 0 until supportFragmentManager.backStackEntryCount) {
                 supportFragmentManager.popBackStack()
             }
