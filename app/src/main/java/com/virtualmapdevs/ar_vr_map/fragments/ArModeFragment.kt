@@ -572,7 +572,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             modelNode?.parent = anchorNode
                             modelNode?.select()
 
-                            addInfoDashboard(anchorNode!!)
+                            addInfoDashboard()
                             showArSceneButton.visibility = View.GONE
                             loadingModelTextView.visibility = View.GONE
                             arFragment.arSceneView.planeRenderer.isVisible = false
@@ -588,14 +588,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun addInfoDashboard(anchorNode: AnchorNode) {
+    private fun addInfoDashboard() {
         val dashboardNode = TransformableNode(arFragment.transformationSystem)
         dashboardNode.renderable = infoDashboard
-        dashboardNode.scaleController.minScale = 10.0f
-        dashboardNode.scaleController.maxScale = 30.0f
-        dashboardNode.localScale = Vector3(20.0f, 20.0f, 20.0f)
+        dashboardNode.scaleController.minScale = 20.0f
+        dashboardNode.scaleController.maxScale = 60.0f
+        dashboardNode.localScale = Vector3(40.0f, 40.0f, 40.0f)
         dashboardNode.localPosition = Vector3(0.0f, 10.0f, -30.0f)
-        dashboardNode.parent = anchorNode
+        dashboardNode.parent = modelNode
     }
 
     private fun createCube() {
