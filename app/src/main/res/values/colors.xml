@@ -20,5 +20,5 @@
 
     <color name="grey_transparent">#55A0A0A0</color>
     <color name="translucent_white_background">#9AEAEAEA</color>
-    <color name="blue_button">#007aff</color>
+    <color name="blue_widget_color">#007aff</color>
 </resources>

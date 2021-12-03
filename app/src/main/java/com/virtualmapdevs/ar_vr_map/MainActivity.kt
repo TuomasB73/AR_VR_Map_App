@@ -3,8 +3,6 @@ package com.virtualmapdevs.ar_vr_map
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -43,7 +41,7 @@ class MainActivity : AppCompatActivity() {
         builder.setTitle("No connection")
         builder.setMessage("Check your Internet connection and try again")
         builder.setIcon(android.R.drawable.ic_dialog_alert)
-        builder.setPositiveButton("Test connection") { dialogInterface, which ->
+        builder.setPositiveButton("Test connection") { _, _ ->
             if (NetworkVariables.isNetworkConnected) {
                 checkIsUserLoggedIn()
             } else {
@@ -55,7 +53,6 @@ class MainActivity : AppCompatActivity() {
         alertDialog.setCancelable(false)
         alertDialog.show()
     }
-
 
     private fun checkIsUserLoggedIn() {
         userToken = SharedPreferencesFunctions.getUserToken(this)

@@ -47,6 +47,7 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
@@ -113,15 +114,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         navView = view.findViewById(R.id.nav_view)
 
-        /*if (NetworkVariables.isNetworkConnected) {
-            checkIfItemIsAlreadySaved()
-            fetchARItemData()
-        } else {
-            Toast.makeText(activity, getString(R.string.network_error_text), Toast.LENGTH_LONG).show()
-        }*/
-
-        checkIfItemIsAlreadySaved()
-        fetchARItemData()
+        lifecycleScope.launch {
+            if (NetworkVariables.isNetworkConnected) {
+                checkIfItemIsAlreadySaved()
+                fetchARItemData()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
 
         showInstructionVideo()
         createCube()
@@ -164,6 +164,24 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     unRegisterSensorListener()
                 }
             }
+    }
+
+    private fun showNoConnectionDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("No connection")
+        builder.setMessage("Check your Internet connection and try again")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Test connection") { _, _ ->
+            if (NetworkVariables.isNetworkConnected) {
+                checkIfItemIsAlreadySaved()
+                fetchARItemData()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun findApproximateUserLocation() {
@@ -330,8 +348,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
                 }
 
-                if (itemTitle != null && itemCategory != null && itemDescription != null) {
-                    //loadInfoDashboard(itemTitle, itemCategory, itemDescription)
+                if (itemTitle != null && itemCategory != null && logoReference != null) {
+                    loadInfoDashboard(itemTitle, itemCategory, itemDescription, logoReference)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -516,13 +534,18 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private fun loadInfoDashboard(
         itemTitle: String,
         itemCategory: String,
-        itemDescription: String
+        itemDescription: String,
+        itemLogoReference: String
     ) {
         val layout = LayoutInflater.from(context)
             .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
         layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
         layout.findViewById<TextView>(R.id.itemCategoryTextView).text = itemCategory
         layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
+
+        Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
+            .error(R.drawable.testlogo2)
+            .into(layout.findViewById(R.id.itemImageView))
 
         ViewRenderable.builder()
             .setView(context, layout)
@@ -546,7 +569,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     val trackable = hit.trackable
 
                     if (trackable is Plane) {
-                        GlobalScope.launch(Dispatchers.Main) {
+                        lifecycleScope.launch {
                             loadingModelTextView.visibility = View.VISIBLE
                             delay(1)
 
@@ -561,7 +584,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             modelNode?.parent = anchorNode
                             modelNode?.select()
 
-                            addInfoDashboard(anchorNode!!)
+                            addInfoDashboard()
                             showArSceneButton.visibility = View.GONE
                             loadingModelTextView.visibility = View.GONE
                             arFragment.arSceneView.planeRenderer.isVisible = false
@@ -577,14 +600,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun addInfoDashboard(anchorNode: AnchorNode) {
+    private fun addInfoDashboard() {
         val dashboardNode = TransformableNode(arFragment.transformationSystem)
         dashboardNode.renderable = infoDashboard
-        dashboardNode.scaleController.minScale = 10.0f
-        dashboardNode.scaleController.maxScale = 30.0f
-        dashboardNode.localScale = Vector3(20.0f, 20.0f, 20.0f)
-        dashboardNode.localPosition = Vector3(0.0f, 10.0f, -10.0f)
-        dashboardNode.parent = anchorNode
+        dashboardNode.scaleController.minScale = 20.0f
+        dashboardNode.scaleController.maxScale = 60.0f
+        dashboardNode.localScale = Vector3(40.0f, 40.0f, 40.0f)
+        dashboardNode.localPosition = Vector3(0.0f, 10.0f, -30.0f)
+        dashboardNode.parent = modelNode
     }
 
     private fun createCube() {
@@ -731,7 +754,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun reRegisterSensorListenerAfterDelay() {
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             unRegisterSensorListener()
             delay(400)
             registerSensorListener()
