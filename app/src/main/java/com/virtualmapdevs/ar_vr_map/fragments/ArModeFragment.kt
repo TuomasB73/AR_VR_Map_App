@@ -709,7 +709,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
                 if (childNodeCount != null) {
-                    if (childNodeCount > 1) {
+                    if (childNodeCount > 2) {
                         setRemoveAllPoisAlertBuilder()
                         unRegisterSensorListener()
                     } else {
