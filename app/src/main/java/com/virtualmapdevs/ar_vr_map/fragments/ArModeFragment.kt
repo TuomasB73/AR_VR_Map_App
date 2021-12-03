@@ -52,8 +52,9 @@ import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
-import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import kotlinx.coroutines.*
+
+data class AddedPointOfInterest(val poi: Poi, val menuItem: MenuItem, val node: RotatingNode)
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -78,6 +79,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var sensorLinearAcceleration: Sensor? = null
     private var lastXAxisAccelerationValue = 0.0f
     private var lastYAxisAccelerationValue = 0.0f
+    private var addedPointOfInterestList: MutableList<AddedPointOfInterest> =
+        mutableListOf<AddedPointOfInterest>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -376,15 +379,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
             val subMenu: SubMenu = mMenu.addSubMenu(0, 0, 0, category)
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
-                    subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
-                        Toast.makeText(
-                            requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        setSubMenuItemClickListener(poi)
-                        false
-                    }.also {
-                        setSubMenuIcon(it, poi.poiImage)
+                    subMenu.add(0, 0, 0, poi.name).let { menuItem ->
+                        menuItem.setOnMenuItemClickListener {
+                            setSubMenuItemClickListener(poi, menuItem)
+                            false
+                        }
+                        setSubMenuIcon(menuItem, poi.poiImage)
                     }
                 }
             }
@@ -410,7 +410,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             })
     }
 
-    private fun setSubMenuItemClickListener(poi: Poi) {
+    private fun setSubMenuItemClickListener(poi: Poi, menuItem: MenuItem) {
+        Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
+            .show()
 
         var pointOfInterestRenderable: ViewRenderable?
 
@@ -425,10 +427,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     node.scaleController.minScale = 4f
                     node.scaleController.maxScale = 15f
                     node.localScale = Vector3(8f, 8f, 8f)
+                    addedPointOfInterestList.add(AddedPointOfInterest(poi, menuItem, node))
                     pointOfInterestRenderable!!.isShadowCaster = false
                     pointOfInterestRenderable!!.isShadowReceiver = false
                     node.setOnTapListener { _, _ ->
-                        setNodeRemovalAlertBuilder(poi, node)
+                        setNodeRemovalAlertBuilder(poi, node, menuItem)
                     }
                     node.parent = modelNode
 
@@ -437,19 +440,24 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     if (poi.poiImage != "poiimages/poidefault.jpg") {
                         Glide.with(requireContext())
                             .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
-                            .error(R.drawable.testlogo2)
+                            .error(R.drawable.arrow_down)
                             .into(poiImageView)
                     } else {
-                        poiImageView.visibility = View.GONE
+                        poiImageView.setImageResource(R.drawable.arrow_down)
                     }
                     pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text =
                         poi.name
+                    menuItem.setOnMenuItemClickListener(null)
                 }
             }
 
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Poi, pointOfInterestNode: TransformableNode) {
+    private fun setNodeRemovalAlertBuilder(
+        poi: Poi,
+        pointOfInterestNode: TransformableNode,
+        menuItem: MenuItem
+    ) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
@@ -459,6 +467,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
             pointOfInterestNode.parent = null
             pointOfInterestNode.renderable = null
             Toast.makeText(requireContext(), "Removed item from map", Toast.LENGTH_SHORT).show()
+            menuItem.setOnMenuItemClickListener {
+                setSubMenuItemClickListener(poi, menuItem)
+                false
+            }
         }
         builder.setNeutralButton("Cancel") { _, _ ->
         }
@@ -600,16 +612,16 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun removePointsOfInterest() {
-        val allChildNodes = modelNode?.children?.toList()
 
-        if (allChildNodes != null) {
-            for (i in allChildNodes.indices) {
-                // The first child node is the info dashboard, which won't be removed.
-                if (i != 0) {
-                    modelNode?.removeChild(allChildNodes[i])
-                }
+        addedPointOfInterestList.forEach { addedPointOfInterest ->
+            addedPointOfInterest.menuItem.setOnMenuItemClickListener {
+                setSubMenuItemClickListener(addedPointOfInterest.poi, addedPointOfInterest.menuItem)
+                false
             }
+            modelNode?.removeChild(addedPointOfInterest.node)
         }
+        addedPointOfInterestList.clear()
+
     }
 
     private fun zoomMapModel(shrink: Boolean) {
