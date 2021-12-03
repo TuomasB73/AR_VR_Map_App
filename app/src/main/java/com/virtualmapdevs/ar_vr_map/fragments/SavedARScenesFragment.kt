@@ -16,20 +16,22 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.databinding.FragmentSavedARScenesBinding
 import com.virtualmapdevs.ar_vr_map.model.ARItem
+import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.ItemizedIconOverlay
-import org.osmdroid.views.overlay.Marker
 import org.osmdroid.views.overlay.OverlayItem
 
 class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
@@ -39,7 +41,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private var matchedMaps: List<ARItem> = arrayListOf()
     private lateinit var savedItemAdapter: SavedItemAdapter
     private lateinit var binding: FragmentSavedARScenesBinding
-    private lateinit var marker: Marker
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,12 +67,36 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
-        fetchSavedItemsAndSetAdapter()
-        performSearch()
+        lifecycleScope.launch {
+            if (NetworkVariables.isNetworkConnected) {
+                fetchSavedItemsAndSetAdapter()
+                performSearch()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
 
         view.findViewById<Button>(R.id.backBtn).setOnClickListener {
             requireActivity().onBackPressed()
         }
+    }
+
+    private fun showNoConnectionDialog() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("No connection")
+        builder.setMessage("Check your Internet connection and try again")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Test connection") { _, _ ->
+            if (NetworkVariables.isNetworkConnected) {
+                fetchSavedItemsAndSetAdapter()
+                performSearch()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
+        val alertDialog: androidx.appcompat.app.AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun fetchSavedItemsAndSetAdapter() {
@@ -90,6 +115,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
                 savedItemAdapter = SavedItemAdapter(maps.toMutableList(), this, requireContext())
                 binding.savedItemsRecyclerView.adapter = savedItemAdapter
                 binding.searchView.isSubmitButtonEnabled = true
+                binding.itemsListLoadingIndicator.visibility = View.GONE
             }
         })
     }
