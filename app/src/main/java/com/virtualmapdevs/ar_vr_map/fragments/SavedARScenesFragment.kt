@@ -212,7 +212,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
         showInMapBtn.setOnClickListener {
             locationMapDialog(latitude, longitude)
-            dialog.dismiss()
         }
 
         deleteBtn.setOnClickListener {

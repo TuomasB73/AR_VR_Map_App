@@ -199,6 +199,8 @@ class QRScannerFragment : Fragment() {
                 val longitude = response.body()?.longitude
 
                 if (itemTitle != null && itemDescription != null && latitude != null && longitude != null) {
+
+                    // open dialog
                     mapActionsDialog(arItemId, itemDescription, latitude, longitude)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
