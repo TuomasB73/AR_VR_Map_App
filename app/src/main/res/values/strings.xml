@@ -36,4 +36,19 @@
     <string name="open_in_ar">Open in AR</string>
     <string name="show_location_in_map">Show location in map</string>
     <string name="motion_gestures_switch_text">Motion gestures</string>
+
+
+    <string name="title_onboarding_1">Welcome to ARea explorer App !</string>
+    <string name="description_onboarding_1">You can scan QR codes and see maps in AR</string>
+    <string name="title_onboarding_2">Try scan your first code</string>
+    <string name="description_onboarding_2">Press Scan QR code and bring your phone close to a code\Then press open AR</string>
+    <string name="title_onboarding_3">AR mode</string>
+    <string name="description_onboarding_3">Swipe from left and you will find points of interests</string>
+    <string name="start_text_advice">By continuing on this application you agree to our Terms of Use and Privacy Policy</string>
+    <string name="start">start</string>
+    <string name="skip">Skip</string>
+    <string name="finish">finish</string>
+    <string name="next">next</string>
+    <string name="back">back</string>
+    <string name="test">Test</string>
 </resources>

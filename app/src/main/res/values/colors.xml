@@ -13,6 +13,7 @@
     <color name="background">#2072de</color>
     <color name="heart_red">#C51818</color>
     <color name="button_stroke">#bef4f4</color>
+    <color name="background_color">#0d181c</color>
 
     <color name="ar_item_info_dashboard_background">#CBB3DBDF</color>
     <color name="light_gray_translucent">#B2DCDCDC</color>
@@ -21,4 +22,29 @@
     <color name="grey_transparent">#55A0A0A0</color>
     <color name="translucent_white_background">#9AEAEAEA</color>
     <color name="blue_button">#007aff</color>
+
+
+
+
+    <color name="colorPrimary">#6FB6F4</color>
+    <color name="colorPrimaryDark">#3E97F0</color>
+    <color name="colorAccent">#f0973e</color>
+
+    <color name="light_grey">#ABABAB</color>
+    <color name="dark_grey">#333333</color>
+    <color name="dark_blue">#405467</color>
+    <color name="md_blue_100">#BBDEFB</color>
+    <!--grey-->
+    <color name="md_grey_50">#FAFAFA</color>
+    <color name="md_grey_100">#F5F5F5</color>
+    <color name="md_grey_200">#EEEEEE</color>
+    <color name="md_grey_300">#E0E0E0</color>
+    <color name="md_grey_400">#BDBDBD</color>
+    <color name="md_grey_500">#9E9E9E</color>
+    <color name="md_grey_600">#757575</color>
+    <color name="md_grey_700">#616161</color>
+    <color name="md_grey_800">#424242</color>
+    <color name="md_grey_900">#212121</color>
+    <color name="md_black_1000">#000000</color>
+    <color name="md_white_1000">#ffffff</color>
 </resources>

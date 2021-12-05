@@ -43,4 +43,16 @@ object SharedPreferencesFunctions {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         return sharedPreference?.getString("videoShown", "no")
     }
+
+    fun saveOnboardingShown(activity: Activity) {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreference.edit()
+        editor?.putString("onboardingShown", "yes")
+        editor?.apply()
+    }
+
+    fun isOnboardingShownCheck(activity: Activity): String? {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        return sharedPreference?.getString("onboardingShown", "no")
+    }
 }

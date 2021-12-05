@@ -29,8 +29,10 @@
         android:windowSoftInputMode="adjustPan"
         android:supportsRtl="true"
         android:theme="@style/Theme.AR_VR_Map">
+        <activity android:name=".OnboardingFinishActivity" />
+        <activity android:name=".MainActivity" />
         <activity
-            android:name=".MainActivity"
+            android:name=".OnboardingActivity"
             android:screenOrientation="portrait"
             android:exported="true">
             <intent-filter>
