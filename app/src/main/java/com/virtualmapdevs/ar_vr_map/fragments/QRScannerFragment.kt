@@ -2,7 +2,6 @@ package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.app.Dialog
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -19,6 +18,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import com.budiyev.android.codescanner.AutoFocusMode
 import com.budiyev.android.codescanner.CodeScanner
@@ -28,10 +28,10 @@ import com.budiyev.android.codescanner.ErrorCallback
 import com.budiyev.android.codescanner.ScanMode
 import com.google.zxing.Result
 import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.model.Poi
-import com.virtualmapdevs.ar_vr_map.utils.Constants
+import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
+import kotlinx.coroutines.launch
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.util.GeoPoint
@@ -47,6 +47,14 @@ class QRScannerFragment : Fragment() {
         super.onCreate(savedInstanceState)
     }
 
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_q_r_scanner, container, false)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -54,16 +62,32 @@ class QRScannerFragment : Fragment() {
         Configuration.getInstance()
             .load(context, PreferenceManager.getDefaultSharedPreferences(context))
 
-        checkPermissions()
-        startScanning()
+        lifecycleScope.launch {
+            if (NetworkVariables.isNetworkConnected) {
+                checkPermissions()
+                startScanning()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_q_r_scanner, container, false)
+    private fun showNoConnectionDialog() {
+        val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
+        builder.setTitle("No connection")
+        builder.setMessage("Check your Internet connection and try again")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Test connection") { _, _ ->
+            if (NetworkVariables.isNetworkConnected) {
+                checkPermissions()
+                startScanning()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
+        val alertDialog: androidx.appcompat.app.AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun startScanning() {

@@ -47,13 +47,15 @@ import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
-import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import kotlinx.coroutines.*
+
+data class AddedPointOfInterest(val poi: Poi, val menuItem: MenuItem, val node: RotatingNode)
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -78,6 +80,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var sensorLinearAcceleration: Sensor? = null
     private var lastXAxisAccelerationValue = 0.0f
     private var lastYAxisAccelerationValue = 0.0f
+    private var addedPointOfInterestList: MutableList<AddedPointOfInterest> =
+        mutableListOf<AddedPointOfInterest>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -110,15 +114,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         navView = view.findViewById(R.id.nav_view)
 
-        /*if (NetworkVariables.isNetworkConnected) {
-            checkIfItemIsAlreadySaved()
-            fetchARItemData()
-        } else {
-            Toast.makeText(activity, getString(R.string.network_error_text), Toast.LENGTH_LONG).show()
-        }*/
-
-        checkIfItemIsAlreadySaved()
-        fetchARItemData()
+        lifecycleScope.launch {
+            if (NetworkVariables.isNetworkConnected) {
+                checkIfItemIsAlreadySaved()
+                fetchARItemData()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
 
         showInstructionVideo()
         createCube()
@@ -161,6 +164,24 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     unRegisterSensorListener()
                 }
             }
+    }
+
+    private fun showNoConnectionDialog() {
+        val builder = AlertDialog.Builder(requireContext())
+        builder.setTitle("No connection")
+        builder.setMessage("Check your Internet connection and try again")
+        builder.setIcon(android.R.drawable.ic_dialog_alert)
+        builder.setPositiveButton("Test connection") { _, _ ->
+            if (NetworkVariables.isNetworkConnected) {
+                checkIfItemIsAlreadySaved()
+                fetchARItemData()
+            } else {
+                showNoConnectionDialog()
+            }
+        }
+        val alertDialog: AlertDialog = builder.create()
+        alertDialog.setCancelable(false)
+        alertDialog.show()
     }
 
     private fun findApproximateUserLocation() {
@@ -327,8 +348,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
                 }
 
-                if (itemTitle != null && itemCategory != null && itemDescription != null) {
-                    //loadInfoDashboard(itemTitle, itemCategory, itemDescription)
+                if (itemTitle != null && itemCategory != null && logoReference != null) {
+                    loadInfoDashboard(itemTitle, itemCategory, itemDescription, logoReference)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
                     Toast.makeText(
@@ -376,15 +397,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
             val subMenu: SubMenu = mMenu.addSubMenu(0, 0, 0, category)
             poisSortedAlphabetically.forEach { poi ->
                 if (category == poi.category) {
-                    subMenu.add(0, 0, 0, poi.name).setOnMenuItemClickListener {
-                        Toast.makeText(
-                            requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT
-                        )
-                            .show()
-                        setSubMenuItemClickListener(poi)
-                        false
-                    }.also {
-                        setSubMenuIcon(it, poi.poiImage)
+                    subMenu.add(0, 0, 0, poi.name).let { menuItem ->
+                        menuItem.setOnMenuItemClickListener {
+                            setSubMenuItemClickListener(poi, menuItem)
+                            false
+                        }
+                        setSubMenuIcon(menuItem, poi.poiImage)
                     }
                 }
             }
@@ -410,7 +428,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             })
     }
 
-    private fun setSubMenuItemClickListener(poi: Poi) {
+    private fun setSubMenuItemClickListener(poi: Poi, menuItem: MenuItem) {
+        Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
+            .show()
 
         var pointOfInterestRenderable: ViewRenderable?
 
@@ -425,10 +445,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     node.scaleController.minScale = 4f
                     node.scaleController.maxScale = 15f
                     node.localScale = Vector3(8f, 8f, 8f)
+                    addedPointOfInterestList.add(AddedPointOfInterest(poi, menuItem, node))
                     pointOfInterestRenderable!!.isShadowCaster = false
                     pointOfInterestRenderable!!.isShadowReceiver = false
                     node.setOnTapListener { _, _ ->
-                        setNodeRemovalAlertBuilder(poi, node)
+                        setNodeRemovalAlertBuilder(poi, node, menuItem)
                     }
                     node.parent = modelNode
 
@@ -437,19 +458,24 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     if (poi.poiImage != "poiimages/poidefault.jpg") {
                         Glide.with(requireContext())
                             .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
-                            .error(R.drawable.testlogo2)
+                            .error(R.drawable.arrow_down)
                             .into(poiImageView)
                     } else {
-                        poiImageView.visibility = View.GONE
+                        poiImageView.setImageResource(R.drawable.arrow_down)
                     }
                     pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text =
                         poi.name
+                    menuItem.setOnMenuItemClickListener(null)
                 }
             }
 
     }
 
-    private fun setNodeRemovalAlertBuilder(poi: Poi, pointOfInterestNode: TransformableNode) {
+    private fun setNodeRemovalAlertBuilder(
+        poi: Poi,
+        pointOfInterestNode: TransformableNode,
+        menuItem: MenuItem
+    ) {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(poi.name)
         builder.setMessage(poi.description)
@@ -459,6 +485,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
             pointOfInterestNode.parent = null
             pointOfInterestNode.renderable = null
             Toast.makeText(requireContext(), "Removed item from map", Toast.LENGTH_SHORT).show()
+            menuItem.setOnMenuItemClickListener {
+                setSubMenuItemClickListener(poi, menuItem)
+                false
+            }
         }
         builder.setNeutralButton("Cancel") { _, _ ->
         }
@@ -504,13 +534,18 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private fun loadInfoDashboard(
         itemTitle: String,
         itemCategory: String,
-        itemDescription: String
+        itemDescription: String,
+        itemLogoReference: String
     ) {
         val layout = LayoutInflater.from(context)
             .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
         layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
         layout.findViewById<TextView>(R.id.itemCategoryTextView).text = itemCategory
         layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
+
+        Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
+            .error(R.drawable.testlogo2)
+            .into(layout.findViewById(R.id.itemImageView))
 
         ViewRenderable.builder()
             .setView(context, layout)
@@ -534,7 +569,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     val trackable = hit.trackable
 
                     if (trackable is Plane) {
-                        GlobalScope.launch(Dispatchers.Main) {
+                        lifecycleScope.launch {
                             loadingModelTextView.visibility = View.VISIBLE
                             delay(1)
 
@@ -549,7 +584,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             modelNode?.parent = anchorNode
                             modelNode?.select()
 
-                            addInfoDashboard(anchorNode!!)
+                            addInfoDashboard()
                             showArSceneButton.visibility = View.GONE
                             loadingModelTextView.visibility = View.GONE
                             arFragment.arSceneView.planeRenderer.isVisible = false
@@ -565,14 +600,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    private fun addInfoDashboard(anchorNode: AnchorNode) {
+    private fun addInfoDashboard() {
         val dashboardNode = TransformableNode(arFragment.transformationSystem)
         dashboardNode.renderable = infoDashboard
-        dashboardNode.scaleController.minScale = 10.0f
-        dashboardNode.scaleController.maxScale = 30.0f
-        dashboardNode.localScale = Vector3(20.0f, 20.0f, 20.0f)
-        dashboardNode.localPosition = Vector3(0.0f, 10.0f, -10.0f)
-        dashboardNode.parent = anchorNode
+        dashboardNode.scaleController.minScale = 20.0f
+        dashboardNode.scaleController.maxScale = 60.0f
+        dashboardNode.localScale = Vector3(40.0f, 40.0f, 40.0f)
+        dashboardNode.localPosition = Vector3(0.0f, 10.0f, -30.0f)
+        dashboardNode.parent = modelNode
     }
 
     private fun createCube() {
@@ -600,16 +635,16 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun removePointsOfInterest() {
-        val allChildNodes = modelNode?.children?.toList()
 
-        if (allChildNodes != null) {
-            for (i in allChildNodes.indices) {
-                // The first child node is the info dashboard, which won't be removed.
-                if (i != 0) {
-                    modelNode?.removeChild(allChildNodes[i])
-                }
+        addedPointOfInterestList.forEach { addedPointOfInterest ->
+            addedPointOfInterest.menuItem.setOnMenuItemClickListener {
+                setSubMenuItemClickListener(addedPointOfInterest.poi, addedPointOfInterest.menuItem)
+                false
             }
+            modelNode?.removeChild(addedPointOfInterest.node)
         }
+        addedPointOfInterestList.clear()
+
     }
 
     private fun zoomMapModel(shrink: Boolean) {
@@ -674,7 +709,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
                 if (childNodeCount != null) {
-                    if (childNodeCount > 1) {
+                    if (childNodeCount > 2) {
                         setRemoveAllPoisAlertBuilder()
                         unRegisterSensorListener()
                     } else {
@@ -719,7 +754,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun reRegisterSensorListenerAfterDelay() {
-        GlobalScope.launch(Dispatchers.Main) {
+        lifecycleScope.launch {
             unRegisterSensorListener()
             delay(400)
             registerSensorListener()
