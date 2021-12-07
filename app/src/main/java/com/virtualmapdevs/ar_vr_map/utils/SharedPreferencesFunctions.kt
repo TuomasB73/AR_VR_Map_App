@@ -30,7 +30,7 @@ object SharedPreferencesFunctions {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         val editor = sharedPreference.edit()
-        editor?.putString(userToken.toString(), "yes")
+        editor?.putString("video"+userToken.toString(), "yes")
         editor?.apply()
     }
 
@@ -38,27 +38,27 @@ object SharedPreferencesFunctions {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         val editor = sharedPreference?.edit()
-        editor?.putString(userToken.toString(), "no")
+        editor?.putString("video"+userToken.toString(), "no")
         editor?.apply()
     }
 
     fun isVideoShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
-        return sharedPreference?.getString(userToken.toString(), "no")
+        return sharedPreference?.getString("video"+userToken.toString(), "no")
     }
 
     fun saveOnboardingShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         val editor = sharedPreference.edit()
-        editor?.putString(userToken.toString(), "yes")
+        editor?.putString("onboarding"+userToken.toString(), "yes")
         editor?.apply()
     }
 
     fun isOnboardingShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
-        return sharedPreference?.getString(userToken.toString(), "no")
+        return sharedPreference?.getString("onboarding"+userToken.toString(), "no")
     }
 }
