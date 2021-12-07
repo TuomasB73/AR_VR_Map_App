@@ -5,6 +5,7 @@ import android.content.Context
 
 object SharedPreferencesFunctions {
     private const val sharedPrefFile = "userSharedPreferences"
+    private var userToken: String? = null
 
     fun getUserToken(activity: Activity): String {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
@@ -27,32 +28,37 @@ object SharedPreferencesFunctions {
 
     fun saveVideoShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        userToken = getUserToken(activity)
         val editor = sharedPreference.edit()
-        editor?.putString("videoShown", "yes")
+        editor?.putString(userToken.toString(), "yes")
         editor?.apply()
     }
 
     fun resetVideoShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        userToken = getUserToken(activity)
         val editor = sharedPreference?.edit()
-        editor?.putString("videoShown", "no")
+        editor?.putString(userToken.toString(), "no")
         editor?.apply()
     }
 
     fun isVideoShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        return sharedPreference?.getString("videoShown", "no")
+        userToken = getUserToken(activity)
+        return sharedPreference?.getString(userToken.toString(), "no")
     }
 
     fun saveOnboardingShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        userToken = getUserToken(activity)
         val editor = sharedPreference.edit()
-        editor?.putString("onboardingShown", "yes")
+        editor?.putString(userToken.toString(), "yes")
         editor?.apply()
     }
 
     fun isOnboardingShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        return sharedPreference?.getString("onboardingShown", "no")
+        userToken = getUserToken(activity)
+        return sharedPreference?.getString(userToken.toString(), "no")
     }
 }

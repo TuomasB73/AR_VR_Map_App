@@ -22,9 +22,6 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var userToken: String? = null
 
-    //for testing onboarding
-    val showOnboarding = true
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -39,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (showOnboarding){
+        if (SharedPreferencesFunctions.isOnboardingShownCheck(this) == "no") {
             val intent = Intent(this, OnboardingActivity::class.java)
             startActivity(intent)
         }

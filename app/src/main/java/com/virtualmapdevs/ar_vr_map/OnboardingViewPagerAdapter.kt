@@ -4,9 +4,6 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
-import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.OnboardingFragment
-
 
 class OnboardingViewPagerAdapter(
     fragmentActivity: FragmentActivity,
