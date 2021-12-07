@@ -1,9 +1,11 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.adapters
 
 import android.content.Context
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
+import com.virtualmapdevs.ar_vr_map.R
+import com.virtualmapdevs.ar_vr_map.fragments.OnboardingFragment
 
 class OnboardingViewPagerAdapter(
     fragmentActivity: FragmentActivity,

@@ -20,7 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
 import androidx.recyclerview.widget.GridLayoutManager
 import com.virtualmapdevs.ar_vr_map.R
-import com.virtualmapdevs.ar_vr_map.SavedItemAdapter
+import com.virtualmapdevs.ar_vr_map.adapters.SavedItemAdapter
 import com.virtualmapdevs.ar_vr_map.databinding.FragmentSavedARScenesBinding
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
