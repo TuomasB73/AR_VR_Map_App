@@ -6,23 +6,22 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import com.virtualmapdevs.ar_vr_map.adapters.OnboardingViewPagerAdapter
-import kotlinx.android.synthetic.main.activity_onboarding.*
 
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var mViewPager: ViewPager2
     private lateinit var textSkip: TextView
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_onboarding)
 
-        mViewPager = viewPager
+        mViewPager = findViewById(R.id.viewPager)
         mViewPager.adapter = OnboardingViewPagerAdapter(this, this)
-        TabLayoutMediator(pageIndicator, mViewPager) { _, _ -> }.attach()
+        TabLayoutMediator(findViewById(R.id.pageIndicator), mViewPager) { _, _ -> }.attach()
         textSkip = findViewById(R.id.text_skip)
         textSkip.setOnClickListener {
             finish()
@@ -51,5 +50,4 @@ class OnboardingActivity : AppCompatActivity() {
     private fun getItem(): Int {
         return mViewPager.currentItem
     }
-
 }

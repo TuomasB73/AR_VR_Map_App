@@ -354,11 +354,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
         viewModel.arItembyIdMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 val itemTitle = response.body()?.name
-                val itemCategory = response.body()?.category
-                val itemDescription = getString(
+                val itemCategory = getString(
                     R.string.item_info_dashboard_category_text,
-                    response.body()?.description
+                    response.body()?.category
                 )
+                val itemDescription = response.body()?.description
                 val itemModelUri = response.body()?.objectReference
                 val logoReference = response.body()?.logoImageReference
                 val pois = response.body()?.pois
@@ -373,7 +373,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
                 }
 
-                if (itemTitle != null && itemCategory != null && logoReference != null) {
+                if (itemTitle != null && itemDescription != null && logoReference != null) {
                     loadInfoDashboard(itemTitle, itemCategory, itemDescription, logoReference)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
