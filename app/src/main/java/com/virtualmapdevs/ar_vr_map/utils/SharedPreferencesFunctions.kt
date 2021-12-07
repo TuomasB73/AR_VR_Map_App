@@ -2,6 +2,7 @@ package com.virtualmapdevs.ar_vr_map.utils
 
 import android.app.Activity
 import android.content.Context
+import android.util.Log
 
 object SharedPreferencesFunctions {
     private const val sharedPrefFile = "userSharedPreferences"
@@ -29,36 +30,60 @@ object SharedPreferencesFunctions {
     fun saveVideoShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
+        val user = userToken!!.substring(0, 100)
         val editor = sharedPreference.edit()
-        editor?.putString("video"+userToken.toString(), "yes")
+        editor?.putString("video$user", "yes")
         editor?.apply()
     }
 
     fun resetVideoShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
+        val user = userToken!!.substring(0, 100)
         val editor = sharedPreference?.edit()
-        editor?.putString("video"+userToken.toString(), "no")
+        editor?.putString("video$user", "no")
         editor?.apply()
     }
 
     fun isVideoShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
-        return sharedPreference?.getString("video"+userToken.toString(), "no")
+        val user = userToken!!.substring(0, 100)
+        Log.d("sharedtest", "isVideoShown: ${user.toString()}")
+        return sharedPreference?.getString("video$user", "no")
     }
 
     fun saveOnboardingShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         val editor = sharedPreference.edit()
-        editor?.putString("onboarding"+userToken.toString(), "yes")
+        Log.d("sharedtest", "saveOnboardingShown: ${userToken.toString()}")
+        editor?.putString("onboarding$userToken", "yes")
+        editor?.apply()
+    }
+
+    fun saveOnboardingShownUser(activity: Activity) {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        userToken = getUserToken(activity)
+        val user = userToken!!.substring(0, 100)
+        val editor = sharedPreference.edit()
+        Log.d("sharedtest", "saveOnboardingShownUser: ${user.toString()}")
+        editor?.putString("onboarding$user", "yes")
         editor?.apply()
     }
 
     fun isOnboardingShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
-        return sharedPreference?.getString("onboarding"+userToken.toString(), "no")
+        Log.d("sharedtest", "isOnboardingShownCheck: ${userToken.toString()}")
+        return sharedPreference?.getString("onboarding$userToken", "no")
+    }
+
+    fun isOnboardingShownCheckUser(activity: Activity): String? {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        userToken = getUserToken(activity)
+        val user = userToken!!.substring(0, 100)
+        Log.d("sharedtest", "isOnboardingShownCheckUser: ${user.toString()}")
+        return sharedPreference?.getString("onboarding$user", "no")
     }
 }

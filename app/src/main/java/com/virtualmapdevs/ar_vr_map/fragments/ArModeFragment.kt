@@ -123,7 +123,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
         }
 
-        showInstructionVideo()
+        if (SharedPreferencesFunctions.isVideoShownCheck(requireActivity()) == "no") {
+            showInstructionVideo()
+        }
         createCube()
         createSphere()
         setUpSensor()
@@ -807,32 +809,30 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun showInstructionVideo() {
-        if (SharedPreferencesFunctions.isVideoShownCheck(requireActivity()) == "no") {
-            val dialog = Dialog(this.requireContext())
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false)
-            dialog.setContentView(R.layout.video_dialog)
-            val skipBtn = dialog.findViewById(R.id.skipButton) as Button
-            val video = dialog.findViewById(R.id.dialogVideoView) as VideoView
+        SharedPreferencesFunctions.saveVideoShown(requireActivity())
+        val dialog = Dialog(this.requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(false)
+        dialog.setContentView(R.layout.video_dialog)
+        val skipBtn = dialog.findViewById(R.id.skipButton) as Button
+        val video = dialog.findViewById(R.id.dialogVideoView) as VideoView
 
-            val mediaController = MediaController(this.requireContext())
-            mediaController.setAnchorView(video)
+        val mediaController = MediaController(this.requireContext())
+        mediaController.setAnchorView(video)
 
-            val offlineUri: Uri =
-                Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.testvideo)
+        val offlineUri: Uri =
+            Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.testvideo)
 
-            skipBtn.setOnClickListener {
-                SharedPreferencesFunctions.saveVideoShown(requireActivity())
-                dialog.dismiss()
-            }
-
-            dialog.show()
-
-            video.setMediaController(mediaController)
-            video.setVideoURI(offlineUri)
-            video.requestFocus()
-            video.start()
+        skipBtn.setOnClickListener {
+            dialog.dismiss()
         }
+
+        dialog.show()
+        video.setMediaController(mediaController)
+        video.setVideoURI(offlineUri)
+        video.requestFocus()
+        video.start()
+
     }
 
     private fun resetShowInstructionVideo() {

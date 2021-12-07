@@ -17,6 +17,7 @@ import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 import kotlinx.coroutines.launch
+import java.lang.Error
 
 class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()

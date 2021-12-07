@@ -15,10 +15,8 @@ class OnboardingFinishActivity : AppCompatActivity() {
         setContentView(R.layout.activity_onboarding_finish)
         btnStart = layout_start
         btnStart.setOnClickListener {
-
             // This will save that user have now seen onboarding
             SharedPreferencesFunctions.saveOnboardingShown(this)
-
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
         }
