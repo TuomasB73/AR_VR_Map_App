@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -23,6 +24,9 @@ class MainActivity : AppCompatActivity() {
     private val viewModel: MainViewModel by viewModels()
     private var userToken: String? = null
 
+    //for testing onboarding
+    val showOnboarding = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,6 +39,11 @@ class MainActivity : AppCompatActivity() {
             } else {
                 showNoConnectionDialog()
             }
+        }
+
+        if (showOnboarding){
+            val intent = Intent(this, OnboardingActivity::class.java)
+            startActivity(intent)
         }
     }
 
