@@ -95,13 +95,12 @@ class QRScannerFragment : Fragment() {
         // Parameters (default values)
         val scannerView = view?.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = scannerView?.let { context?.let { it1 -> CodeScanner(it1, it) } }!!
-        codeScanner.camera = CodeScanner.CAMERA_BACK // or CAMERA_FRONT or specific camera id
-        codeScanner.formats = CodeScanner.ALL_FORMATS // list of type BarcodeFormat,
-        // ex. listOf(BarcodeFormat.QR_CODE)
-        codeScanner.autoFocusMode = AutoFocusMode.SAFE // or CONTINUOUS
-        codeScanner.scanMode = ScanMode.SINGLE // or CONTINUOUS or PREVIEW
-        codeScanner.isAutoFocusEnabled = true // Whether to enable auto focus or not
-        codeScanner.isFlashEnabled = false // Whether to enable flash or not
+        codeScanner.camera = CodeScanner.CAMERA_BACK
+        codeScanner.formats = CodeScanner.ALL_FORMATS
+        codeScanner.autoFocusMode = AutoFocusMode.SAFE
+        codeScanner.scanMode = ScanMode.SINGLE
+        codeScanner.isAutoFocusEnabled = true
+        codeScanner.isFlashEnabled = false
 
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
@@ -184,10 +183,9 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+    // This check if qr code is valid
     private fun isQRcodeValidCheck(result: Result) {
-
         val inTest = result.toString()
-
         if (inTest.length == 24) {
             if (isLettersOrNumbers(inTest)) {
                 fetchQRItemData(inTest)
@@ -200,6 +198,7 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+    // Valid qr code contain only letters and numbers
     private fun isLettersOrNumbers(string: String): Boolean {
         for (c in string) {
             if (c !in 'A'..'Z' && c !in 'a'..'z' && c !in '0'..'9') {
