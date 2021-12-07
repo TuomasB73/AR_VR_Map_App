@@ -49,6 +49,8 @@ import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
+import com.google.ar.core.HitResult
+import com.google.ar.sceneform.Scene
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
@@ -82,6 +84,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var lastYAxisAccelerationValue = 0.0f
     private var addedPointOfInterestList: MutableList<AddedPointOfInterest> =
         mutableListOf<AddedPointOfInterest>()
+    private var isLocationFound = false
+    private lateinit var onUpdateListener: Scene.OnUpdateListener
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -151,7 +155,15 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
 
         view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
-            findApproximateUserLocation()
+            if (!isLocationFound) {
+                findApproximateUserLocation()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.location_already_added_text),
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
 
         view.findViewById<ImageView>(R.id.navDrawerIndicatorImageView).setOnClickListener {
@@ -166,6 +178,16 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     unRegisterSensorListener()
                 }
             }
+
+        lifecycleScope.launch {
+            delay(1)
+            onUpdateListener = Scene.OnUpdateListener {
+                if (getPlaneHitResult() != null) {
+                    showArSceneButton.visibility = View.VISIBLE
+                }
+            }
+            arFragment.arSceneView.scene.addOnUpdateListener(onUpdateListener)
+        }
     }
 
     private fun showNoConnectionDialog() {
@@ -231,6 +253,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
 
         sphereNode.parent = modelNode
+        isLocationFound = true
     }
 
     private fun checkIfItemIsAlreadySaved() {
@@ -555,50 +578,56 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .thenAccept { infoDashboard = it }
     }
 
-    private fun add3dObject() {
+    private fun getPlaneHitResult(): HitResult? {
         val frame = arFragment.arSceneView.arFrame
 
-        if (frame != null && modelRenderable != null) {
+        if (frame != null) {
             val screenCenter = getScreenCenter()
             val hits = frame.hitTest(screenCenter.x.toFloat(), screenCenter.y.toFloat())
 
-            if (hits.isEmpty()) {
-                Toast.makeText(
-                    activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
-                ).show()
-            } else {
+            if (hits.isNotEmpty()) {
                 for (hit in hits) {
                     val trackable = hit.trackable
 
                     if (trackable is Plane) {
-                        lifecycleScope.launch {
-                            loadingModelTextView.visibility = View.VISIBLE
-                            delay(1)
-
-                            val anchor = hit!!.createAnchor()
-                            anchorNode = AnchorNode(anchor)
-                            anchorNode?.parent = arFragment.arSceneView.scene
-                            modelNode = TransformableNode(arFragment.transformationSystem)
-                            modelNode?.renderable = modelRenderable
-                            modelNode?.scaleController?.minScale = 0.5f
-                            modelNode?.scaleController?.maxScale = 2.5f
-                            anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
-                            modelNode?.parent = anchorNode
-                            modelNode?.select()
-
-                            addInfoDashboard()
-                            showArSceneButton.visibility = View.GONE
-                            loadingModelTextView.visibility = View.GONE
-                            arFragment.arSceneView.planeRenderer.isVisible = false
-                        }
-                        break
-                    } else {
-                        Toast.makeText(
-                            activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
-                        ).show()
+                        return hit
                     }
                 }
             }
+        }
+
+        return null
+    }
+
+    private fun add3dObject() {
+        val hit = getPlaneHitResult()
+
+        if (hit != null && modelRenderable != null) {
+            lifecycleScope.launch {
+                loadingModelTextView.visibility = View.VISIBLE
+                delay(1)
+
+                val anchor = hit.createAnchor()
+                anchorNode = AnchorNode(anchor)
+                anchorNode?.parent = arFragment.arSceneView.scene
+                modelNode = TransformableNode(arFragment.transformationSystem)
+                modelNode?.renderable = modelRenderable
+                modelNode?.scaleController?.minScale = 0.5f
+                modelNode?.scaleController?.maxScale = 2.5f
+                anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
+                modelNode?.parent = anchorNode
+                modelNode?.select()
+
+                addInfoDashboard()
+                arFragment.arSceneView.scene.removeOnUpdateListener(onUpdateListener)
+                showArSceneButton.visibility = View.GONE
+                loadingModelTextView.visibility = View.GONE
+                arFragment.arSceneView.planeRenderer.isVisible = false
+            }
+        } else {
+            Toast.makeText(
+                activity, getString(R.string.find_plane_toast_text), Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -696,7 +725,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onSensorChanged(event: SensorEvent?) {
         event ?: return
         if (event.sensor == sensorLinearAcceleration) {
-            Log.d("sensor", event.values[0].toString())
             determineVerticalMovement(event)
             determineHorizontalMovement(event)
         }
@@ -711,7 +739,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
                 if (childNodeCount != null) {
-                    if (childNodeCount > 2) {
+                    if ((!isLocationFound && childNodeCount > 2) || (isLocationFound && childNodeCount > 3)) {
                         setRemoveAllPoisAlertBuilder()
                         unRegisterSensorListener()
                     } else {
