@@ -28,6 +28,8 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        SharedPreferencesFunctions.saveOnboardingShown(requireActivity())
+
         view.findViewById<Button>(R.id.readQrCodeButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)

@@ -56,18 +56,12 @@ object SharedPreferencesFunctions {
     fun saveOnboardingShown(activity: Activity) {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
+        var user = "Bearer "
+        if (userToken != "Bearer ") {
+            user = userToken!!.substring(0, 100)
+        }
         val editor = sharedPreference.edit()
-        Log.d("sharedtest", "saveOnboardingShown: ${userToken.toString()}")
-        editor?.putString("onboarding$userToken", "yes")
-        editor?.apply()
-    }
-
-    fun saveOnboardingShownUser(activity: Activity) {
-        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        userToken = getUserToken(activity)
-        val user = userToken!!.substring(0, 100)
-        val editor = sharedPreference.edit()
-        Log.d("sharedtest", "saveOnboardingShownUser: ${user.toString()}")
+        Log.d("sharedtest", "saveOnboardingShown: ${user.toString()}")
         editor?.putString("onboarding$user", "yes")
         editor?.apply()
     }
@@ -75,15 +69,12 @@ object SharedPreferencesFunctions {
     fun isOnboardingShownCheck(activity: Activity): String? {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
-        Log.d("sharedtest", "isOnboardingShownCheck: ${userToken.toString()}")
-        return sharedPreference?.getString("onboarding$userToken", "no")
-    }
-
-    fun isOnboardingShownCheckUser(activity: Activity): String? {
-        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
-        userToken = getUserToken(activity)
-        val user = userToken!!.substring(0, 100)
-        Log.d("sharedtest", "isOnboardingShownCheckUser: ${user.toString()}")
+        var user = "Bearer "
+        if (userToken != "Bearer "){
+            user = userToken!!.substring(0, 100)
+            Log.d("sharedtest", "userToken $userToken")
+        }
+        Log.d("sharedtest", "isOnboardingShownCheck: ${user.toString()}")
         return sharedPreference?.getString("onboarding$user", "no")
     }
 }
