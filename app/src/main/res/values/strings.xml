@@ -22,17 +22,18 @@
     <string name="motion_gestures_instructions_title_text">Motion gestures</string>
     <string name="zoom_gesture_title_text">Zooming the map</string>
     <string name="remove_points_of_interest_gesture_title_text">Removing all points of interest</string>
+    <string name="remove_points_of_interest_gesture_instruction_text">Shake the phone up or down to remove all the points of interest from the map.</string>
     <string name="zoom_gesture_instruction_text">Move the phone quickly right to zoom in the map and left to zoom out the map.</string>
-    <string name="remove_points_of_interest_gesture_instruction_text">Shake the phone vertically to remove all the points of interest from the map.</string>
     <string name="close_gesture_instructions_button_text">Close</string>
-    <string name="zoom_gesture_min_size_text">This is the minimum size!</string>
-    <string name="zoom_gesture_max_size_text">This is the maximum size!</string>
+    <string name="zoom_gesture_min_size_text">This is the minimum gesture zoom level!</string>
+    <string name="zoom_gesture_max_size_text">This is the maximum gesture zoom level!</string>
     <string name="remove_all_pois_dialog_title_text">Remove all points of interest</string>
     <string name="remove_all_pois_dialog_message_text">Are you sure you want to remove all the points of interest from the map?</string>
     <string name="no_pois_added_text">No points of interest added</string>
-    <string name="cancel">cancel</string>
+    <string name="cancel">Cancel</string>
     <string name="description">Description</string>
     <string name="open_in_ar">Open in AR</string>
     <string name="show_location_in_map">Show location in map</string>
     <string name="motion_gestures_switch_text">Motion gestures</string>
+    <string name="location_already_added_text">You have already added your location on the map!</string>
 </resources>
