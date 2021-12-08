@@ -468,45 +468,51 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun setSubMenuItemClickListener(poi: Poi, menuItem: MenuItem) {
-        Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
-            .show()
 
-        var pointOfInterestRenderable: ViewRenderable?
+        if(modelNode != null) {
 
-        ViewRenderable.builder()
-            .setView(requireContext(), R.layout.point_of_interest_layout)
-            .build()
-            .thenAccept { renderable ->
-                pointOfInterestRenderable = renderable
-                RotatingNode(arFragment.transformationSystem).let { node ->
-                    node.renderable = pointOfInterestRenderable
-                    node.localPosition = Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
-                    node.scaleController.minScale = 4f
-                    node.scaleController.maxScale = 15f
-                    node.localScale = Vector3(8f, 8f, 8f)
-                    addedPointOfInterestList.add(AddedPointOfInterest(poi, menuItem, node))
-                    pointOfInterestRenderable!!.isShadowCaster = false
-                    pointOfInterestRenderable!!.isShadowReceiver = false
-                    node.setOnTapListener { _, _ ->
-                        setNodeRemovalAlertBuilder(poi, node, menuItem)
+            Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
+                .show()
+
+            var pointOfInterestRenderable: ViewRenderable?
+
+            ViewRenderable.builder()
+                .setView(requireContext(), R.layout.point_of_interest_layout)
+                .build()
+                .thenAccept { renderable ->
+                    pointOfInterestRenderable = renderable
+                    RotatingNode(arFragment.transformationSystem).let { node ->
+                        node.renderable = pointOfInterestRenderable
+                        node.localPosition = Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
+                        node.scaleController.minScale = 4f
+                        node.scaleController.maxScale = 15f
+                        node.localScale = Vector3(8f, 8f, 8f)
+                        addedPointOfInterestList.add(AddedPointOfInterest(poi, menuItem, node))
+                        pointOfInterestRenderable!!.isShadowCaster = false
+                        pointOfInterestRenderable!!.isShadowReceiver = false
+                        node.setOnTapListener { _, _ ->
+                            setNodeRemovalAlertBuilder(poi, node, menuItem)
+                        }
+                        node.parent = modelNode
+
+                        val poiImageView =
+                            pointOfInterestRenderable!!.view.findViewById<ImageView>(R.id.poi_iv)
+                        if (poi.poiImage != "poiimages/poidefault.jpg") {
+                            Glide.with(requireContext())
+                                .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
+                                .error(R.drawable.arrow_down)
+                                .into(poiImageView)
+                        } else {
+                            poiImageView.setImageResource(R.drawable.arrow_down)
+                        }
+                        pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text =
+                            poi.name
+                        menuItem.setOnMenuItemClickListener(null)
                     }
-                    node.parent = modelNode
-
-                    val poiImageView =
-                        pointOfInterestRenderable!!.view.findViewById<ImageView>(R.id.poi_iv)
-                    if (poi.poiImage != "poiimages/poidefault.jpg") {
-                        Glide.with(requireContext())
-                            .load("${Constants.AR_ITEM_MODEL_BASE_URL}${poi.poiImage}")
-                            .error(R.drawable.arrow_down)
-                            .into(poiImageView)
-                    } else {
-                        poiImageView.setImageResource(R.drawable.arrow_down)
-                    }
-                    pointOfInterestRenderable!!.view.findViewById<TextView>(R.id.poi_tv).text =
-                        poi.name
-                    menuItem.setOnMenuItemClickListener(null)
                 }
-            }
+        } else {
+            Toast.makeText(requireContext(), "Place the map first!", Toast.LENGTH_SHORT).show()
+        }
 
     }
 
