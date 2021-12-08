@@ -1,6 +1,8 @@
 package com.virtualmapdevs.ar_vr_map.model
 
+import android.view.MenuItem
 import com.google.gson.annotations.SerializedName
+import com.virtualmapdevs.ar_vr_map.utils.RotatingNode
 
 data class ARItem(
     @SerializedName("pois") val pois: List<Poi>,
@@ -18,21 +20,21 @@ data class ARItem(
 
 data class Poi(
 
-    @SerializedName("poiId") val poiId : String,
-    @SerializedName("name") val name : String,
-    @SerializedName("description") val description : String,
-    @SerializedName("category") val category : String,
-    @SerializedName("latitude") val latitude : Double,
-    @SerializedName("longitude") val longitude : Double,
-    @SerializedName("mapCoordinates") val mapCoordinates : MapCoordinates,
-    @SerializedName("poiImage") val poiImage : String
+    @SerializedName("poiId") val poiId: String,
+    @SerializedName("name") val name: String,
+    @SerializedName("description") val description: String,
+    @SerializedName("category") val category: String,
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double,
+    @SerializedName("mapCoordinates") val mapCoordinates: MapCoordinates,
+    @SerializedName("poiImage") val poiImage: String
 )
 
-data class MapCoordinates (
+data class MapCoordinates(
 
-    @SerializedName("x") val x : Float,
-    @SerializedName("y") val y : Float,
-    @SerializedName("z") val z : Float
+    @SerializedName("x") val x: Float,
+    @SerializedName("y") val y: Float,
+    @SerializedName("z") val z: Float
 )
 
 data class ReducedPoi(
@@ -41,4 +43,10 @@ data class ReducedPoi(
     val x: Float,
     val y: Float,
     val z: Float
+)
+
+data class AddedPointOfInterest(
+    val poi: Poi,
+    val menuItem: MenuItem,
+    val node: RotatingNode
 )

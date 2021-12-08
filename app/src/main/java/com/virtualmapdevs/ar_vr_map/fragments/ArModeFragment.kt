@@ -51,13 +51,12 @@ import androidx.lifecycle.lifecycleScope
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.Scene
+import com.virtualmapdevs.ar_vr_map.model.AddedPointOfInterest
 import com.virtualmapdevs.ar_vr_map.model.ReducedPoi
 import com.virtualmapdevs.ar_vr_map.utils.*
 import com.virtualmapdevs.ar_vr_map.utils.Constants.Companion.PERMISSIONS_REQUEST_LOCATION
 import com.virtualmapdevs.ar_vr_map.utils.LocationManager
 import kotlinx.coroutines.*
-
-data class AddedPointOfInterest(val poi: Poi, val menuItem: MenuItem, val node: RotatingNode)
 
 class ArModeFragment : Fragment(), SensorEventListener {
     private lateinit var arFragment: ArFragment
@@ -74,7 +73,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var arItemId: String? = null
     private var userToken: String? = null
     private var arItemSaved: Boolean? = null
-    private lateinit var showArSceneButton: Button
+    private lateinit var place3dMapButton: Button
     private lateinit var saveItemButton: Button
     private lateinit var loadingModelTextView: TextView
     private lateinit var motionGesturesInstructionsCardView: CardView
@@ -82,8 +81,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var sensorLinearAcceleration: Sensor? = null
     private var lastXAxisAccelerationValue = 0.0f
     private var lastYAxisAccelerationValue = 0.0f
-    private var addedPointOfInterestList: MutableList<AddedPointOfInterest> =
-        mutableListOf<AddedPointOfInterest>()
+    private var addedPointOfInterestList: MutableList<AddedPointOfInterest> = mutableListOf()
     private var isLocationFound = false
     private lateinit var onUpdateListener: Scene.OnUpdateListener
 
@@ -106,10 +104,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
         locationManager.initLocationClientRequestAndCallback()
         locationManager.checkSelfPermissions()
 
+        // The ID of the item is passed from the previous fragment
         arItemId = requireArguments().getString("arItemId")
+        // The user token is retrieved from the SharedPreferences
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
-        showArSceneButton = view.findViewById(R.id.place3dMapButton)
+        place3dMapButton = view.findViewById(R.id.place3dMapButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
         motionGesturesInstructionsCardView =
@@ -118,6 +118,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         navView = view.findViewById(R.id.nav_view)
 
+        // Network connection is tested
         lifecycleScope.launch {
             if (NetworkVariables.isNetworkConnected) {
                 checkIfItemIsAlreadySaved()
@@ -127,14 +128,16 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
         }
 
+        // If the tutorial video is not shown yet, it will be shown
         if (SharedPreferencesFunctions.isVideoShownCheck(requireActivity()) == "no") {
             showInstructionVideo()
         }
+
         createCube()
         createSphere()
         setUpSensor()
 
-        showArSceneButton.setOnClickListener {
+        place3dMapButton.setOnClickListener {
             add3dObject()
         }
 
@@ -155,6 +158,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
 
         view.findViewById<Button>(R.id.check_location_btn).setOnClickListener {
+            // If the user has already tapped the location button, the user location won't be set again
             if (!isLocationFound) {
                 findApproximateUserLocation()
             } else {
@@ -179,17 +183,22 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
             }
 
+        /* To avoid the arFragment being null when adding the update listener, the listener is set
+        in a coroutine with a small delay before that */
         lifecycleScope.launch {
             delay(1)
             onUpdateListener = Scene.OnUpdateListener {
+                /* A hit test is done every frame to find out when a plane is found in AR and the
+                button for placing the 3D map is made visible */
                 if (getPlaneHitResult() != null) {
-                    showArSceneButton.visibility = View.VISIBLE
+                    place3dMapButton.visibility = View.VISIBLE
                 }
             }
             arFragment.arSceneView.scene.addOnUpdateListener(onUpdateListener)
         }
     }
 
+    // Creates a connection error dialog
     private fun showNoConnectionDialog() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle("No connection")
@@ -256,6 +265,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         isLocationFound = true
     }
 
+    // Checks if the item is already saved by the user and sets the button state accordingly
     private fun checkIfItemIsAlreadySaved() {
         if (userToken != null) {
             viewModel.getUserScannedItems(userToken!!)
@@ -267,6 +277,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
                 arItemSaved = false
 
+                // All the user's saved items are fetched and checked if the current item is included
                 if (savedArItems != null) {
                     for (arItem in savedArItems) {
                         if (arItem._id == arItemId) {
@@ -281,6 +292,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         })
     }
 
+    // Sets the correct icon for the button based on if the item is already saved
     private fun setSaveButtonAppearance() {
         saveItemButton.isEnabled = true
 
@@ -301,6 +313,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Saves or deletes the item
     private fun saveOrDeleteUserScannedItem() {
         if (userToken != null && arItemId != null) {
             // If AR item is not saved, it will be saved
@@ -345,7 +358,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
-    // The AR item's details are fetched from the ViewModel and the 3D model and dashboards are loaded
+    // The AR item's details are fetched from the ViewModel and the 3D model and dashboard are loaded
     private fun fetchARItemData() {
         if (userToken != null && arItemId != null) {
             viewModel.getArItemById(userToken!!, arItemId!!)
@@ -364,6 +377,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 val pois = response.body()?.pois
                 poiList = response.body()?.pois!!
 
+                // The 3D model is loaded from the URL
                 if (itemModelUri != null) {
                     val fullItemModelUri =
                         Uri.parse("${Constants.AR_ITEM_MODEL_BASE_URL}$itemModelUri")
@@ -373,6 +387,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
                 }
 
+                // The info dashboard is loaded with the data of the item
                 if (itemTitle != null && itemDescription != null && logoReference != null) {
                     loadInfoDashboard(itemTitle, itemCategory, itemDescription, logoReference)
                 } else {
@@ -412,7 +427,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun initDrawerItems(pois: MutableList<Poi>) {
-
         navView.itemIconTintList = null
         val mMenu = navView.menu
         val categories = pois.distinctBy { it.category }.map { it.category }.sortedBy { it }
@@ -522,6 +536,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         alertDialog.show()
     }
 
+    // Creates a dialog for removing all the points of interest
     private fun setRemoveAllPoisAlertBuilder() {
         val builder = AlertDialog.Builder(requireContext())
         builder.setTitle(getString(R.string.remove_all_pois_dialog_title_text))
@@ -529,9 +544,13 @@ class ArModeFragment : Fragment(), SensorEventListener {
         builder.setIcon(android.R.drawable.ic_dialog_alert)
         builder.setPositiveButton("Yes") { _, _ ->
             removePointsOfInterest()
+            /* Registers the sensor listener again after being unregistered for avoiding multiple
+            instances of the dialog */
             registerSensorListener()
         }
         builder.setNeutralButton("Cancel") { _, _ ->
+            /* Registers the sensor listener again after being unregistered for avoiding multiple
+            instances of the dialog */
             registerSensorListener()
         }
         val alertDialog: AlertDialog = builder.create()
@@ -539,7 +558,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
         alertDialog.show()
     }
 
+    // Loads the 3D model from the provided URL
     private fun load3DModel(itemModelUri: Uri) {
+        // The loading needs to be done on main thread so the thread policy is modified
         StrictMode.setThreadPolicy(StrictMode.ThreadPolicy.Builder().permitAll().build())
         ModelRenderable.builder()
             .setSource(
@@ -556,18 +577,21 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
     }
 
+    // The info dashboard is created and set up
     private fun loadInfoDashboard(
         itemTitle: String,
         itemCategory: String,
         itemDescription: String,
         itemLogoReference: String
     ) {
+        // The layout is inflated and the texts are set
         val layout = LayoutInflater.from(context)
             .inflate(R.layout.ar_item_info_dashboard, null as ViewGroup?)
         layout.findViewById<TextView>(R.id.itemTitleTextView).text = itemTitle
         layout.findViewById<TextView>(R.id.itemCategoryTextView).text = itemCategory
         layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
 
+        // The logo image is loaded
         Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
             .error(R.drawable.testlogo2)
             .into(layout.findViewById(R.id.itemImageView))
@@ -578,6 +602,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .thenAccept { infoDashboard = it }
     }
 
+    // Makes a hit test in AR space, tries to recognize a plane and returns the HitResult if one was found
     private fun getPlaneHitResult(): HitResult? {
         val frame = arFragment.arSceneView.arFrame
 
@@ -599,10 +624,14 @@ class ArModeFragment : Fragment(), SensorEventListener {
         return null
     }
 
+    // Adds the 3D model in the AR space and sets the scaling settings and UI changes
     private fun add3dObject() {
         val hit = getPlaneHitResult()
 
         if (hit != null && modelRenderable != null) {
+            /* The set up of the 3D model is done in a coroutine with a small delay so that the loading
+            text manages to be set visible before the UI freezes for a small time when the 3D model is
+            actually loaded */
             lifecycleScope.launch {
                 loadingModelTextView.visibility = View.VISIBLE
                 delay(1)
@@ -619,8 +648,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 modelNode?.select()
 
                 addInfoDashboard()
+                /* The update listener is removed as the 3D model is placed and the place 3D model
+                button is no longer needed */
                 arFragment.arSceneView.scene.removeOnUpdateListener(onUpdateListener)
-                showArSceneButton.visibility = View.GONE
+                place3dMapButton.visibility = View.GONE
                 loadingModelTextView.visibility = View.GONE
                 arFragment.arSceneView.planeRenderer.isVisible = false
             }
@@ -631,6 +662,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Adds the info dashboard to the AR space and sets the scaling
     private fun addInfoDashboard() {
         val dashboardNode = TransformableNode(arFragment.transformationSystem)
         dashboardNode.renderable = infoDashboard
@@ -665,8 +697,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
     }
 
+    // Removes all the added point of interest nodes from the map
     private fun removePointsOfInterest() {
-
         addedPointOfInterestList.forEach { addedPointOfInterest ->
             addedPointOfInterest.menuItem.setOnMenuItemClickListener {
                 setSubMenuItemClickListener(addedPointOfInterest.poi, addedPointOfInterest.menuItem)
@@ -675,9 +707,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
             modelNode?.removeChild(addedPointOfInterest.node)
         }
         addedPointOfInterestList.clear()
-
     }
 
+    // Zooms the map model smaller or bigger
     private fun zoomMapModel(shrink: Boolean) {
         val currentScale = anchorNode?.localScale?.x
 
@@ -685,6 +717,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             val zoomLevel = 0.003f
 
             if (shrink) {
+                // If the current scale is bigger than 0.004 the map will be shrinked by 0.003
                 if (currentScale > 0.004) {
                     val newScale = currentScale - zoomLevel
                     anchorNode?.localScale = Vector3(newScale, newScale, newScale)
@@ -694,6 +727,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     ).show()
                 }
             } else {
+                // If the current scale is smaller than 0.02 the map will be enlarged by 0.003
                 if (currentScale < 0.02) {
                     val newScale = currentScale + zoomLevel
                     anchorNode?.localScale = Vector3(newScale, newScale, newScale)
@@ -706,11 +740,13 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Returns the center point of the screen
     private fun getScreenCenter(): Point {
         val vw = requireActivity().findViewById<View>(android.R.id.content)
         return Point(vw.width / 2, vw.height / 2)
     }
 
+    // Sets up the linear acceleration sensor used for the motion gestures
     private fun setUpSensor() {
         sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
@@ -724,23 +760,32 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     override fun onSensorChanged(event: SensorEvent?) {
         event ?: return
+        // The sensor values are determined if they count as gestures
         if (event.sensor == sensorLinearAcceleration) {
             determineVerticalMovement(event)
             determineHorizontalMovement(event)
         }
     }
 
+    // Determines if a vertical movement counts as a gesture
     private fun determineVerticalMovement(event: SensorEvent?) {
         if (event != null) {
             val yAxisAccelerationValue = event.values[1]
             val childNodeCount = modelNode?.children?.toList()?.size
 
+            /* If the sensor value is bigger or smaller than 4.0 or -4.0 and the last sensor value is
+            outside that range (to avoid multiple consecutive sensor gesture triggers) the movement
+             counts as a gesture */
             if ((yAxisAccelerationValue >= 4.0 && lastYAxisAccelerationValue < 4.0) ||
                 (yAxisAccelerationValue <= -4.0 && lastYAxisAccelerationValue > -4.0)
             ) {
                 if (childNodeCount != null) {
+                    /* If the model node's child node count is bigger than 2 or 3 depending on if the
+                    user location is placed, the dialog for removing all the points of interest is set */
                     if ((!isLocationFound && childNodeCount > 2) || (isLocationFound && childNodeCount > 3)) {
                         setRemoveAllPoisAlertBuilder()
+                        /* Unregisters the sensor listener temporarily for avoiding multiple instances
+                        of the dialog */
                         unRegisterSensorListener()
                     } else {
                         Toast.makeText(
@@ -748,6 +793,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             getString(R.string.no_pois_added_text),
                             Toast.LENGTH_SHORT
                         ).show()
+                        /* Unregisters and registers the sensor listener again after a small delay for
+                        avoiding multiple consecutive sensor gesture triggers */
                         reRegisterSensorListenerAfterDelay()
                     }
                 }
@@ -757,15 +804,23 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Determines if a horizontal movement counts as a gesture
     private fun determineHorizontalMovement(event: SensorEvent?) {
         if (event != null) {
             val xAxisAccelerationValue = event.values[0]
 
+            /* If the sensor value is bigger or smaller than 4.0 or -4.0 and the last sensor value is
+            outside that range (to avoid multiple consecutive sensor gesture triggers) the movement
+             counts as a gesture */
             if (xAxisAccelerationValue >= 4.0 && lastXAxisAccelerationValue < 4.0) {
                 zoomMapModel(true)
+                /* Unregisters and registers the sensor listener again after a small delay for
+                avoiding multiple consecutive sensor gesture triggers */
                 reRegisterSensorListenerAfterDelay()
             } else if (xAxisAccelerationValue <= -4.0 && lastXAxisAccelerationValue > -4.0) {
                 zoomMapModel(false)
+                /* Unregisters and registers the sensor listener again after a small delay for
+                avoiding multiple consecutive sensor gesture triggers */
                 reRegisterSensorListenerAfterDelay()
             }
 
@@ -783,6 +838,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         sensorManager.unregisterListener(this)
     }
 
+    /* Unregisters and registers the sensor listener again after a small delay */
     private fun reRegisterSensorListenerAfterDelay() {
         lifecycleScope.launch {
             unRegisterSensorListener()
