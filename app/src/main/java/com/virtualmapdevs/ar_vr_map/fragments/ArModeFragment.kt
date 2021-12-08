@@ -109,7 +109,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         arItemId = requireArguments().getString("arItemId")
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
-        showArSceneButton = view.findViewById(R.id.showArSceneButton)
+        showArSceneButton = view.findViewById(R.id.place3dMapButton)
         saveItemButton = view.findViewById(R.id.saveBtn)
         loadingModelTextView = view.findViewById(R.id.loadingModelTextView)
         motionGesturesInstructionsCardView =

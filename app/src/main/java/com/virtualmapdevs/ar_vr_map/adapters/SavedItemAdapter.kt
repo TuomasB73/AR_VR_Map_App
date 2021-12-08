@@ -8,10 +8,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.google.android.material.card.MaterialCardView
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.Constants
-
 
 class SavedItemAdapter(
     private var arItemsList: MutableList<ARItem>?,
@@ -30,7 +30,8 @@ class SavedItemAdapter(
 
     inner class ArItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         var itemNameTextView: TextView = view.findViewById(R.id.itemNameTextView)
-        var imageView: ImageView = view.findViewById(R.id.mapImageView)
+        var imageView: ImageView = view.findViewById(R.id.itemLogoImageView)
+        var savedArListItemCard: MaterialCardView = view.findViewById(R.id.savedArListItemCard)
     }
 
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
@@ -41,16 +42,7 @@ class SavedItemAdapter(
             .error(R.drawable.testlogo4)
             .into(holder.imageView)
 
-        holder.imageView.setOnClickListener {
-            clickListener.onItemClick(
-                arItemsList?.get(position)?._id,
-                arItemsList?.get(position)?.description,
-                arItemsList?.get(position)?.latitude,
-                arItemsList?.get(position)?.longitude
-            )
-        }
-
-        holder.itemNameTextView.setOnClickListener {
+        holder.savedArListItemCard.setOnClickListener {
             clickListener.onItemClick(
                 arItemsList?.get(position)?._id,
                 arItemsList?.get(position)?.description,
@@ -74,7 +66,5 @@ class SavedItemAdapter(
             latitude: Double?,
             longitude: Double?
         )
-
-        fun onDeleteButtonPressed(arItemId: String?)
     }
 }
