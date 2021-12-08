@@ -30,6 +30,7 @@ class HomeFragment : Fragment() {
 
         SharedPreferencesFunctions.saveOnboardingShown(requireActivity())
 
+
         view.findViewById<Button>(R.id.readQrCodeButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
