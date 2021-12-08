@@ -3,7 +3,7 @@
     <string name="read_qr_code_button_text">Read QR code</string>
     <string name="home_title_text">AR / VR Map App</string>
     <string name="ar_mode_button_text">AR mode</string>
-    <string name="show_ar_scene_button_text">Show AR scene</string>
+    <string name="place_3d_map_button_text">Place 3D map</string>
     <string name="addUsername">username</string>
     <string name="addPassword">password</string>
     <string name="read_QR_code">read qr code</string>
@@ -11,7 +11,7 @@
     <string name="login">login</string>
     <string name="register">register</string>
     <string name="addConfirmPassword">Confirm Password</string>
-    <string name="my_saved_scenes">My saved AR scenes</string>
+    <string name="my_saved_maps">My saved maps</string>
     <string name="don_t_have_any_account_yet">Don\'t have any account yet?</string>
     <string name="already_have_an_account">Already have an account?</string>
     <string name="logout">logout</string>
@@ -36,7 +36,6 @@
     <string name="show_location_in_map">Show location in map</string>
     <string name="motion_gestures_switch_text">Motion gestures</string>
     <string name="location_already_added_text">You have already added your location on the map!</string>
-
     <string name="title_onboarding_1">Welcome to ARea explorer App !</string>
     <string name="description_onboarding_1">You can scan QR codes and see maps in AR</string>
     <string name="title_onboarding_2">Try scan your first code</string>

@@ -38,7 +38,7 @@ class HomeFragment : Fragment() {
             }
         }
 
-        view.findViewById<Button>(R.id.savedScenesButton).setOnClickListener {
+        view.findViewById<Button>(R.id.mySavedMapsButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<SavedARScenesFragment>(R.id.fragmentContainer)

@@ -129,7 +129,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         mapActionsDialog(arItemId, description, latitude, longitude)
     }
 
-    override fun onDeleteButtonPressed(arItemId: String?) {
+    private fun onDeleteButtonPressed(arItemId: String?) {
 
         val builder = AlertDialog.Builder(this.requireContext())
         builder.setTitle("DELETE")
@@ -276,12 +276,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
             mapController.setZoom(12.0)
             val startPoint = GeoPoint(latitude, longitude)
             mapController.setCenter(startPoint)
-
-
-/*        marker = Marker(map)
-        marker.icon = AppCompatResources.getDrawable(this.requireContext(), R.drawable.ic_pin)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.textLabelFontSize = 20*/
 
             val items = java.util.ArrayList<OverlayItem>()
             items.add(OverlayItem("Title", "Snippet", GeoPoint(latitude, longitude)))

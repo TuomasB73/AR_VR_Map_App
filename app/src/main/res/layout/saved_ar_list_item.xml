@@ -7,7 +7,7 @@
     android:layout_margin="6dp">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card"
+        android:id="@+id/savedArListItemCard"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="0dp">
@@ -18,18 +18,32 @@
             android:orientation="vertical">
 
             <!-- Media -->
-            <ImageView
-                android:id="@+id/mapImageView"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="194dp"
-                android:scaleType="centerInside"
-                android:adjustViewBounds="true"
-                android:contentDescription="@string/ARmap" />
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:id="@+id/itemLogoImageView"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:adjustViewBounds="true"
+                    android:background="@color/light_gray"
+                    android:contentDescription="@string/ARmap"
+                    android:scaleType="centerInside"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/itemNameTextView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceHeadline6"
                 tools:text="Item title" />
