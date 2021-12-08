@@ -31,9 +31,13 @@
         android:theme="@style/Theme.AR_VR_Map">
         <activity android:name=".OnboardingFinishActivity" />
         <activity android:name=".OnboardingActivity" />
-        <activity
-            android:name=".MainActivity"
+        <activity android:name=".MainActivity"
             android:screenOrientation="portrait"
+            android:exported="true">
+        </activity>
+        <activity
+            android:name=".SplashScreen"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
