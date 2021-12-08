@@ -15,7 +15,7 @@ class SplashScreen : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
 
-        val videoView : VideoView = findViewById<VideoView>(R.id.splahVideoView)
+        val videoView : VideoView = findViewById(R.id.splahVideoView)
         val mediaController = MediaController(this)
         mediaController.setAnchorView(videoView)
 
