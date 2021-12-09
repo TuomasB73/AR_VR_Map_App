@@ -4,7 +4,20 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/white"
     android:layout_width="250dp"
-    android:layout_height="250dp">
+    android:layout_height="280dp">
+
+    <TextView
+        android:id="@+id/poi_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        android:padding="8dp"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Text would go here" />
 
     <ImageView
         android:layout_marginTop="5dp"
@@ -17,17 +30,5 @@
         app:layout_constraintTop_toBottomOf="@+id/poi_tv"
         app:layout_constraintVertical_bias="0.0"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />
-
-    <TextView
-        android:id="@+id/poi_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:textColor="@color/black"
-        android:textSize="25sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Text would go here" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
