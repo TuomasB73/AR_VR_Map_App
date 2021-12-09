@@ -22,7 +22,6 @@ class SplashScreenActivity : AppCompatActivity() {
 
         val offlineUri: Uri = Uri.parse("android.resource://$packageName/${R.raw.splashlogo}")
 
-        videoView.setMediaController(mediaController)
         videoView.setVideoURI(offlineUri)
         videoView.requestFocus()
         videoView.start()
