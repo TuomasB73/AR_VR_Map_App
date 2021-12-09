@@ -28,11 +28,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // This disables dark mode
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-
+        // Starts the network callback for testing connection
         NetworkMonitor(application).startNetworkCallback()
 
+        // If there's no internet connection, an error dialog is shown to the user
         lifecycleScope.launch {
             if (NetworkVariables.isNetworkConnected) {
                 checkIsUserLoggedIn()
@@ -41,12 +40,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        // Checks if the onboarding is already shown. If not it will be shown
         if (SharedPreferencesFunctions.isOnboardingShownCheck(this) == "no") {
             val intent = Intent(this, OnboardingActivity::class.java)
             startActivity(intent)
         }
     }
 
+    // Creates a no connection dialog with a retest option
     private fun showNoConnectionDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("No connection")
@@ -65,6 +66,8 @@ class MainActivity : AppCompatActivity() {
         alertDialog.show()
     }
 
+    /* Gets the saved user token from the SharedPreferences if it exists and makes a server request
+    for authentication. If no token is saved, the app proceeds to the login fragment */
     private fun checkIsUserLoggedIn() {
         userToken = SharedPreferencesFunctions.getUserToken(this)
 
@@ -80,6 +83,8 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /* Makes a server check request to confirm authentication and then moves to home fragment. If token
+    is not valid the app moves to login fragment */
     private fun checkSecureData(userToken: String) {
         viewModel.getSecureData(userToken)
 
@@ -105,6 +110,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        /* If the user has navigated to the AR mode fragment through the QR scanner fragment and presses
+        the back button, they will be transitioned back to the home fragment skipping the QR scanner fragment */
         if (supportFragmentManager.backStackEntryCount > 1 &&
             supportFragmentManager.getBackStackEntryAt(0).name == "QRScannerFragment"
         ) {
