@@ -171,7 +171,7 @@ class QRScannerFragment : Fragment() {
         }
     }
 
-    private fun openAR(result: Result) {
+/*    private fun openAR(result: Result) {
         val bundle = bundleOf("arItemId" to result.text)
 
         Log.d("artest", "qrscanF QR id: $result")
@@ -181,7 +181,7 @@ class QRScannerFragment : Fragment() {
             replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
             addToBackStack(null)
         }
-    }
+    }*/
 
     // This check if qr code is valid
     private fun isQRcodeValidCheck(result: Result) {
@@ -284,6 +284,7 @@ class QRScannerFragment : Fragment() {
         dialog.show()
     }
 
+    // This open dialog that show 3D map location in 2D map
     private fun locationMapDialog(latitude: Double?, longitude: Double?) {
 
         if (latitude != null && longitude != null) {

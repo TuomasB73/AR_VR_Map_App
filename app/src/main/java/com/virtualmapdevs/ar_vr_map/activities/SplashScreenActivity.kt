@@ -10,6 +10,7 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.virtualmapdevs.ar_vr_map.R
 
+// Teachers allowed to use "suppress" here
 @Suppress("DEPRECATION")
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
