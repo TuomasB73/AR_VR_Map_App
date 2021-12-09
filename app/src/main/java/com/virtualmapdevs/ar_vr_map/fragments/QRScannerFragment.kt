@@ -246,7 +246,7 @@ class QRScannerFragment : Fragment() {
 
         val dialog = Dialog(this.requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-        dialog.setCancelable(false)
+        dialog.setCancelable(true)
         dialog.setContentView(R.layout.map_actions_dialog_qr)
 
         val descriptionText = dialog.findViewById(R.id.mapDescriptionTextView) as TextView
@@ -290,10 +290,10 @@ class QRScannerFragment : Fragment() {
 
             val dialog = Dialog(this.requireContext())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setCancelable(false)
+            dialog.setCancelable(true)
             dialog.setContentView(R.layout.location_map_dialog)
 
-            val cancelBtn = dialog.findViewById(R.id.lMcancelBtn) as Button
+            val cancelBtn = dialog.findViewById(R.id.lMcloseBtn) as Button
             val map = dialog.findViewById(R.id.dialogMapView) as MapView
 
             cancelBtn.setOnClickListener {

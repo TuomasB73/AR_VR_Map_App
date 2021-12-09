@@ -191,6 +191,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 /* A hit test is done every frame to find out when a plane is found in AR and the
                 button for placing the 3D map is made visible */
                 if (getPlaneHitResult() != null) {
+                    view.findViewById<TextView>(R.id.moveThePhoneInstructionTextView).visibility = View.GONE
                     place3dMapButton.visibility = View.VISIBLE
                 }
             }
@@ -263,6 +264,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         sphereNode.parent = modelNode
         isLocationFound = true
+
+        Toast.makeText(
+            requireContext(),
+            getString(R.string.user_location_added_text),
+            Toast.LENGTH_SHORT
+        ).show()
     }
 
     // Checks if the item is already saved by the user and sets the button state accordingly
