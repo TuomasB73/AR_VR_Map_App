@@ -53,8 +53,8 @@
     <string name="lm_close_button_text">Close</string>
     <string name="move_the_phone_instruction_text">Move the phone and find a plane/level</string>
     <string name="user_location_added_text">Your location is added to the map!</string>
+    <string name="place_map_first_text">Place the map first!</string>
     <string name="getting_started">GETTING STARTED</string>
     <string name="background">background</string>
     <string name="application_logo">Application logo</string>
-
 </resources>
