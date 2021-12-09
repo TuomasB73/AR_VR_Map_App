@@ -17,10 +17,9 @@ import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 import com.virtualmapdevs.ar_vr_map.viewmodels.MainViewModel
 
-private var usernameTxt: String? = null
-private var passwordTxt: String? = null
-
 class RegistrationFragment : Fragment() {
+    private var usernameTxt: String? = null
+    private var passwordTxt: String? = null
     private val viewModel: MainViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
