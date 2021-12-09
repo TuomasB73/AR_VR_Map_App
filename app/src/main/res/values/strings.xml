@@ -53,4 +53,5 @@
     <string name="lm_close_button_text">Close</string>
     <string name="move_the_phone_instruction_text">Move the phone and find a plane/level</string>
     <string name="user_location_added_text">Your location is added to the map!</string>
+    <string name="place_map_first_text">Place the map first!</string>
 </resources>

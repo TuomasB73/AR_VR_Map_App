@@ -191,7 +191,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 /* A hit test is done every frame to find out when a plane is found in AR and the
                 button for placing the 3D map is made visible */
                 if (getPlaneHitResult() != null) {
-                    view.findViewById<TextView>(R.id.moveThePhoneInstructionTextView).visibility = View.GONE
+                    view.findViewById<TextView>(R.id.moveThePhoneInstructionTextView).visibility =
+                        View.GONE
                     place3dMapButton.visibility = View.VISIBLE
                 }
             }
@@ -219,57 +220,65 @@ class ArModeFragment : Fragment(), SensorEventListener {
     }
 
     private fun findApproximateUserLocation() {
-        locationManager.userLocation?.latitude ?: return
-        locationManager.userLocation?.longitude ?: return
+        if (modelNode != null) {
+            locationManager.userLocation?.latitude ?: return
+            locationManager.userLocation?.longitude ?: return
 
-        val currentLocation = Location("currentLocation")
-        currentLocation.latitude = locationManager.userLocation?.latitude!!
-        currentLocation.longitude = locationManager.userLocation?.longitude!!
+            val currentLocation = Location("currentLocation")
+            currentLocation.latitude = locationManager.userLocation?.latitude!!
+            currentLocation.longitude = locationManager.userLocation?.longitude!!
 
-        val distancesList = mutableListOf<ReducedPoi>()
-        poiList.forEach { poi ->
-            val destinationLocation = Location("destinationLocation").also {
-                it.latitude = poi.latitude
-                it.longitude = poi.longitude
-            }
-            val distance = currentLocation.distanceTo(destinationLocation).toInt()
-            distancesList.add(
-                ReducedPoi(
-                    poi.name,
-                    distance,
-                    poi.mapCoordinates.x,
-                    poi.mapCoordinates.y,
-                    poi.mapCoordinates.z
+            val distancesList = mutableListOf<ReducedPoi>()
+            poiList.forEach { poi ->
+                val destinationLocation = Location("destinationLocation").also {
+                    it.latitude = poi.latitude
+                    it.longitude = poi.longitude
+                }
+                val distance = currentLocation.distanceTo(destinationLocation).toInt()
+                distancesList.add(
+                    ReducedPoi(
+                        poi.name,
+                        distance,
+                        poi.mapCoordinates.x,
+                        poi.mapCoordinates.y,
+                        poi.mapCoordinates.z
+                    )
                 )
+            }
+            val closestPointOfInterest =
+                distancesList.sortedByDescending { it.distance }.reversed().first()
+            val sphereNode = Node()
+            sphereNode.renderable = sphereRenderable
+            sphereNode.localPosition = Vector3(
+                closestPointOfInterest.x,
+                closestPointOfInterest.y,
+                closestPointOfInterest.z
             )
-        }
-        val closestPointOfInterest =
-            distancesList.sortedByDescending { it.distance }.reversed().first()
-        val sphereNode = Node()
-        sphereNode.renderable = sphereRenderable
-        sphereNode.localPosition = Vector3(
-            closestPointOfInterest.x,
-            closestPointOfInterest.y,
-            closestPointOfInterest.z
-        )
 
-        sphereNode.setOnTapListener { _, _ ->
+            sphereNode.setOnTapListener { _, _ ->
+                Toast.makeText(
+                    requireContext(),
+                    "You are around this area! ${closestPointOfInterest.name}",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+
+            sphereNode.parent = modelNode
+            isLocationFound = true
+
             Toast.makeText(
                 requireContext(),
-                "You are around this area! ${closestPointOfInterest.name}",
+                getString(R.string.user_location_added_text),
                 Toast.LENGTH_SHORT
-            )
-                .show()
+            ).show()
+        } else {
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.place_map_first_text),
+                Toast.LENGTH_SHORT
+            ).show()
         }
-
-        sphereNode.parent = modelNode
-        isLocationFound = true
-
-        Toast.makeText(
-            requireContext(),
-            getString(R.string.user_location_added_text),
-            Toast.LENGTH_SHORT
-        ).show()
     }
 
     // Checks if the item is already saved by the user and sets the button state accordingly
@@ -476,7 +485,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     private fun setSubMenuItemClickListener(poi: Poi, menuItem: MenuItem) {
 
-        if(modelNode != null) {
+        if (modelNode != null) {
 
             Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
                 .show()
@@ -518,9 +527,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     }
                 }
         } else {
-            Toast.makeText(requireContext(), "Place the map first!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.place_map_first_text),
+                Toast.LENGTH_SHORT
+            ).show()
         }
-
     }
 
     private fun setNodeRemovalAlertBuilder(
@@ -542,7 +554,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 false
             }
         }
-        builder.setNeutralButton("Cancel") { _, _ ->
+        builder.setNeutralButton("Close") { _, _ ->
         }
         val alertDialog: AlertDialog = builder.create()
         alertDialog.setCancelable(false)
@@ -929,10 +941,5 @@ class ArModeFragment : Fragment(), SensorEventListener {
         video.setVideoURI(offlineUri)
         video.requestFocus()
         video.start()
-
-    }
-
-    private fun resetShowInstructionVideo() {
-        SharedPreferencesFunctions.resetVideoShown(requireActivity())
     }
 }
