@@ -1,4 +1,4 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.lifecycle.lifecycleScope
+import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.fragments.HomeFragment
 import com.virtualmapdevs.ar_vr_map.fragments.LoginFragment
 import com.virtualmapdevs.ar_vr_map.utils.NetworkMonitor

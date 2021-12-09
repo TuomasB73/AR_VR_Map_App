@@ -1,4 +1,4 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.activities
 
 import android.content.Intent
 import android.net.Uri
@@ -8,6 +8,7 @@ import android.view.WindowManager
 import android.widget.MediaController
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
+import com.virtualmapdevs.ar_vr_map.R
 
 @Suppress("DEPRECATION")
 class SplashScreenActivity : AppCompatActivity() {

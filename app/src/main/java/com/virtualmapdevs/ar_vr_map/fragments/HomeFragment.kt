@@ -28,8 +28,10 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // This will use user token to save that user have seen onboarding
         SharedPreferencesFunctions.saveOnboardingShown(requireActivity())
-
+        // This will clear "empty token" that was used when user was not yet registered
+        SharedPreferencesFunctions.clearEmptyToken(requireActivity())
 
         view.findViewById<Button>(R.id.readQrCodeButton).setOnClickListener {
             requireActivity().supportFragmentManager.commit {

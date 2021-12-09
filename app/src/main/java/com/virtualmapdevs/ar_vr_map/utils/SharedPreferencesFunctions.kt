@@ -3,6 +3,10 @@ package com.virtualmapdevs.ar_vr_map.utils
 import android.app.Activity
 import android.content.Context
 import android.util.Log
+import android.content.SharedPreferences
+
+
+
 
 object SharedPreferencesFunctions {
     private const val sharedPrefFile = "userSharedPreferences"
@@ -76,5 +80,12 @@ object SharedPreferencesFunctions {
         }
         Log.d("sharedtest", "isOnboardingShownCheck: ${user.toString()}")
         return sharedPreference?.getString("onboarding$user", "no")
+    }
+
+    fun clearEmptyToken(activity: Activity) {
+        val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
+        val editor = sharedPreference.edit()
+        editor.remove("onboardingBearer ")
+        editor.apply()
     }
 }

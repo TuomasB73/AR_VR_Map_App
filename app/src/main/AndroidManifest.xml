@@ -29,14 +29,14 @@
         android:windowSoftInputMode="adjustPan"
         android:supportsRtl="true"
         android:theme="@style/Theme.AR_VR_Map">
-        <activity android:name=".OnboardingFinishActivity" />
-        <activity android:name=".OnboardingActivity" />
-        <activity android:name=".MainActivity"
+        <activity android:name=".activities.OnboardingFinishActivity" />
+        <activity android:name=".activities.OnboardingActivity" />
+        <activity android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">
         </activity>
         <activity
-            android:name=".SplashScreenActivity"
+            android:name=".activities.SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true">
             <intent-filter>

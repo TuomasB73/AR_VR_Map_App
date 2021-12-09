@@ -1,8 +1,9 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.activities
 
 import android.os.Bundle
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.SharedPreferencesFunctions
 
 class OnboardingFinishActivity : AppCompatActivity() {

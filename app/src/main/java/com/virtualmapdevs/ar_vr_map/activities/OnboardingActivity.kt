@@ -1,4 +1,4 @@
-package com.virtualmapdevs.ar_vr_map
+package com.virtualmapdevs.ar_vr_map.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -6,8 +6,9 @@ import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
-import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import com.virtualmapdevs.ar_vr_map.Animatoo
+import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.adapters.OnboardingViewPagerAdapter
 
 class OnboardingActivity : AppCompatActivity() {
