@@ -36,7 +36,7 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".SplashScreen"
+            android:name=".SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true">
             <intent-filter>
