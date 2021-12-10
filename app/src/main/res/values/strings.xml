@@ -70,4 +70,6 @@
     <string name="delete_map_from_your_list">delete map from your list</string>
     <string name="return_to_the_my_saved_maps_screen">return to the my saved maps screen</string>
     <string name="open_application">open application</string>
+    <string name="set_point_of_interest_scale">Set point of interest scale</string>
+    <string name="ok">OK</string>
 </resources>
