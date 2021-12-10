@@ -3,6 +3,7 @@ package com.virtualmapdevs.ar_vr_map.utils
 import android.animation.ObjectAnimator
 import android.view.animation.LinearInterpolator
 import androidx.annotation.Nullable
+import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.QuaternionEvaluator
 import com.google.ar.sceneform.math.Vector3
@@ -10,9 +11,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 import com.google.ar.sceneform.ux.TransformationSystem
 
 
-class RotatingNode(
-    transformationSystem: TransformationSystem?
-) : TransformableNode(transformationSystem) {
+class RotatingNode: Node() {
     @Nullable
     private var pointOfInterestImageAnimation: ObjectAnimator? = null
     private var speed = 90.0f

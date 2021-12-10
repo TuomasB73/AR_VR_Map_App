@@ -48,6 +48,7 @@ import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.slider.Slider
 import com.google.android.material.switchmaterial.SwitchMaterial
 import com.google.ar.core.HitResult
 import com.google.ar.sceneform.Scene
@@ -73,6 +74,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var arItemId: String? = null
     private var userToken: String? = null
     private var arItemSaved: Boolean? = null
+    private var sliderValue: Float = 5.5f
     private lateinit var place3dMapButton: Button
     private lateinit var saveItemButton: Button
     private lateinit var loadingModelTextView: TextView
@@ -438,8 +440,23 @@ class ArModeFragment : Fragment(), SensorEventListener {
         val drawerImage = headerView.findViewById<ImageView>(R.id.navDrawerImageView)
 
         Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$logoReference")
-            .error(R.drawable.testlogo2)
+            .error(R.drawable.testlogo4)
             .into(drawerImage)
+
+        headerView.findViewById<Slider>(R.id.slider)
+            .addOnChangeListener { slider, value, fromUser ->
+                sliderValue = slider.value
+
+                addedPointOfInterestList.forEach { addedPointOfInterest ->
+                    addedPointOfInterest.node.localScale =
+                        Vector3(sliderValue, sliderValue, sliderValue)
+                    addedPointOfInterest.node.parent = modelNode
+                }
+
+
+            }
+
+
     }
 
     private fun initDrawerItems(pois: MutableList<Poi>) {
@@ -497,12 +514,12 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 .build()
                 .thenAccept { renderable ->
                     pointOfInterestRenderable = renderable
-                    RotatingNode(arFragment.transformationSystem).let { node ->
+                    RotatingNode().let { node ->
                         node.renderable = pointOfInterestRenderable
                         node.localPosition = Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
-                        node.scaleController.minScale = 4f
-                        node.scaleController.maxScale = 15f
-                        node.localScale = Vector3(8f, 8f, 8f)
+                        //node.scaleController.minScale = 4f
+                        //node.scaleController.maxScale = 15f
+                        node.localScale = Vector3(sliderValue, sliderValue, sliderValue)
                         addedPointOfInterestList.add(AddedPointOfInterest(poi, menuItem, node))
                         pointOfInterestRenderable!!.isShadowCaster = false
                         pointOfInterestRenderable!!.isShadowReceiver = false
@@ -537,7 +554,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     private fun setNodeRemovalAlertBuilder(
         poi: Poi,
-        pointOfInterestNode: TransformableNode,
+        pointOfInterestNode: RotatingNode,
         menuItem: MenuItem
     ) {
         val builder = AlertDialog.Builder(requireContext())
