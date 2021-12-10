@@ -693,7 +693,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             actually loaded */
             lifecycleScope.launch {
                 loadingModelTextView.visibility = View.VISIBLE
-                delay(1)
+                delay(100)
 
                 val anchor = hit.createAnchor()
                 anchorNode = AnchorNode(anchor)

@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.model.ARItem
 import com.virtualmapdevs.ar_vr_map.utils.Constants
 
+// Adapter for the saved maps recycler view
 class SavedItemAdapter(
     private var arItemsList: MutableList<ARItem>?,
     private val clickListener: ClickListener,
@@ -37,6 +39,7 @@ class SavedItemAdapter(
     override fun onBindViewHolder(holder: ArItemViewHolder, position: Int) {
         holder.itemNameTextView.text = arItemsList?.get(position)?.name
 
+        // The logo image is loaded with Glide
         Glide.with(context)
             .load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
             .error(R.drawable.testlogo4)
@@ -52,6 +55,9 @@ class SavedItemAdapter(
         }
     }
 
+    /* Updates the list with new search result content. As the list will be relatively short, the usage of
+    notifyDataSetChanged is not a problem */
+    @SuppressLint("NotifyDataSetChanged")
     fun updateData(updatedList: List<ARItem>) {
         arItemsList?.clear()
         arItemsList?.addAll(updatedList)
@@ -59,6 +65,7 @@ class SavedItemAdapter(
         notifyDataSetChanged()
     }
 
+    // Interface for the item click action
     interface ClickListener {
         fun onItemClick(
             arItemId: String?,
