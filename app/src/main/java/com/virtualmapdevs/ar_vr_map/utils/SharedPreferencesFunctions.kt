@@ -3,10 +3,6 @@ package com.virtualmapdevs.ar_vr_map.utils
 import android.app.Activity
 import android.content.Context
 import android.util.Log
-import android.content.SharedPreferences
-
-
-
 
 object SharedPreferencesFunctions {
     private const val sharedPrefFile = "userSharedPreferences"
@@ -53,7 +49,7 @@ object SharedPreferencesFunctions {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         val user = userToken!!.substring(0, 100)
-        Log.d("sharedtest", "isVideoShown: ${user.toString()}")
+        Log.d("sharedtest", "isVideoShown: $user")
         return sharedPreference?.getString("video$user", "no")
     }
 
@@ -65,7 +61,7 @@ object SharedPreferencesFunctions {
             user = userToken!!.substring(0, 100)
         }
         val editor = sharedPreference.edit()
-        Log.d("sharedtest", "saveOnboardingShown: ${user.toString()}")
+        Log.d("sharedtest", "saveOnboardingShown: $user")
         editor?.putString("onboarding$user", "yes")
         editor?.apply()
     }
@@ -74,11 +70,11 @@ object SharedPreferencesFunctions {
         val sharedPreference = activity.getSharedPreferences(sharedPrefFile, Context.MODE_PRIVATE)
         userToken = getUserToken(activity)
         var user = "Bearer "
-        if (userToken != "Bearer "){
+        if (userToken != "Bearer ") {
             user = userToken!!.substring(0, 100)
             Log.d("sharedtest", "userToken $userToken")
         }
-        Log.d("sharedtest", "isOnboardingShownCheck: ${user.toString()}")
+        Log.d("sharedtest", "isOnboardingShownCheck: $user")
         return sharedPreference?.getString("onboarding$user", "no")
     }
 

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="@color/white"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@color/white"
     android:paddingBottom="16dp">
 
     <TextView
@@ -28,6 +27,7 @@
         android:layout_height="64dp"
         android:layout_gravity="bottom|end"
         android:layout_marginTop="36dp"
+        android:contentDescription="@string/open_in_ar"
         android:text="@string/open_in_ar"
         android:textSize="16sp"
         android:textStyle="bold"
@@ -45,6 +45,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="36dp"
         android:layout_marginEnd="16dp"
+        android:contentDescription="@string/show_location_in_map"
         android:text="@string/show_location_in_map"
         app:icon="@drawable/ic_baseline_map_24"
         app:layout_constraintEnd_toEndOf="parent"
@@ -57,6 +58,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/delete_map_from_your_list"
         android:text="@string/delete_saved_item_button_text"
         app:icon="@drawable/ic_baseline_delete_24"
         app:layout_constraintEnd_toEndOf="parent"
@@ -68,6 +70,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
+        android:contentDescription="@string/return_to_the_my_saved_maps_screen"
         android:text="@string/cancel"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

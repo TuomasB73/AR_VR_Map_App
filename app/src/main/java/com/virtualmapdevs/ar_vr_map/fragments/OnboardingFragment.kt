@@ -29,7 +29,7 @@ class OnboardingFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         // Inflate the layout for this fragment
         val rootLayout: View =
             inflater.inflate(R.layout.fragment_onboarding, container, false)
@@ -38,7 +38,7 @@ class OnboardingFragment : Fragment() {
         image = rootLayout.image_onboarding
         tvTitle.text = title
         tvDescription.text = description
-        image.setImageResource(R.drawable.testlogo4)
+        image.setImageResource(imageResource)
         return rootLayout
     }
 

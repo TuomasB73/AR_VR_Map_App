@@ -71,6 +71,7 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+    // This will show dialog if internet connection is not found
     private fun showNoConnectionDialog() {
         val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
         builder.setTitle("No connection")
@@ -90,7 +91,6 @@ class QRScannerFragment : Fragment() {
     }
 
     private fun startScanning() {
-
         // Parameters (default values)
         val scannerView = view?.findViewById<CodeScannerView>(R.id.scanner_view)
         codeScanner = scannerView?.let { context?.let { it1 -> CodeScanner(it1, it) } }!!
@@ -135,6 +135,7 @@ class QRScannerFragment : Fragment() {
         super.onPause()
     }
 
+    // Asks permission to use camera
     private fun checkPermissions() {
         if (context?.let {
                 ContextCompat.checkSelfPermission(
@@ -213,7 +214,6 @@ class QRScannerFragment : Fragment() {
         latitude: Double?,
         longitude: Double?
     ) {
-
         val dialog = Dialog(this.requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
         dialog.setCancelable(true)
