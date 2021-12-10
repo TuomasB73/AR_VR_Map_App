@@ -185,6 +185,31 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
             }
 
+        view.findViewById<Button>(R.id.point_of_interest_scale_btn).setOnClickListener {
+            val dialog = Dialog(requireContext())
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.setContentView(R.layout.point_of_interest_slider_scale_dialog)
+            dialog.findViewById<Button>(R.id.slider_dialog_btn).setOnClickListener {
+                dialog.dismiss()
+            }
+            dialog.findViewById<Slider>(R.id.slider).let { poiScaleSlider ->
+                poiScaleSlider.value = sliderValue
+                poiScaleSlider.addOnChangeListener { slider, value, fromUser ->
+                    sliderValue = slider.value
+                    if (addedPointOfInterestList.isNotEmpty()) {
+                        addedPointOfInterestList.forEach { addedPointOfInterest ->
+                            addedPointOfInterest.node.localScale =
+                                Vector3(sliderValue, sliderValue, sliderValue)
+                            addedPointOfInterest.node.parent = modelNode
+                        }
+                    }
+                }
+            }
+            dialog.setCancelable(true)
+            dialog.show()
+        }
+
+
         /* To avoid the arFragment being null when adding the update listener, the listener is set
         in a coroutine with a small delay before that */
         lifecycleScope.launch {
@@ -402,7 +427,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     load3DModel(fullItemModelUri)
                 } else {
                     Log.d("ARItemFetch", "Item model Uri not found")
-                    Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(activity, "Item model Uri not found", Toast.LENGTH_SHORT)
+                        .show()
                 }
 
                 // The info dashboard is loaded with the data of the item
@@ -442,21 +468,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
         Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$logoReference")
             .error(R.drawable.testlogo4)
             .into(drawerImage)
-
-        headerView.findViewById<Slider>(R.id.slider)
-            .addOnChangeListener { slider, value, fromUser ->
-                sliderValue = slider.value
-
-                addedPointOfInterestList.forEach { addedPointOfInterest ->
-                    addedPointOfInterest.node.localScale =
-                        Vector3(sliderValue, sliderValue, sliderValue)
-                    addedPointOfInterest.node.parent = modelNode
-                }
-
-
-            }
-
-
     }
 
     private fun initDrawerItems(pois: MutableList<Poi>) {
@@ -504,7 +515,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
         if (modelNode != null) {
 
-            Toast.makeText(requireContext(), "Added item ${poi.name} to map!", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                requireContext(),
+                "Added item ${poi.name} to map!",
+                Toast.LENGTH_SHORT
+            )
                 .show()
 
             var pointOfInterestRenderable: ViewRenderable?
@@ -516,7 +531,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     pointOfInterestRenderable = renderable
                     RotatingNode().let { node ->
                         node.renderable = pointOfInterestRenderable
-                        node.localPosition = Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
+                        node.localPosition =
+                            Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
                         //node.scaleController.minScale = 4f
                         //node.scaleController.maxScale = 15f
                         node.localScale = Vector3(sliderValue, sliderValue, sliderValue)
@@ -634,7 +650,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
         layout.findViewById<TextView>(R.id.itemDescriptionTextView).text = itemDescription
 
         // The logo image is loaded
-        Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
+        Glide.with(requireContext())
+            .load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
             .error(R.drawable.testlogo2)
             .into(layout.findViewById(R.id.itemImageView))
 
@@ -743,7 +760,10 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private fun removePointsOfInterest() {
         addedPointOfInterestList.forEach { addedPointOfInterest ->
             addedPointOfInterest.menuItem.setOnMenuItemClickListener {
-                setSubMenuItemClickListener(addedPointOfInterest.poi, addedPointOfInterest.menuItem)
+                setSubMenuItemClickListener(
+                    addedPointOfInterest.poi,
+                    addedPointOfInterest.menuItem
+                )
                 false
             }
             modelNode?.removeChild(addedPointOfInterest.node)
@@ -765,7 +785,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     anchorNode?.localScale = Vector3(newScale, newScale, newScale)
                 } else {
                     Toast.makeText(
-                        activity, getString(R.string.zoom_gesture_min_size_text), Toast.LENGTH_SHORT
+                        activity,
+                        getString(R.string.zoom_gesture_min_size_text),
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             } else {
@@ -775,7 +797,9 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     anchorNode?.localScale = Vector3(newScale, newScale, newScale)
                 } else {
                     Toast.makeText(
-                        activity, getString(R.string.zoom_gesture_max_size_text), Toast.LENGTH_SHORT
+                        activity,
+                        getString(R.string.zoom_gesture_max_size_text),
+                        Toast.LENGTH_SHORT
                     ).show()
                 }
             }
@@ -790,7 +814,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
     // Sets up the linear acceleration sensor used for the motion gestures
     private fun setUpSensor() {
-        sensorManager = requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        sensorManager =
+            requireActivity().getSystemService(Context.SENSOR_SERVICE) as SensorManager
 
         if (sensorManager.getDefaultSensor(Sensor.TYPE_LINEAR_ACCELERATION) != null) {
             sensorLinearAcceleration =

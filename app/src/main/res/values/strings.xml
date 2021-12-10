@@ -58,4 +58,6 @@
     <string name="background">background</string>
     <string name="application_logo">Application logo</string>
     <string name="info">info</string>
+    <string name="set_point_of_interest_scale">Set point of interest scale</string>
+    <string name="ok">OK</string>
 </resources>
