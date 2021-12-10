@@ -58,4 +58,16 @@
     <string name="background">background</string>
     <string name="application_logo">Application logo</string>
     <string name="info">info</string>
+    <string name="return_to_home_screen">return to home screen</string>
+    <string name="check_your_location">check your location</string>
+    <string name="save_map_to_your_list">save map to your list</string>
+    <string name="show_motion_gestures_instructions">show motion gestures instructions</string>
+    <string name="motion_gestures_on_or_off">motion gestures on or off</string>
+    <string name="navigation_drawer_indicator_arrow">navigation drawer indicator arrow</string>
+    <string name="remove_points_of_interest_gestures">remove points of interest gestures</string>
+    <string name="zoom_gesture">zoom gesture</string>
+    <string name="instruction_video_for_ar">instruction video for ar</string>
+    <string name="delete_map_from_your_list">delete map from your list</string>
+    <string name="return_to_the_my_saved_maps_screen">return to the my saved maps screen</string>
+    <string name="open_application">open application</string>
 </resources>
