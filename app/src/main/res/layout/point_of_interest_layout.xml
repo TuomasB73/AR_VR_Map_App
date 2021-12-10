@@ -19,13 +19,14 @@
         tools:text="Text would go here" />
 
     <ImageView
-        android:layout_marginTop="5dp"
         android:id="@+id/poi_iv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:contentDescription="@string/point_of_interest"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/poi_tv"
         app:layout_constraintEnd_toEndOf="@+id/poi_tv"
+        app:layout_constraintStart_toStartOf="@+id/poi_tv"
         app:layout_constraintTop_toBottomOf="@+id/poi_tv"
         app:layout_constraintVertical_bias="0.0"
         tools:srcCompat="@tools:sample/backgrounds/scenic" />

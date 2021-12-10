@@ -30,14 +30,19 @@
 
         <Button
             android:id="@+id/backBtn"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
+            style="@style/Widget.AppCompat.Button.Borderless"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:drawableLeft="@drawable/ic_baseline_arrow_back_24_white"
-            android:padding="16dp"
+            android:insetLeft="0dp"
+            android:insetTop="0dp"
+            android:insetRight="0dp"
+            android:insetBottom="0dp"
             android:textSize="24sp"
+            app:icon="@drawable/ic_baseline_arrow_back_24_white"
+            app:iconGravity="textStart"
+            app:iconPadding="0dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

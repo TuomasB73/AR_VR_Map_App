@@ -72,4 +72,6 @@
     <string name="open_application">open application</string>
     <string name="set_point_of_interest_scale">Set point of interest scale</string>
     <string name="ok">OK</string>
+    <string name="_3d_object_logo">3D object logo</string>
+    <string name="point_of_interest">point of interest</string>
 </resources>
