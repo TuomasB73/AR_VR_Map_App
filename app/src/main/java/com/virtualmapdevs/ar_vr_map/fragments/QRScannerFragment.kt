@@ -43,7 +43,6 @@ import org.osmdroid.views.overlay.OverlayItem
 class QRScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
     private val viewModel: MainViewModel by viewModels()
-    private val requestImageCapture = 1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,7 +59,7 @@ class QRScannerFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        permissions()
+        checkPermissions()
 
         // Open Street Map API registering
         Configuration.getInstance()
@@ -112,7 +111,7 @@ class QRScannerFragment : Fragment() {
                 isQRcodeValidCheck(it)
             }
         }
-        codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+        codeScanner.errorCallback = ErrorCallback {
             activity?.runOnUiThread {
                 Toast.makeText(
                     activity, "Camera initialization error: ${it.message}",
@@ -124,17 +123,6 @@ class QRScannerFragment : Fragment() {
         scannerView.setOnClickListener {
             codeScanner.startPreview()
         }
-    }
-
-    private fun permissions() {
-        if (ContextCompat.checkSelfPermission(
-                requireContext(), Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_DENIED
-        )
-            ActivityCompat.requestPermissions(
-                requireActivity(), arrayOf(Manifest.permission.CAMERA),
-                requestImageCapture
-            )
     }
 
     override fun onResume() {
@@ -175,7 +163,6 @@ class QRScannerFragment : Fragment() {
         if (inTest.length == 24) {
             if (isLettersOrNumbers(inTest)) {
                 fetchQRItemData(inTest)
-                //openAR(result)
             } else {
                 Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
             }
@@ -209,7 +196,6 @@ class QRScannerFragment : Fragment() {
 
                 if (itemTitle != null && itemDescription != null && latitude != null && longitude != null) {
 
-                    // open dialog
                     mapActionsDialog(arItemId, itemDescription, latitude, longitude)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
@@ -223,6 +209,8 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+    // This will open dialog that show description of the 3D map and two buttons
+    // to open 3D map in AR mode or show location in 2D map
     private fun mapActionsDialog(
         arItemId: String?,
         description: String?,
