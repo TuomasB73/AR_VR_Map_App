@@ -38,7 +38,7 @@ class OnboardingFragment : Fragment() {
         image = rootLayout.image_onboarding
         tvTitle.text = title
         tvDescription.text = description
-        image.setImageResource(R.drawable.testlogo4)
+        image.setImageResource(imageResource)
         return rootLayout
     }
 

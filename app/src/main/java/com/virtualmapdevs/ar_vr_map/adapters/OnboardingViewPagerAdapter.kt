@@ -13,18 +13,17 @@ class OnboardingViewPagerAdapter(
 ) :
     FragmentStateAdapter(fragmentActivity) {
 
-    // Onboarding have 3 instruction screens
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> OnboardingFragment.newInstance(
                 context.resources.getString(R.string.title_onboarding_1),
                 context.resources.getString(R.string.description_onboarding_1),
-                R.drawable.testlogo4
+                R.drawable.testlogo
             )
             1 -> OnboardingFragment.newInstance(
                 context.resources.getString(R.string.title_onboarding_2),
                 context.resources.getString(R.string.description_onboarding_2),
-                R.drawable.testlogo4
+                R.drawable.testlogo2
             )
             else -> OnboardingFragment.newInstance(
                 context.resources.getString(R.string.title_onboarding_3),
