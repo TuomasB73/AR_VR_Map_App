@@ -44,10 +44,6 @@ class QRScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
     private val viewModel: MainViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -108,7 +104,7 @@ class QRScannerFragment : Fragment() {
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
-                isQRcodeValidCheck(it)
+                isQrCodeValidCheck(it)
             }
         }
         codeScanner.errorCallback = ErrorCallback {
@@ -158,7 +154,7 @@ class QRScannerFragment : Fragment() {
     }
 
     // This will check if the qr code is valid
-    private fun isQRcodeValidCheck(result: Result) {
+    private fun isQrCodeValidCheck(result: Result) {
         val inTest = result.toString()
         if (inTest.length == 24) {
             if (isLettersOrNumbers(inTest)) {
