@@ -1,5 +1,6 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
+import android.Manifest
 import android.app.Dialog
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -43,10 +44,6 @@ class QRScannerFragment : Fragment() {
     private lateinit var codeScanner: CodeScanner
     private val viewModel: MainViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -57,6 +54,8 @@ class QRScannerFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        checkPermissions()
 
         // Open Street Map API registering
         Configuration.getInstance()
@@ -105,11 +104,10 @@ class QRScannerFragment : Fragment() {
         // Callbacks
         codeScanner.decodeCallback = DecodeCallback {
             activity?.runOnUiThread {
-                isQRcodeValidCheck(it)
-                //openAR(it)
+                isQrCodeValidCheck(it)
             }
         }
-        codeScanner.errorCallback = ErrorCallback { // or ErrorCallback.SUPPRESS
+        codeScanner.errorCallback = ErrorCallback {
             activity?.runOnUiThread {
                 Toast.makeText(
                     activity, "Camera initialization error: ${it.message}",
@@ -120,22 +118,6 @@ class QRScannerFragment : Fragment() {
 
         scannerView.setOnClickListener {
             codeScanner.startPreview()
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == 123) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(activity, "Camera permission granted", Toast.LENGTH_LONG).show()
-                startScanning()
-            } else {
-                Toast.makeText(activity, "Camera permission denied", Toast.LENGTH_LONG).show()
-            }
         }
     }
 
@@ -157,39 +139,26 @@ class QRScannerFragment : Fragment() {
         if (context?.let {
                 ContextCompat.checkSelfPermission(
                     it,
-                    android.Manifest.permission.CAMERA
+                    Manifest.permission.CAMERA
                 )
             } != PackageManager.PERMISSION_GRANTED
         ) {
             activity?.let {
                 ActivityCompat.requestPermissions(
                     it,
-                    arrayOf(android.Manifest.permission.CAMERA),
+                    arrayOf(Manifest.permission.CAMERA),
                     0
                 )
             }
         }
     }
 
-/*    private fun openAR(result: Result) {
-        val bundle = bundleOf("arItemId" to result.text)
-
-        Log.d("artest", "qrscanF QR id: $result")
-
-        requireActivity().supportFragmentManager.commit {
-            setReorderingAllowed(true)
-            replace<ArModeFragment>(R.id.fragmentContainer, args = bundle)
-            addToBackStack(null)
-        }
-    }*/
-
-    // This check if qr code is valid
-    private fun isQRcodeValidCheck(result: Result) {
+    // This will check if the qr code is valid
+    private fun isQrCodeValidCheck(result: Result) {
         val inTest = result.toString()
         if (inTest.length == 24) {
             if (isLettersOrNumbers(inTest)) {
                 fetchQRItemData(inTest)
-                //openAR(result)
             } else {
                 Toast.makeText(activity, "Not a valid QR code", Toast.LENGTH_LONG).show()
             }
@@ -223,7 +192,6 @@ class QRScannerFragment : Fragment() {
 
                 if (itemTitle != null && itemDescription != null && latitude != null && longitude != null) {
 
-                    // open dialog
                     mapActionsDialog(arItemId, itemDescription, latitude, longitude)
                 } else {
                     Log.d("ARItemFetch", "Item title and/or description not found")
@@ -237,6 +205,8 @@ class QRScannerFragment : Fragment() {
         }
     }
 
+    // This will open dialog that show description of the 3D map and two buttons
+    // to open 3D map in AR mode or show location in 2D map
     private fun mapActionsDialog(
         arItemId: String?,
         description: String?,
@@ -308,12 +278,6 @@ class QRScannerFragment : Fragment() {
             mapController.setZoom(12.0)
             val startPoint = GeoPoint(latitude, longitude)
             mapController.setCenter(startPoint)
-
-
-/*        marker = Marker(map)
-        marker.icon = AppCompatResources.getDrawable(this.requireContext(), R.drawable.ic_pin)
-        marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-        marker.textLabelFontSize = 20*/
 
             val items = java.util.ArrayList<OverlayItem>()
             items.add(OverlayItem("Title", "Snippet", GeoPoint(latitude, longitude)))
