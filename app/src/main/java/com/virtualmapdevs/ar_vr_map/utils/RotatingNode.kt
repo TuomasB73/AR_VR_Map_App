@@ -7,9 +7,6 @@ import com.google.ar.sceneform.Node
 import com.google.ar.sceneform.math.Quaternion
 import com.google.ar.sceneform.math.QuaternionEvaluator
 import com.google.ar.sceneform.math.Vector3
-import com.google.ar.sceneform.ux.TransformableNode
-import com.google.ar.sceneform.ux.TransformationSystem
-
 
 class RotatingNode: Node() {
     @Nullable

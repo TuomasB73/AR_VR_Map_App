@@ -4,7 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -48,7 +47,6 @@
 
     </RelativeLayout>
 
-
     <LinearLayout
         android:id="@+id/layout_start"
         android:layout_width="match_parent"
@@ -67,7 +65,5 @@
             android:text="@string/getting_started"
             android:textColor="@color/md_white_1000" />
 
-
     </LinearLayout>
-
 </RelativeLayout>

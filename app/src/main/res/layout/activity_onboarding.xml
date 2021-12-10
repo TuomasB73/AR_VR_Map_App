@@ -51,7 +51,6 @@
             app:tabGravity="center"
             app:tabIndicatorHeight="0dp" />
 
-
         <Button
             android:id="@+id/btn_next_step"
             android:layout_width="wrap_content"
@@ -68,6 +67,4 @@
             android:textSize="16sp" />
 
     </RelativeLayout>
-
-
 </RelativeLayout>

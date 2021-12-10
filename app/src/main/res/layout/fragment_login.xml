@@ -11,6 +11,7 @@
         android:id="@+id/bRimageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:contentDescription="@string/background"
         android:cropToPadding="false"
         android:scaleType="centerCrop"
         android:src="@drawable/background"
@@ -19,19 +20,18 @@
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0"
-        android:contentDescription="@string/background" />
+        app:layout_constraintVertical_bias="1.0" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/loginTextInputLayout"
         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-        app:hintTextColor="@color/white"
-        android:textColorHint="@color/white"
         android:layout_width="276dp"
         android:layout_height="56dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="200dp"
         android:layout_marginEnd="8dp"
+        android:textColorHint="@color/white"
+        app:hintTextColor="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -58,10 +58,10 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="32dp"
         android:layout_marginEnd="8dp"
+        android:textColorHint="@color/white"
         app:endIconMode="password_toggle"
         app:endIconTint="@color/white"
         app:hintTextColor="@color/white"
-        android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/loginTextInputLayout">
@@ -115,24 +115,29 @@
         android:layout_width="0dp"
         android:layout_height="40dp"
         android:layout_marginTop="8dp"
-        android:paddingRight="15dp"
+        android:contentDescription="@string/register"
         android:text="@string/register"
         android:textColor="@color/button_stroke"
         android:textSize="12sp"
-        android:contentDescription="@string/register"
         app:layout_constraintStart_toEndOf="@+id/registrationTxtView"
         app:layout_constraintTop_toBottomOf="@+id/passwordTextInputLayout" />
 
     <Button
         android:id="@+id/infoButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="60dp"
         android:layout_height="61dp"
-        android:layout_marginEnd="24dp"
-        android:drawableLeft="@drawable/ic_baseline_info_24_white"
+        android:layout_marginEnd="36dp"
+        android:contentDescription="@string/info"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         android:padding="16dp"
         android:textSize="24sp"
-        android:contentDescription="@string/info"
+        app:icon="@drawable/ic_baseline_info_24_white"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/loginTextInputLayout"
         app:layout_constraintEnd_toEndOf="parent" />
 

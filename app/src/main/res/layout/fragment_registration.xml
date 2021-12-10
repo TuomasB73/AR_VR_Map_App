@@ -152,15 +152,20 @@
 
     <Button
         android:id="@+id/infoRegisterButton"
-        style="@style/Widget.MaterialComponents.Button.TextButton"
+        style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="60dp"
         android:layout_height="61dp"
         android:layout_marginEnd="36dp"
-        android:layout_marginBottom="8dp"
         android:contentDescription="@string/info"
-        android:drawableLeft="@drawable/ic_baseline_info_24_white"
+        android:insetLeft="0dp"
+        android:insetTop="0dp"
+        android:insetRight="0dp"
+        android:insetBottom="0dp"
         android:padding="16dp"
         android:textSize="24sp"
+        app:icon="@drawable/ic_baseline_info_24_white"
+        app:iconGravity="textStart"
+        app:iconPadding="0dp"
         app:layout_constraintBottom_toTopOf="@+id/regTextInputLayout"
         app:layout_constraintEnd_toEndOf="parent" />
 
