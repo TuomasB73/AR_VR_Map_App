@@ -37,6 +37,7 @@ class RegistrationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Makes a registration request to the server
         view.findViewById<Button>(R.id.registerButton).setOnClickListener {
             usernameTxt = view.findViewById<EditText>(R.id.registerUsernameAdd).text.toString()
             passwordTxt = view.findViewById<EditText>(R.id.registerPasswordAdd).text.toString()
@@ -52,6 +53,7 @@ class RegistrationFragment : Fragment() {
             }
         }
 
+        // Opens a info dialog of the username and password requirements
         view.findViewById<Button>(R.id.infoRegisterButton).setOnClickListener {
             val builder = AlertDialog.Builder(this.requireContext())
             builder.setTitle("Username and password")
@@ -63,6 +65,7 @@ class RegistrationFragment : Fragment() {
             builder.show()
         }
 
+        // If the registration was successful a login request is made
         viewModel.registerUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "postUserMsg: ${response.body()}")
@@ -80,6 +83,8 @@ class RegistrationFragment : Fragment() {
             Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
 
+        /* If the login was successful the user token will be saved and the app proceeds to the home
+        fragment */
         viewModel.loginUserMsg.observe(viewLifecycleOwner, { response ->
             if (response.isSuccessful) {
                 Log.d("artest", "loginUserMsg: ${response.body()}")
@@ -103,6 +108,7 @@ class RegistrationFragment : Fragment() {
             Toast.makeText(activity, it, Toast.LENGTH_SHORT).show()
         })
 
+        // The app changes to the login fragment
         view.findViewById<Button>(R.id.logBtn).setOnClickListener {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
