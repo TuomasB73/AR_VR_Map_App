@@ -53,7 +53,7 @@
 
         <Button
             android:id="@+id/btn_next_step"
-            android:layout_width="wrap_content"
+            android:layout_width="100dp"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_marginStart="10dp"
