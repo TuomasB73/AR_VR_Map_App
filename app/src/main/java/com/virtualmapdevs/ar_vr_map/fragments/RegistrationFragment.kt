@@ -1,11 +1,13 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
 import android.app.AlertDialog
+import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
@@ -55,14 +57,7 @@ class RegistrationFragment : Fragment() {
 
         // Opens a info dialog of the username and password requirements
         view.findViewById<Button>(R.id.infoRegisterButton).setOnClickListener {
-            val builder = AlertDialog.Builder(this.requireContext())
-            builder.setTitle("Username and password")
-            builder.setMessage("Username must be 3 or more characters and start with capital letter" +
-                    "\n" + "\n" +
-                    "Password must be at least 8 characters in length and have 1 capital letter")
-
-            builder.setPositiveButton("Ok") { _, _ -> }
-            builder.show()
+            instructionDialog()
         }
 
         // If the registration was successful a login request is made
@@ -115,5 +110,20 @@ class RegistrationFragment : Fragment() {
                 replace<LoginFragment>(R.id.fragmentContainer)
             }
         }
+    }
+
+    private fun instructionDialog() {
+        val dialog = Dialog(this.requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setCancelable(true)
+        dialog.setContentView(R.layout.logreg_instructions_dialog)
+
+        val okBtn = dialog.findViewById(R.id.okBtn) as Button
+
+        okBtn.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 }

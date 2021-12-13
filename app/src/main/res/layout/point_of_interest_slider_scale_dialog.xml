@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="250dp"
+    android:background="@color/white"
     android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="5dp">
@@ -14,6 +15,7 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="@string/set_point_of_interest_scale"
+            android:textColor="@color/black"
             android:textSize="25sp" />
     </LinearLayout>
 

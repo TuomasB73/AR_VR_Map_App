@@ -75,4 +75,7 @@
     <string name="_3d_object_logo">3D object logo</string>
     <string name="point_of_interest">point of interest</string>
     <string name="spotlight">spotlight</string>
+    <string name="username">Username must be 3 or more characters and start with capital letter</string>
+    <string name="username_and_password">Username and password</string>
+    <string name="password">Password must be at least 8 characters in length and have 1 capital letter</string>
 </resources>
