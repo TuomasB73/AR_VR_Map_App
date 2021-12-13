@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -16,17 +15,13 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.preference.PreferenceManager
-import com.budiyev.android.codescanner.AutoFocusMode
-import com.budiyev.android.codescanner.CodeScanner
-import com.budiyev.android.codescanner.CodeScannerView
-import com.budiyev.android.codescanner.DecodeCallback
-import com.budiyev.android.codescanner.ErrorCallback
-import com.budiyev.android.codescanner.ScanMode
+import com.budiyev.android.codescanner.*
 import com.google.zxing.Result
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.utils.NetworkVariables
@@ -153,6 +148,28 @@ class QRScannerFragment : Fragment() {
             }
         }
     }
+
+/*    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        when (requestCode) {
+            Constants.PERMISSIONS_REQUEST_LOCATION -> {
+                if (requestCode == 123) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(activity, "Camera permission granted", Toast.LENGTH_LONG)
+                            .show()
+                        startScanning()
+                    } else {
+                        codeScanner.errorCallback
+                        Toast.makeText(activity, "Camera permission denied", Toast.LENGTH_LONG)
+                            .show()
+                    }
+                }
+            }
+        }
+    }*/
 
     // This will check if the qr code is valid
     private fun isQrCodeValidCheck(result: Result) {
