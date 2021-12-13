@@ -61,7 +61,6 @@ class SavedItemAdapter(
     fun updateData(updatedList: List<ARItem>) {
         arItemsList?.clear()
         arItemsList?.addAll(updatedList)
-        arItemsList = updatedList.toMutableList()
         notifyDataSetChanged()
     }
 
