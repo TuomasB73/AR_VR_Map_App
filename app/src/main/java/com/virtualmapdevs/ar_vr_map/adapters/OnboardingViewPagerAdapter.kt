@@ -13,6 +13,7 @@ class OnboardingViewPagerAdapter(
 ) :
     FragmentStateAdapter(fragmentActivity) {
 
+    // In onboarding we have 3 different instruction pages
     override fun createFragment(position: Int): Fragment {
         return when (position) {
             0 -> OnboardingFragment.newInstance(

@@ -170,6 +170,7 @@ class QRScannerFragment : Fragment() {
         return true
     }
 
+    // Fetch data for the dialog description and location
     private fun fetchQRItemData(arItemId: String?) {
         val userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
         if (arItemId != null) {

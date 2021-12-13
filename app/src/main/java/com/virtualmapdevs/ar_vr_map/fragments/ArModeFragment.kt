@@ -43,6 +43,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Looper
 import android.widget.*
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat

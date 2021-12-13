@@ -85,6 +85,7 @@ class LoginFragment : Fragment() {
         }
     }
 
+    // Dialog that shows user acceptable username and password
     private fun instructionDialog() {
         val dialog = Dialog(this.requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)

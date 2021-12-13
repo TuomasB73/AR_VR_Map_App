@@ -257,7 +257,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         dialog.show()
     }
 
-    // Dialog that show 2D map and location of 3d map
+    // Dialog that show 2D map and location of the 3d map object
     private fun locationMapDialog(latitude: Double?, longitude: Double?) {
 
         if (latitude != null && longitude != null) {
