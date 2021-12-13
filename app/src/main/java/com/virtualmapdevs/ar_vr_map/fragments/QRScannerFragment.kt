@@ -104,10 +104,7 @@ class QRScannerFragment : Fragment() {
         }
         codeScanner.errorCallback = ErrorCallback {
             activity?.runOnUiThread {
-                Toast.makeText(
-                    activity, "Camera initialization error: ${it.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+
             }
         }
 
@@ -148,29 +145,7 @@ class QRScannerFragment : Fragment() {
             }
         }
     }
-
-/*    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        when (requestCode) {
-            Constants.PERMISSIONS_REQUEST_LOCATION -> {
-                if (requestCode == 123) {
-                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        Toast.makeText(activity, "Camera permission granted", Toast.LENGTH_LONG)
-                            .show()
-                        startScanning()
-                    } else {
-                        codeScanner.errorCallback
-                        Toast.makeText(activity, "Camera permission denied", Toast.LENGTH_LONG)
-                            .show()
-                    }
-                }
-            }
-        }
-    }*/
-
+    
     // This will check if the qr code is valid
     private fun isQrCodeValidCheck(result: Result) {
         val inTest = result.toString()
