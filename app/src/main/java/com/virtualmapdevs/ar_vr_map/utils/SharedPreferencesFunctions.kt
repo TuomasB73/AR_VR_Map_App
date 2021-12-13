@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.util.Log
 
+// Singleton object for all the SharedPreference functions
 object SharedPreferencesFunctions {
     private const val sharedPrefFile = "userSharedPreferences"
     private var userToken: String? = null

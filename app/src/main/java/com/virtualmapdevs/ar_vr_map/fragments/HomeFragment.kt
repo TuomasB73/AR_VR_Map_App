@@ -37,6 +37,8 @@ class HomeFragment : Fragment() {
             requireActivity().supportFragmentManager.commit {
                 setReorderingAllowed(true)
                 replace<QRScannerFragment>(R.id.fragmentContainer)
+                /* The QR scanner fragment name is attached in the backstack entry so it can be identified
+                later in the back button navigation logic */
                 addToBackStack("QRScannerFragment")
             }
         }

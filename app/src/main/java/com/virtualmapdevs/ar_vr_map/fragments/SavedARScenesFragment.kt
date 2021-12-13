@@ -67,6 +67,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
         userToken = SharedPreferencesFunctions.getUserToken(requireActivity())
 
+        // If there's no internet connection, an error dialog is shown to the user
         lifecycleScope.launch {
             if (NetworkVariables.isNetworkConnected) {
                 fetchSavedItemsAndSetAdapter()
@@ -81,6 +82,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         }
     }
 
+    // Creates a no connection dialog with a retest option
     private fun showNoConnectionDialog() {
         val builder = androidx.appcompat.app.AlertDialog.Builder(requireContext())
         builder.setTitle("No connection")
@@ -129,6 +131,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         mapActionsDialog(arItemId, description, latitude, longitude)
     }
 
+    // Creates a delete confirmation dialog
     private fun onDeleteButtonPressed(arItemId: String?) {
 
         val builder = AlertDialog.Builder(this.requireContext())
@@ -183,6 +186,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         })
     }
 
+    // Compares the search text to the names of the maps in the list and updates the recyclerView
     private fun search(text: String?) {
         matchedMaps = arrayListOf()
 
@@ -204,7 +208,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
         savedItemAdapter.updateData(matchedMaps)
     }
 
-
+    // Creates a dialog for the maps with ar mode, show map and delete options
     private fun mapActionsDialog(
         arItemId: String?,
         description: String?,
@@ -227,6 +231,7 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
 
         openArBtn.setOnClickListener {
             dialog.dismiss()
+            // The AR item ID is passed to the ar mode fragment
             val bundle = bundleOf("arItemId" to arItemId)
 
             requireActivity().supportFragmentManager.commit {
