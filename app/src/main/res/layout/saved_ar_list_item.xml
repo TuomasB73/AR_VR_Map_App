@@ -15,6 +15,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/white"
             android:orientation="vertical">
 
             <!-- Media -->
@@ -46,6 +47,7 @@
                 android:maxLines="1"
                 android:textAlignment="center"
                 android:textAppearance="?attr/textAppearanceHeadline6"
+                android:textColor="@color/black"
                 tools:text="Item title" />
 
             <!-- Buttons -->
