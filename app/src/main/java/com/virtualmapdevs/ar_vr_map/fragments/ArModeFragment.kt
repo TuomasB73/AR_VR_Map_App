@@ -729,6 +729,8 @@ class ArModeFragment : Fragment(), SensorEventListener {
     // Adds the info dashboard to the AR space and sets the scaling
     private fun addInfoDashboard() {
         val dashboardNode = TransformableNode(arFragment.transformationSystem)
+        infoDashboard!!.isShadowReceiver = false
+        infoDashboard!!.isShadowCaster = false
         dashboardNode.renderable = infoDashboard
         dashboardNode.scaleController.minScale = 20.0f
         dashboardNode.scaleController.maxScale = 60.0f
