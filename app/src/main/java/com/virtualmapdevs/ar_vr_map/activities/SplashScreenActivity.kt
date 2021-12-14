@@ -10,7 +10,9 @@ import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.virtualmapdevs.ar_vr_map.R
 
-// Teachers allowed to use "suppress" here
+/*This method work with Android 11 or lower. We need to use this and
+it has to be "suppressed" because the other
+method only work with Android 12 or higher.*/
 @Suppress("DEPRECATION")
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,6 +41,6 @@ class SplashScreenActivity : AppCompatActivity() {
             val intent = Intent(this, MainActivity::class.java)
             startActivity(intent)
             finish()
-        }, 2000) // is the delayed time in milliseconds.
+        }, 2000) // delayed time in milliseconds.
     }
 }

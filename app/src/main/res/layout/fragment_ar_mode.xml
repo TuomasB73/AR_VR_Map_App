@@ -179,8 +179,8 @@
             android:layout_width="40dp"
             android:layout_height="90dp"
             android:clickable="true"
-            android:focusable="true"
             android:contentDescription="@string/navigation_drawer_indicator_arrow"
+            android:focusable="true"
             android:src="@drawable/nav_drawer_arrow_indicator"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -360,6 +360,8 @@
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header" />
+        android:background="@color/white"
+        app:headerLayout="@layout/nav_header"
+        app:itemTextColor="@color/black" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

@@ -1,6 +1,5 @@
 package com.virtualmapdevs.ar_vr_map.fragments
 
-import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.util.Log
@@ -112,6 +111,7 @@ class RegistrationFragment : Fragment() {
         }
     }
 
+    // Dialog that shows user instructions how to create acceptable username and password
     private fun instructionDialog() {
         val dialog = Dialog(this.requireContext())
         dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
