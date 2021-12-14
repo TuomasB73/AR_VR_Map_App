@@ -362,6 +362,7 @@
         android:layout_gravity="start"
         android:background="@color/white"
         app:headerLayout="@layout/nav_header"
-        app:itemTextColor="@color/black" />
+        app:itemTextColor="@color/black"
+        app:theme="@style/NavigationViewStyle" />
 
 </androidx.drawerlayout.widget.DrawerLayout>

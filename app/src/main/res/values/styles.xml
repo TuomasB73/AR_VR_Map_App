@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="NavigationViewStyle">
+        <item name="android:textSize">16sp</item> <!-- menu item text size-->
+        <item name="android:listPreferredItemHeightSmall">40dp</item><!-- menu item height-->
+        <item name="android:textColorSecondary">#4C4A46</item>
+    </style>
+
+</resources>
