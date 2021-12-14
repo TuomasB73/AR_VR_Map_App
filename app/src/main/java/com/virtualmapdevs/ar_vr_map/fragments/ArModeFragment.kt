@@ -119,6 +119,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             view.findViewById(R.id.motionGesturesInstructionsCardView)
         arFragment = childFragmentManager.findFragmentById(R.id.sceneform_fragment) as ArFragment
 
+        // Navigation drawer
         navView = view.findViewById(R.id.nav_view)
 
         // Network connection is tested
@@ -187,27 +188,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
 
         view.findViewById<Button>(R.id.point_of_interest_scale_btn).setOnClickListener {
-            val dialog = Dialog(requireContext())
-            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.point_of_interest_slider_scale_dialog)
-            dialog.findViewById<Button>(R.id.slider_dialog_btn).setOnClickListener {
-                dialog.dismiss()
-            }
-            dialog.findViewById<Slider>(R.id.slider).let { poiScaleSlider ->
-                poiScaleSlider.value = sliderValue
-                poiScaleSlider.addOnChangeListener { slider, value, fromUser ->
-                    sliderValue = slider.value
-                    if (addedPointOfInterestList.isNotEmpty()) {
-                        addedPointOfInterestList.forEach { addedPointOfInterest ->
-                            addedPointOfInterest.node.localScale =
-                                Vector3(sliderValue, sliderValue, sliderValue)
-                            addedPointOfInterest.node.parent = modelNode
-                        }
-                    }
-                }
-            }
-            dialog.setCancelable(true)
-            dialog.show()
+            setDialogSlider()
         }
 
 
@@ -226,6 +207,31 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
             arFragment.arSceneView.scene.addOnUpdateListener(onUpdateListener)
         }
+    }
+
+    // Sets the slider dialog which allows to scale point of interest size in the map
+    private fun setDialogSlider() {
+        val dialog = Dialog(requireContext())
+        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+        dialog.setContentView(R.layout.point_of_interest_slider_scale_dialog)
+        dialog.findViewById<Button>(R.id.slider_dialog_btn).setOnClickListener {
+            dialog.dismiss()
+        }
+        dialog.findViewById<Slider>(R.id.slider).let { poiScaleSlider ->
+            poiScaleSlider.value = sliderValue
+            poiScaleSlider.addOnChangeListener { slider, _, _ ->
+                sliderValue = slider.value
+                if (addedPointOfInterestList.isNotEmpty()) {
+                    addedPointOfInterestList.forEach { addedPointOfInterest ->
+                        addedPointOfInterest.node.localScale =
+                            Vector3(sliderValue, sliderValue, sliderValue)
+                        addedPointOfInterest.node.parent = modelNode
+                    }
+                }
+            }
+        }
+        dialog.setCancelable(true)
+        dialog.show()
     }
 
     // Creates a connection error dialog
@@ -247,6 +253,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         alertDialog.show()
     }
 
+    // Finds the approximate user location based on nearest point of interest
     private fun findApproximateUserLocation() {
         if (modelNode != null) {
             locationManager.userLocation?.latitude ?: return
@@ -461,6 +468,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         })
     }
 
+    // Initialize the navigation navigation drawer header with the image logo reference saved for the 3D object
     private fun initDrawerHeader(logoReference: String?) {
         logoReference ?: return
         val headerView = navView.getHeaderView(0)
@@ -471,6 +479,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             .into(drawerImage)
     }
 
+    // Create navigation drawer menu and items dynamically based on the points of interest of the 3D object
     private fun initDrawerItems(pois: MutableList<Poi>) {
         navView.itemIconTintList = null
         val mMenu = navView.menu
@@ -493,6 +502,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Set icon for a submenu item by loading the icon image from Azure storage
     private fun setSubMenuIcon(menuItem: MenuItem, poiImage: String) {
         Glide.with(requireContext())
             .asBitmap()
@@ -512,6 +522,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             })
     }
 
+    // Set a click listener on navigation drawer item that will display the rotating point of interest node above the map
     private fun setSubMenuItemClickListener(poi: Poi, menuItem: MenuItem) {
 
         if (modelNode != null) {
@@ -573,6 +584,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         }
     }
 
+    // Set an alert dialog for removing a point of interest from the map
     private fun setNodeRemovalAlertBuilder(
         poi: Poi,
         pointOfInterestNode: RotatingNode,
@@ -752,6 +764,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
             }
     }
 
+    // Used as the indicator for user location
     private fun createSphere() {
         MaterialFactory.makeOpaqueWithColor(requireContext(), Color(0f, 255f, 0f))
             .thenAccept { material: Material? ->
@@ -940,6 +953,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         locationManager.fusedLocationClient.removeLocationUpdates(locationManager.locationCallback)
     }
 
+    // Callback which listens to user input for allowing to use location service or not
     override fun onRequestPermissionsResult(
         requestCode: Int, permissions: Array<String>, grantResults: IntArray
     ) {
