@@ -706,7 +706,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 modelNode = TransformableNode(arFragment.transformationSystem)
                 modelNode?.renderable = modelRenderable
                 modelNode?.scaleController?.minScale = 0.5f
-                modelNode?.scaleController?.maxScale = 2.5f
+                modelNode?.scaleController?.maxScale = 10f
                 anchorNode?.localScale = Vector3(0.01f, 0.01f, 0.01f)
                 modelNode?.parent = anchorNode
                 modelNode?.select()
