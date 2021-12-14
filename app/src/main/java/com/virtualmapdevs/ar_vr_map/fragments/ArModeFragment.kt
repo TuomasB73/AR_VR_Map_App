@@ -533,7 +533,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
                     RotatingNode().let { node ->
                         node.renderable = pointOfInterestRenderable
                         node.localPosition =
-                            Vector3(poi.mapCoordinates.x, 3f, poi.mapCoordinates.z)
+                            Vector3(
+                                poi.mapCoordinates.x,
+                                poi.mapCoordinates.y + 1.5f,
+                                poi.mapCoordinates.z
+                            )
                         //node.scaleController.minScale = 4f
                         //node.scaleController.maxScale = 15f
                         node.localScale = Vector3(sliderValue, sliderValue, sliderValue)
