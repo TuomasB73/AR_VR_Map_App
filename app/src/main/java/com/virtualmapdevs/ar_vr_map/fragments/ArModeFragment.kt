@@ -964,6 +964,11 @@ class ArModeFragment : Fragment(), SensorEventListener {
                             Manifest.permission.ACCESS_FINE_LOCATION
                         ) == PackageManager.PERMISSION_GRANTED
                     ) {
+                        Toast.makeText(
+                            requireContext(),
+                            "Location permission granted",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         locationManager.fusedLocationClient.requestLocationUpdates(
                             locationManager.locationRequest!!,
                             locationManager.locationCallback, Looper.getMainLooper()
@@ -975,13 +980,13 @@ class ArModeFragment : Fragment(), SensorEventListener {
                         .setOnClickListener {
                             Toast.makeText(
                                 requireContext(),
-                                "Allow location in order to use this feature",
+                                "Allow the application to access location in order to use this feature!",
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
                     val builder = AlertDialog.Builder(requireContext())
-                    builder.setTitle("Location not allowed")
-                    builder.setMessage("Find location feature is not allowed")
+                    builder.setTitle("Location service not allowed")
+                    builder.setMessage("Find location feature is not active because application doesn't have a permission to access location")
                     builder.setIcon(android.R.drawable.ic_dialog_alert)
                     builder.setPositiveButton("OK") { _, _ ->
                     }
