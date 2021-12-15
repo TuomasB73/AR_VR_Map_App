@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.virtualmapdevs.area_explorer">
+    package="com.virtualmapdevs.areaexplorer">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -28,14 +28,14 @@
         android:windowSoftInputMode="adjustPan"
         android:supportsRtl="true"
         android:theme="@style/Theme.AReaExplorer">
-        <activity android:name="com.virtualmapdevs.area_explorer.activities.OnboardingFinishActivity" />
-        <activity android:name="com.virtualmapdevs.area_explorer.activities.OnboardingActivity" />
-        <activity android:name="com.virtualmapdevs.area_explorer.activities.MainActivity"
+        <activity android:name="com.virtualmapdevs.areaexplorer.activities.OnboardingFinishActivity" />
+        <activity android:name="com.virtualmapdevs.areaexplorer.activities.OnboardingActivity" />
+        <activity android:name="com.virtualmapdevs.areaexplorer.activities.MainActivity"
             android:screenOrientation="portrait"
             android:exported="true">
         </activity>
         <activity
-            android:name="com.virtualmapdevs.area_explorer.activities.SplashScreenActivity"
+            android:name="com.virtualmapdevs.areaexplorer.activities.SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
             android:exported="true">
             <intent-filter>
