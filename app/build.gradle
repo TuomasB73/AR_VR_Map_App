@@ -9,7 +9,7 @@ android {
     compileSdk 31
 
     defaultConfig {
-        applicationId "com.virtualmapdevs.ar_vr_map"
+        applicationId "com.virtualmapdevs.area_explorer"
         minSdk 24
         targetSdk 31
         versionCode 1
