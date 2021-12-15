@@ -43,7 +43,6 @@ import android.graphics.drawable.BitmapDrawable
 import android.location.Location
 import android.os.Looper
 import android.widget.*
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.cardview.widget.CardView
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
@@ -993,7 +992,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         mediaController.setAnchorView(video)
 
         val offlineUri: Uri =
-            Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.testvideo)
+            Uri.parse("android.resource://" + activity?.packageName + "/" + R.raw.ar_instruction_video)
 
         skipBtn.setOnClickListener {
             dialog.dismiss()
