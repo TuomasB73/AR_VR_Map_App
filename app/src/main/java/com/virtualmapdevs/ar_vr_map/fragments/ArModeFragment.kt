@@ -86,6 +86,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var addedPointOfInterestList: MutableList<AddedPointOfInterest> = mutableListOf()
     private var isLocationFound = false
     private lateinit var onUpdateListener: Scene.OnUpdateListener
+    private lateinit var viewForFunction: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -98,6 +99,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        viewForFunction = view
         locationManager = LocationManager(requireContext(), this)
         locationManager.initLocationClientRequestAndCallback()
         locationManager.checkSelfPermissions()
@@ -969,7 +971,23 @@ class ArModeFragment : Fragment(), SensorEventListener {
 
                     }
                 } else {
-                    TODO("Not yet implemented")
+                    viewForFunction.findViewById<Button>(R.id.check_location_btn)
+                        .setOnClickListener {
+                            Toast.makeText(
+                                requireContext(),
+                                "Allow location in order to use this feature",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    val builder = AlertDialog.Builder(requireContext())
+                    builder.setTitle("Location not allowed")
+                    builder.setMessage("Find location feature is not allowed")
+                    builder.setIcon(android.R.drawable.ic_dialog_alert)
+                    builder.setPositiveButton("OK") { _, _ ->
+                    }
+                    val alertDialog: AlertDialog = builder.create()
+                    alertDialog.setCancelable(false)
+                    alertDialog.show()
                 }
             }
         }
