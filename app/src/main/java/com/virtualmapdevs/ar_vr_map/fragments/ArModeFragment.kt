@@ -87,10 +87,6 @@ class ArModeFragment : Fragment(), SensorEventListener {
     private var isLocationFound = false
     private lateinit var onUpdateListener: Scene.OnUpdateListener
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

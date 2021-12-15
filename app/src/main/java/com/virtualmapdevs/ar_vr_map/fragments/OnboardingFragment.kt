@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import com.virtualmapdevs.ar_vr_map.R
 import kotlinx.android.synthetic.main.fragment_onboarding.view.*
 
+// This is used in onboarding that shows instructions
+// for the first time user
 class OnboardingFragment : Fragment() {
     private var title: String? = null
     private var description: String? = null

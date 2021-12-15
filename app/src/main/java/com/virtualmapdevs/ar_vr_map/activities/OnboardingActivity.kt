@@ -11,6 +11,8 @@ import com.virtualmapdevs.ar_vr_map.Animatoo
 import com.virtualmapdevs.ar_vr_map.R
 import com.virtualmapdevs.ar_vr_map.adapters.OnboardingViewPagerAdapter
 
+// This is used in onboarding that shows instructions
+// for the first time user
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var mViewPager: ViewPager2

@@ -42,10 +42,6 @@ class SavedARScenesFragment : Fragment(), SavedItemAdapter.ClickListener {
     private lateinit var savedItemAdapter: SavedItemAdapter
     private lateinit var binding: FragmentSavedARScenesBinding
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
