@@ -21,7 +21,7 @@
 
     <color name="grey_transparent">#55A0A0A0</color>
     <color name="translucent_white_background">#9AEAEAEA</color>
-    <color name="blue_button">#007aff</color>
+    <color name="blue_button">#006BDF</color>
 
 
     <color name="colorPrimary">#6FB6F4</color>
@@ -45,5 +45,5 @@
     <color name="md_grey_900">#212121</color>
     <color name="md_black_1000">#000000</color>
     <color name="md_white_1000">#ffffff</color>
-    <color name="blue_widget_color">#007aff</color>
+    <color name="blue_widget_color">#006BDF</color>
 </resources>
