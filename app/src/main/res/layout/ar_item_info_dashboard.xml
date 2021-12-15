@@ -53,7 +53,8 @@
                 android:id="@+id/itemImageView"
                 android:layout_width="100dp"
                 android:layout_height="100dp"
-                android:layout_margin="8dp" />
+                android:layout_margin="8dp"
+                android:contentDescription="@string/_3d_object_logo" />
         </LinearLayout>
 
         <TextView
