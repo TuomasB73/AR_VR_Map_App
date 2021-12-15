@@ -60,9 +60,10 @@ The app can be just cloned and installed using Android studio. The app requires 
 
 1. Login and registration
 
-<img src="https://user-images.githubusercontent.com/64253189/146197114-63e1a4d1-7b50-4376-b655-c4d25053e9c8.jpg" width="200" />
-<img src="https://user-images.githubusercontent.com/64253189/146197216-5c2c8202-a801-4ba8-84dd-0172a3b65efd.jpg" width="200" />
-Login or register in the app first. See the credential requirements by tapping the info button.
+   <img src="https://user-images.githubusercontent.com/64253189/146197114-63e1a4d1-7b50-4376-b655-c4d25053e9c8.jpg" width="200" />
+   <img src="https://user-images.githubusercontent.com/64253189/146197216-5c2c8202-a801-4ba8-84dd-0172a3b65efd.jpg" width="200" />
+   Login or register in the app first. See the credential requirements by tapping the info button.
+
 
 2. Home screen
 
