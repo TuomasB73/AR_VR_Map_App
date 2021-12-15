@@ -19,7 +19,7 @@
             android:layout_marginTop="60dp"
             android:layout_marginBottom="30dp"
             android:contentDescription="@string/application_logo"
-            app:srcCompat="@drawable/testlogo4" />
+            app:srcCompat="@drawable/logo" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text_onboarding_title"

@@ -42,7 +42,7 @@ class SavedItemAdapter(
         // The logo image is loaded with Glide
         Glide.with(context)
             .load("${Constants.AR_ITEM_MODEL_BASE_URL}${arItemsList?.get(position)?.logoImageReference}")
-            .error(R.drawable.testlogo4)
+            .error(R.drawable.logo)
             .into(holder.imageView)
 
         holder.savedArListItemCard.setOnClickListener {

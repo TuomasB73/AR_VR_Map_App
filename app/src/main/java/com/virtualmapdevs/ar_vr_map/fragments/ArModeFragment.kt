@@ -474,7 +474,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         val drawerImage = headerView.findViewById<ImageView>(R.id.navDrawerImageView)
 
         Glide.with(requireContext()).load("${Constants.AR_ITEM_MODEL_BASE_URL}$logoReference")
-            .error(R.drawable.testlogo4)
+            .error(R.drawable.logo)
             .into(drawerImage)
     }
 
@@ -516,7 +516,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
                 }
 
                 override fun onLoadCleared(@Nullable placeholder: Drawable?) {
-                    menuItem.setIcon(R.drawable.testlogo2)
+                    menuItem.setIcon(R.drawable.logo)
                 }
             })
     }
@@ -668,7 +668,7 @@ class ArModeFragment : Fragment(), SensorEventListener {
         // The logo image is loaded
         Glide.with(requireContext())
             .load("${Constants.AR_ITEM_MODEL_BASE_URL}$itemLogoReference")
-            .error(R.drawable.testlogo2)
+            .error(R.drawable.logo)
             .into(layout.findViewById(R.id.itemImageView))
 
         ViewRenderable.builder()

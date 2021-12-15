@@ -10,8 +10,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:focusableInTouchMode="true"
         android:background="@color/background_color"
+        android:focusableInTouchMode="true"
         tools:context=".activities.MainActivity">
 
         <Button
@@ -21,6 +21,7 @@
             android:layout_height="60dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
+            android:contentDescription="@string/return_to_home_screen"
             android:insetLeft="0dp"
             android:insetTop="0dp"
             android:insetRight="0dp"
